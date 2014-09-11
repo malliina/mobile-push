@@ -21,29 +21,29 @@ scope of this library.
 ### Google Cloud Messaging ###
 
 ```
-    val gcmApiKey: String = ???
-    val deviceRegistrationId: String = ???
-    val client = new GoogleMessaging(gcmApiKey)
-    val message = AndroidMessage(Map("key" -> "value"), expiresAfter = 20.seconds)
-    val response: Future[Response] = client.send(deviceRegistrationId, message)
+val gcmApiKey: String = ???
+val deviceRegistrationId: String = ???
+val client = new GoogleMessaging(gcmApiKey)
+val message = AndroidMessage(Map("key" -> "value"), expiresAfter = 20.seconds)
+val response: Future[Response] = client.send(deviceRegistrationId, message)
 ```
 
 ### Amazon Device Messaging ###
 
 ```
-    val clientId: String = ???
-    val clientSecret: String = ???
-    val deviceID: String = ???
-    val client = new AmazonMessaging(clientId, clientSecret)
-    val message = AndroidMessage(Map("key" -> "value"), expiresAfter = 20.seconds)
-    val response: Future[Response] = client.send(deviceID, message)
+val clientId: String = ???
+val clientSecret: String = ???
+val deviceID: String = ???
+val client = new AmazonMessaging(clientId, clientSecret)
+val message = AndroidMessage(Map("key" -> "value"), expiresAfter = 20.seconds)
+val response: Future[Response] = client.send(deviceID, message)
 ```
 
 ### Microsoft Push Notification Service ###
 
 ```
-    val deviceURL: String = ???
-    val client = new MPNSClient
-    val message = ToastMessage("text1", "text2", deepLink = "/App/Xaml/DeepLinkPage.xaml?param=value", silent = true)
-    val response: Future[Response] = client.send(deviceURL, message)
+val deviceURL: String = ???
+val client = new MPNSClient
+val message = ToastMessage("text1", "text2", deepLink = "/App/Xaml/DeepLinkPage.xaml?param=value", silent = true)
+val response: Future[Response] = client.send(deviceURL, message)
 ```
