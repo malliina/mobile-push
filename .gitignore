@@ -1,0 +1,7 @@
+.idea/
+.idea/*
+*.iml
+lib_managed/
+target/
+.idea_modules/
+
