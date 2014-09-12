@@ -4,7 +4,7 @@ import com.mle.http.AsyncHttp
 import com.mle.http.AsyncHttp.{RichRequestBuilder, _}
 import com.mle.push.adm.AmazonMessaging._
 import com.mle.push.android.AndroidMessage
-import com.mle.push.{PushClient, MessagingClient, PushException}
+import com.mle.push.{PushClient, PushException}
 import com.mle.util.Log
 import com.mle.util.Utils.executionContext
 import com.ning.http.client.Response
@@ -16,7 +16,7 @@ import scala.concurrent.duration.DurationInt
 /**
  * @author Michael
  */
-class AmazonMessaging(clientID: String, clientSecret: String) extends PushClient[AndroidMessage] with Log {
+class AmazonMessaging(val clientID: String, val clientSecret: String) extends PushClient[AndroidMessage] with Log {
   def send(id: String, data: Map[String, String]): Future[Response] =
     send(id, AndroidMessage(data, expiresAfter = 60.seconds))
 
@@ -31,9 +31,10 @@ class AmazonMessaging(clientID: String, clientSecret: String) extends PushClient
       ))
     })
   }
-
   def token(clientID: String, clientSecret: String): Future[String] =
     accessToken(clientID, clientSecret).map(_.access_token)
+
+  def accessToken: Future[AccessToken] = accessToken(clientID, clientSecret)
 
   def accessToken(clientID: String, clientSecret: String): Future[AccessToken] =
     tokenRequest(clientID, clientSecret)

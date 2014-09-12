@@ -10,7 +10,7 @@ import scala.concurrent.Future
 /**
  * @author Michael
  */
-trait AndroidMessagingClient extends MessagingClient[AndroidMessage] {
+trait AndroidMessagingClient extends MessagingClient[AndroidDevice] {
   def send(id: String, data: Map[String, String]): Future[Response]
 
   def send(dest: AndroidDevice): Future[Response] = send(dest.id, Map(CMD -> STOP, TAG -> dest.tag))

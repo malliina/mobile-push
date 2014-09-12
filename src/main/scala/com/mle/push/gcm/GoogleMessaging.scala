@@ -14,7 +14,7 @@ import scala.concurrent.Future
  *
  * @author mle
  */
-class GoogleMessaging(apiKey: String) extends PushClient[AndroidMessage] {
+class GoogleMessaging(val apiKey: String) extends PushClient[AndroidMessage] {
 
   import com.mle.push.gcm.GoogleMessaging._
 
