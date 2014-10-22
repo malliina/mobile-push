@@ -11,12 +11,12 @@ object PushBuild extends Build {
   lazy val projectSettings = Seq(
     SbtUtils.gitUserName := "malliina",
     SbtUtils.developerName := "Michael Skogberg",
-    version := "0.0.9",
+    version := "0.1.0",
     scalaVersion := "2.11.2",
     fork in Test := true,
     libraryDependencies ++= Seq(
-      "com.github.malliina" %% "util" % "1.4.2",
-      "com.typesafe.play" %% "play-json" % "2.3.4",
+      "com.github.malliina" %% "util" % "1.5.0",
+      "com.typesafe.play" %% "play-json" % "2.3.5",
       "com.ning" % "async-http-client" % "1.8.13"),
     libraryDependencies := {
       CrossVersion.partialVersion(scalaVersion.value) match {

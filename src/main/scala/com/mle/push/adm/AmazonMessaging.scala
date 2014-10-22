@@ -1,12 +1,12 @@
 package com.mle.push.adm
 
+import com.mle.concurrent.ExecutionContexts.cached
 import com.mle.http.AsyncHttp
 import com.mle.http.AsyncHttp.{RichRequestBuilder, _}
 import com.mle.push.adm.AmazonMessaging._
 import com.mle.push.android.AndroidMessage
 import com.mle.push.{PushClient, PushException}
 import com.mle.util.Log
-import com.mle.util.Utils.executionContext
 import com.ning.http.client.Response
 import play.api.libs.json.Json
 

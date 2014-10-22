@@ -5,7 +5,7 @@ import java.io.StringWriter
 import com.mle.http.AsyncHttp
 import com.mle.push.PushClient
 import com.mle.util.Log
-import com.mle.util.Utils.executionContext
+import com.mle.concurrent.ExecutionContexts.cached
 import com.ning.http.client.{Response => NingResponse}
 
 import scala.concurrent.Future

@@ -1,10 +1,10 @@
 package com.mle.push.gcm
 
+import com.mle.concurrent.ExecutionContexts.cached
 import com.mle.http.AsyncHttp
 import com.mle.http.AsyncHttp._
-import com.mle.push.{PushClient, MessagingClient}
+import com.mle.push.PushClient
 import com.mle.push.android.AndroidMessage
-import com.mle.util.Utils.executionContext
 import com.ning.http.client.Response
 import play.api.libs.json.Json
 
