@@ -11,8 +11,8 @@ object PushBuild extends Build {
   lazy val projectSettings = Seq(
     SbtUtils.gitUserName := "malliina",
     SbtUtils.developerName := "Michael Skogberg",
-    version := "0.1.1",
-    scalaVersion := "2.11.4",
+    version := "0.1.2",
+    scalaVersion := "2.11.5",
     fork in Test := true,
     libraryDependencies ++= Seq(
       "com.github.malliina" %% "util" % "1.5.0",

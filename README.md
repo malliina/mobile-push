@@ -2,9 +2,9 @@
 
 Send push notifications to mobile devices. Supports:
 
-+   Google Cloud Messaging (GCM)
-+   Amazon Device Messaging (ADM)
-+   Microsoft Push Notification Service (MPNS)
+- Google Cloud Messaging (GCM)
+- Amazon Device Messaging (ADM)
+- Microsoft Push Notification Service (MPNS)
 
 ## Installation ##
 
