@@ -8,7 +8,7 @@ import com.ning.http.client.Response
 import org.scalatest.FunSuite
 
 import scala.concurrent.Future
-import scala.concurrent.duration.DurationLong
+import scala.concurrent.duration.DurationInt
 
 /**
  * @author Michael
