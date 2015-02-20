@@ -3,7 +3,7 @@ package com.mle.push.mpns
 import java.io.StringWriter
 
 import com.mle.http.AsyncHttp
-import com.mle.push.PushClient
+import com.mle.push.{HttpPushClient, PushClient}
 import com.mle.util.Log
 import com.mle.concurrent.ExecutionContexts.cached
 import com.ning.http.client.{Response => NingResponse}
@@ -15,7 +15,7 @@ import scala.xml.{Elem, XML}
  *
  * @author mle
  */
-class MPNSClient extends PushClient[ToastMessage] with Log {
+class MPNSClient extends HttpPushClient[ToastMessage] with Log {
   //  val MessageID = "X-MessageID"
   // request headers
   val XNotificationClass = "X-NotificationClass"

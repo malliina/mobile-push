@@ -3,9 +3,9 @@ package com.mle.push.adm
 import com.mle.concurrent.ExecutionContexts.cached
 import com.mle.http.AsyncHttp
 import com.mle.http.AsyncHttp.{RichRequestBuilder, _}
-import com.mle.push.adm.AmazonMessaging._
+import com.mle.push.adm.ADMClient._
 import com.mle.push.android.AndroidMessage
-import com.mle.push.{PushClient, PushException}
+import com.mle.push.{HttpPushClient, PushException}
 import com.mle.util.Log
 import com.ning.http.client.Response
 import play.api.libs.json.Json
@@ -16,7 +16,7 @@ import scala.concurrent.duration.DurationInt
 /**
  * @author Michael
  */
-class AmazonMessaging(val clientID: String, val clientSecret: String) extends PushClient[AndroidMessage] with Log {
+class ADMClient(val clientID: String, val clientSecret: String) extends HttpPushClient[AndroidMessage] with Log {
   def send(id: String, data: Map[String, String]): Future[Response] =
     send(id, AndroidMessage(data, expiresAfter = 60.seconds))
 
@@ -31,6 +31,7 @@ class AmazonMessaging(val clientID: String, val clientSecret: String) extends Pu
       ))
     })
   }
+
   def token(clientID: String, clientSecret: String): Future[String] =
     accessToken(clientID, clientSecret).map(_.access_token)
 
@@ -55,7 +56,7 @@ class AmazonMessaging(val clientID: String, val clientSecret: String) extends Pu
 
 }
 
-object AmazonMessaging {
+object ADMClient {
   val GRANT_TYPE = "grant_type"
   val CLIENT_CREDENTIALS = "client_credentials"
   val SCOPE = "scope"

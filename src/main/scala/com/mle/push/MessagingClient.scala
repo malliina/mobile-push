@@ -1,6 +1,6 @@
 package com.mle.push
 
-import com.mle.concurrent.FutureImplicits.RichFuture
+import com.mle.concurrent.FutureOps
 import com.mle.util.Log
 import com.ning.http.client.Response
 
@@ -22,6 +22,8 @@ trait MessagingClient[T] extends Log {
  *
  * @tparam T type of message
  */
-trait PushClient[T] {
-  def send(id: String, dest: T): Future[Response]
+trait PushClient[T, U] {
+  def send(id: String, dest: T): Future[U]
 }
+
+trait HttpPushClient[T] extends PushClient[T, Response]

@@ -1,8 +1,8 @@
 package tests
 
-import com.mle.push.adm.AmazonMessaging
+import com.mle.push.adm.ADMClient
 import com.mle.push.android.AndroidMessage
-import com.mle.push.gcm.GoogleMessaging
+import com.mle.push.gcm.GCMClient
 import com.mle.push.mpns.{MPNSClient, ToastMessage}
 import com.ning.http.client.Response
 import org.scalatest.FunSuite
@@ -17,7 +17,7 @@ class CodeTests extends FunSuite {
   test("Google example") {
     val gcmApiKey: String = ???
     val deviceRegistrationId: String = ???
-    val client = new GoogleMessaging(gcmApiKey)
+    val client = new GCMClient(gcmApiKey)
     val message = AndroidMessage(Map("key" -> "value"), expiresAfter = 20.seconds)
     val response: Future[Response] = client.send(deviceRegistrationId, message)
   }
@@ -25,7 +25,7 @@ class CodeTests extends FunSuite {
     val clientId: String = ???
     val clientSecret: String = ???
     val deviceID: String = ???
-    val client = new AmazonMessaging(clientId, clientSecret)
+    val client = new ADMClient(clientId, clientSecret)
     val message = AndroidMessage(Map("key" -> "value"), expiresAfter = 20.seconds)
     val response: Future[Response] = client.send(deviceID, message)
   }
