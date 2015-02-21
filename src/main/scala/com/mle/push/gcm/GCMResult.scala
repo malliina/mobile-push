@@ -6,26 +6,9 @@ import play.api.libs.json.{JsResult, JsValue, Json, Reads}
 /**
  * @author Michael
  */
-case class GCMResult(message_id: Option[String], registration_id: Option[String], error: Option[GCMResultError])
+case class GCMResult(message_id: Option[String], registration_id: Option[String], error: Option[GCMResult.GCMResultError])
 
 object GCMResult {
-  implicit val errorJson = new Reads[GCMResultError] {
-    override def reads(json: JsValue): JsResult[GCMResultError] = json.validate[String].map {
-      case "MissingRegistration" => MissingRegistration
-      case "InvalidRegistration" => InvalidRegistration
-      case "MismatchSenderId" => MismatchSenderId
-      case "NotRegistered" => NotRegistered
-      case "MessageTooBig" => MessageTooBig
-      case "InvalidDataKey" => InvalidDataKey
-      case "InvalidTtl" => InvalidTtl
-      case "Unavailable" => Unavailable
-      case "InternalServerError" => InternalServerError
-      case "InvalidPackageName" => InvalidPackageName
-      case "DeviceMessageRateExceeded" => DeviceMessageRateExceeded
-      case other => UnknownError(other)
-    }
-  }
-  implicit val json = Json.format[GCMResult]
 
   sealed trait GCMResultError
 
@@ -53,4 +36,21 @@ object GCMResult {
 
   case class UnknownError(name: String) extends GCMResultError
 
+  implicit val errorJson: Reads[GCMResultError] = new Reads[GCMResultError] {
+    override def reads(json: JsValue): JsResult[GCMResultError] = json.validate[String].map {
+      case "MissingRegistration" => MissingRegistration
+      case "InvalidRegistration" => InvalidRegistration
+      case "MismatchSenderId" => MismatchSenderId
+      case "NotRegistered" => NotRegistered
+      case "MessageTooBig" => MessageTooBig
+      case "InvalidDataKey" => InvalidDataKey
+      case "InvalidTtl" => InvalidTtl
+      case "Unavailable" => Unavailable
+      case "InternalServerError" => InternalServerError
+      case "InvalidPackageName" => InvalidPackageName
+      case "DeviceMessageRateExceeded" => DeviceMessageRateExceeded
+      case other => UnknownError(other)
+    }
+  }
+  implicit val json = Json.reads[GCMResult]
 }

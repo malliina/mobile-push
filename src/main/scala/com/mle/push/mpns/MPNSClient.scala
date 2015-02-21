@@ -5,6 +5,7 @@ import java.io.StringWriter
 import com.mle.concurrent.ExecutionContexts.cached
 import com.mle.http.AsyncHttp
 import com.mle.push.PushClient
+import com.mle.push.mpns.MPNSClient.{tileHeaders, toastHeaders}
 import com.mle.util.Log
 import com.ning.http.client.{Response => NingResponse}
 
@@ -15,44 +16,22 @@ import scala.xml.{Elem, XML}
  *
  * @author mle
  */
-class MPNSClient extends PushClient[ToastMessage, NingResponse] with Log {
-  //  val MessageID = "X-MessageID"
-  // request headers
-  val XNotificationClass = "X-NotificationClass"
-  val NotificationType = "X-WindowsPhone-Target"
-  // response headers
-  val NotificationStatus = "X-NotificationStatus"
-  val SubscriptionStatus = "X-SubscriptionStatus"
-  val DeviceConnectionStatus = "X-DeviceConnectionStatus"
-
-  val TILE = "tile"
-  val TOAST = "toast"
-  val RAW = "raw"
-  val IMMEDIATE = "2"
-
-  val CONTENT_TYPE = "Content-Type"
-  val TEXT_XML = "text/xml"
-
-  private val toastHeaders = Map(
-    CONTENT_TYPE -> TEXT_XML,
-    NotificationType -> TOAST,
-    XNotificationClass -> IMMEDIATE)
-
-  def push(url: String, message: ToastMessage): Future[NingResponse] = send(url, toastXml(message))
-
-  override def pushAll(ids: Seq[String], message: ToastMessage): Future[Seq[NingResponse]] = {
-    val bodyAsString = serialize(toastXml(message))
-    sendMulti(ids, bodyAsString)
+class MPNSClient extends PushClient[MPNSMessage, NingResponse] with Log {
+  override def pushAll(urls: Seq[String], message: MPNSMessage): Future[Seq[NingResponse]] = {
+    val bodyAsString = serialize(message.xml)
+    sendMulti(urls, bodyAsString, message.headers)
   }
 
-  protected def send(url: String, xml: Elem): Future[NingResponse] = sendSingle(url, serialize(xml))
+  override def push(url: String, message: MPNSMessage): Future[NingResponse] = send(url, message.xml, message.headers)
 
-  private def sendMulti(urls: Seq[String], body: String) = Future.sequence(urls.map(url => sendSingle(url, body)))
+  protected def send(url: String, xml: Elem, headers: Map[String, String]): Future[NingResponse] =
+    sendSingle(url, serialize(xml), headers)
 
-  private def sendSingle(url: String, body: String) = AsyncHttp.post(url, body, toastHeaders)
+  private def sendMulti(urls: Seq[String], body: String, headers: Map[String, String]) =
+    Future.sequence(urls.map(url => sendSingle(url, body, headers)))
 
-  private def toastXml(message: ToastMessage): Elem =
-    ToastPayload.toastXml(message.text1, message.text2, message.deepLink, message.silent)
+  private def sendSingle(url: String, body: String, headers: Map[String, String]) =
+    AsyncHttp.post(url, body, headers)
 
   /**
    * Serializes `elem` to a string, adding an xml declaration to the top. Encodes the payload
@@ -71,5 +50,85 @@ class MPNSClient extends PushClient[ToastMessage, NingResponse] with Log {
   }
 }
 
-case class ToastMessage(text1: String, text2: String, deepLink: String, silent: Boolean)
+object MPNSClient {
+  //  val MessageID = "X-MessageID"
+  // request headers
+  val XNotificationClass = "X-NotificationClass"
+  val NotificationType = "X-WindowsPhone-Target"
+  // response headers
+  val NotificationStatus = "X-NotificationStatus"
+  val SubscriptionStatus = "X-SubscriptionStatus"
+  val DeviceConnectionStatus = "X-DeviceConnectionStatus"
+
+  // not a bug
+  val TILE = "token"
+  val TOAST = "toast"
+  val TILE_IMMEDIATE = "1"
+  val TOAST_IMMEDIATE = "2"
+  val RAW_IMMEDIATE = "3"
+
+  val CONTENT_TYPE = "Content-Type"
+  val TEXT_XML = "text/xml"
+
+  private def baseHeaders(notificationClass: String) = Map(
+    CONTENT_TYPE -> TEXT_XML,
+    XNotificationClass -> notificationClass)
+
+  private def headers(notificationType: String, notificationClass: String) =
+    baseHeaders(notificationClass) ++ Map(NotificationType -> notificationType)
+
+  val toastHeaders = headers(TOAST, TOAST_IMMEDIATE)
+
+  val tileHeaders = headers(TILE, TILE_IMMEDIATE)
+
+  val rawHeaders = baseHeaders(RAW_IMMEDIATE)
+}
+
+trait MPNSMessage {
+  def xml: Elem
+
+  def headers: Map[String, String]
+}
+
+trait TileMessage extends MPNSMessage {
+  override def headers: Map[String, String] = tileHeaders
+}
+
+case class ToastMessage(text1: String,
+                        text2: String,
+                        deepLink: String,
+                        silent: Boolean) extends MPNSMessage {
+  override def xml: Elem = MPNSPayloads.toast(this)
+
+  override def headers: Map[String, String] = toastHeaders
+}
+
+case class TileData(backgroundImage: String,
+                    count: Int,
+                    title: String,
+                    backBackgroundImage: String,
+                    backTitle: String,
+                    backContent: String) extends TileMessage {
+  override def xml: Elem = MPNSPayloads.tile(this)
+}
+
+case class FlipData(smallBackgroundImage: String,
+                    wideBackgroundImage: String,
+                    wideBackBackgroundImage: String,
+                    wideBackContent: String,
+                    tile: TileData) extends TileMessage {
+  override def xml: Elem = MPNSPayloads.flip(this)
+}
+
+case class IconicData(smallIconImage: String,
+                      iconImage: String,
+                      wideContent1: String,
+                      wideContent2: String,
+                      wideContent3: String,
+                      count: Int,
+                      title: String,
+                      backgroundColor: String) extends TileMessage {
+  override def xml: Elem = MPNSPayloads.iconic(this)
+}
+
 
