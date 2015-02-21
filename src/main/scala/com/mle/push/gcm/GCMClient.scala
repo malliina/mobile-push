@@ -7,7 +7,7 @@ import com.mle.push.PushClient
 import com.mle.push.android.AndroidMessage
 import com.mle.push.gcm.GCMClient._
 import com.ning.http.client.Response
-import play.api.libs.json.Json
+import play.api.libs.json.{JsResult, Json}
 
 import scala.concurrent.Future
 
@@ -39,4 +39,11 @@ object GCMClient {
   val DATA = "data"
   val TIME_TO_LIVE = "time_to_live"
   val MAX_RECIPIENTS_PER_REQUEST = 1000
+
+  def parse(response: Response): Option[JsResult[GCMResponse]] =
+    if (response.getStatusCode == 200) {
+      Some(Json.parse(response.getResponseBody).validate[GCMResponse])
+    } else {
+      None
+    }
 }
