@@ -9,14 +9,27 @@ Send push notifications to mobile devices. Supports:
 ## Installation ##
 
 ```
-libraryDependencies += "com.github.malliina" %% "mobile-push" % "0.0.9"
+libraryDependencies += "com.github.malliina" %% "mobile-push" % "0.3.0"
 ```
 
 ## Usage ##
 
-To send notifications to Android devices, you must first obtain API keys from the provider (Google or Amazon). To 
-receive notifications, mobile devices must first register with your notification server. Setting that up is beyond the 
-scope of this library.
+To push notifications to iOS devices, you need to obtain a certificate for your app. To push notifications to Android
+devices, you must first obtain API keys from the provider (Google or Amazon).
+
+To receive notifications, mobile devices must first register with your notification server. Setting this up is beyond
+the scope of this library; let's assume you already have all this.
+
+### Apple Push Notification Service ###
+
+```
+val certKeyStore: KeyStore = ???
+val certPass: String = ???
+val deviceHexID: String = ???
+val client = new APNSClient(certKeyStore, certPass, isSandbox = true)
+val message = APNSMessage.simple("Hey, sexy!")
+val pushedNotification: Future[ApnsNotification] = client.push(deviceHexID, message)
+```
 
 ### Google Cloud Messaging ###
 

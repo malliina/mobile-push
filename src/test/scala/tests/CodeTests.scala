@@ -1,10 +1,14 @@
 package tests
 
+import java.security.KeyStore
+
 import com.mle.push.adm.ADMClient
 import com.mle.push.android.AndroidMessage
+import com.mle.push.apns.{APNSClient, APNSMessage}
 import com.mle.push.gcm.GCMClient
 import com.mle.push.mpns.{MPNSClient, ToastMessage}
 import com.ning.http.client.Response
+import com.notnoop.apns.ApnsNotification
 import org.scalatest.FunSuite
 
 import scala.concurrent.Future
@@ -14,6 +18,14 @@ import scala.concurrent.duration.DurationInt
  * @author Michael
  */
 class CodeTests extends FunSuite {
+  test("Apple example") {
+    val certKeyStore: KeyStore = ???
+    val certPass: String = ???
+    val deviceHexID: String = ???
+    val client = new APNSClient(certKeyStore, certPass, isSandbox = true)
+    val message = APNSMessage.simple("Hey, sexy!")
+    val pushedNotification: Future[ApnsNotification] = client.push(deviceHexID, message)
+  }
   test("Google example") {
     val gcmApiKey: String = ???
     val deviceRegistrationId: String = ???
