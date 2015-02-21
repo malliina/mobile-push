@@ -19,7 +19,7 @@ class CodeTests extends FunSuite {
     val deviceRegistrationId: String = ???
     val client = new GCMClient(gcmApiKey)
     val message = AndroidMessage(Map("key" -> "value"), expiresAfter = 20.seconds)
-    val response: Future[Response] = client.send(deviceRegistrationId, message)
+    val response: Future[Response] = client.push(deviceRegistrationId, message)
   }
   test("Amazon example") {
     val clientId: String = ???
@@ -27,12 +27,12 @@ class CodeTests extends FunSuite {
     val deviceID: String = ???
     val client = new ADMClient(clientId, clientSecret)
     val message = AndroidMessage(Map("key" -> "value"), expiresAfter = 20.seconds)
-    val response: Future[Response] = client.send(deviceID, message)
+    val response: Future[Response] = client.push(deviceID, message)
   }
   test("MPNS example") {
     val deviceURL: String = ???
     val client = new MPNSClient
     val message = ToastMessage("text1", "text2", deepLink = "/App/Xaml/DeepLinkPage.xaml?param=value", silent = true)
-    val response: Future[Response] = client.send(deviceURL, message)
+    val response: Future[Response] = client.push(deviceURL, message)
   }
 }

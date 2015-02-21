@@ -2,10 +2,10 @@ package com.mle.push.mpns
 
 import java.io.StringWriter
 
-import com.mle.http.AsyncHttp
-import com.mle.push.{HttpPushClient, PushClient}
-import com.mle.util.Log
 import com.mle.concurrent.ExecutionContexts.cached
+import com.mle.http.AsyncHttp
+import com.mle.push.PushClient
+import com.mle.util.Log
 import com.ning.http.client.{Response => NingResponse}
 
 import scala.concurrent.Future
@@ -15,7 +15,7 @@ import scala.xml.{Elem, XML}
  *
  * @author mle
  */
-class MPNSClient extends HttpPushClient[ToastMessage] with Log {
+class MPNSClient extends PushClient[ToastMessage, NingResponse] with Log {
   //  val MessageID = "X-MessageID"
   // request headers
   val XNotificationClass = "X-NotificationClass"
@@ -38,10 +38,18 @@ class MPNSClient extends HttpPushClient[ToastMessage] with Log {
     NotificationType -> TOAST,
     XNotificationClass -> IMMEDIATE)
 
-  def send(url: String, message: ToastMessage): Future[NingResponse] = send(url, toastXml(message))
+  def push(url: String, message: ToastMessage): Future[NingResponse] = send(url, toastXml(message))
 
-  protected def send(url: String, xml: Elem): Future[NingResponse] =
-    AsyncHttp.post(url, serialize(xml), toastHeaders)
+  override def pushAll(ids: Seq[String], message: ToastMessage): Future[Seq[NingResponse]] = {
+    val bodyAsString = serialize(toastXml(message))
+    sendMulti(ids, bodyAsString)
+  }
+
+  protected def send(url: String, xml: Elem): Future[NingResponse] = sendSingle(url, serialize(xml))
+
+  private def sendMulti(urls: Seq[String], body: String) = Future.sequence(urls.map(url => sendSingle(url, body)))
+
+  private def sendSingle(url: String, body: String) = AsyncHttp.post(url, body, toastHeaders)
 
   private def toastXml(message: ToastMessage): Elem =
     ToastPayload.toastXml(message.text1, message.text2, message.deepLink, message.silent)
@@ -59,7 +67,6 @@ class MPNSClient extends HttpPushClient[ToastMessage] with Log {
     // xmlDecl = true prepends this as the first line, as desired: <?xml version="1.0" encoding="utf-8"?>
     XML.write(writer, elem, "UTF-8", xmlDecl = true, doctype = null)
     val str = writer.toString
-    //    log.info(str)
     str
   }
 }

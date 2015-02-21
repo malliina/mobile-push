@@ -7,7 +7,6 @@ import com.ning.http.client.Response
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
- *
  * @tparam T type of device
  */
 trait MessagingClient[T] extends Log {
@@ -18,12 +17,3 @@ trait MessagingClient[T] extends Log {
     .recoverAll(t => log.warn(s"Unable to send message to: $dest", t))
 }
 
-/**
- *
- * @tparam T type of message
- */
-trait PushClient[T, U] {
-  def send(id: String, dest: T): Future[U]
-}
-
-trait HttpPushClient[T] extends PushClient[T, Response]

@@ -5,7 +5,7 @@ import com.mle.http.AsyncHttp
 import com.mle.http.AsyncHttp.{RichRequestBuilder, _}
 import com.mle.push.adm.ADMClient._
 import com.mle.push.android.AndroidMessage
-import com.mle.push.{HttpPushClient, PushException}
+import com.mle.push.{PushClient, PushException}
 import com.mle.util.Log
 import com.ning.http.client.Response
 import play.api.libs.json.Json
@@ -16,13 +16,12 @@ import scala.concurrent.duration.DurationInt
 /**
  * @author Michael
  */
-class ADMClient(val clientID: String, val clientSecret: String) extends HttpPushClient[AndroidMessage] with Log {
+class ADMClient(val clientID: String, val clientSecret: String) extends PushClient[AndroidMessage, Response] with Log {
   def send(id: String, data: Map[String, String]): Future[Response] =
-    send(id, AndroidMessage(data, expiresAfter = 60.seconds))
+    push(id, AndroidMessage(data, expiresAfter = 60.seconds))
 
-  def send(id: String, message: AndroidMessage): Future[Response] = {
+  def push(id: String, message: AndroidMessage): Future[Response] = {
     val body = Json.toJson(message)
-    log.info(s"Sending body: ${Json.stringify(body)}")
     token(clientID, clientSecret).flatMap(t => {
       AsyncHttp.postJson(s"https://api.amazon.com/messaging/registrations/$id/messages", body, Map(
         AUTHORIZATION -> s"Bearer $t",
@@ -31,6 +30,9 @@ class ADMClient(val clientID: String, val clientSecret: String) extends HttpPush
       ))
     })
   }
+
+  override def pushAll(ids: Seq[String], message: AndroidMessage): Future[Seq[Response]] =
+    Future sequence ids.map(id => push(id, message))
 
   def token(clientID: String, clientSecret: String): Future[String] =
     accessToken(clientID, clientSecret).map(_.access_token)
@@ -53,7 +55,6 @@ class ADMClient(val clientID: String, val clientSecret: String) extends HttpPush
         CLIENT_SECRET -> clientSecret)
     }, Map(CONTENT_TYPE -> WWW_FORM_URL_ENCODED))
   }
-
 }
 
 object ADMClient {
@@ -69,5 +70,4 @@ object ADMClient {
   val AmazonTypeVersionValue = "com.amazon.device.messaging.ADMMessage@1.0"
   val AmazonAcceptType = "X-Amzn-Accept-Type"
   val AmazonAcceptTypeValue = "com.amazon.device.messaging.ADMSendResult@1.0"
-
 }

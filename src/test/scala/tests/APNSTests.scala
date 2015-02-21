@@ -5,7 +5,7 @@ import java.nio.file.{Path, Paths}
 import java.security.KeyStore
 
 import com.mle.file.{FileUtilities, StorageFile}
-import com.mle.push.apns.{APNSClient, APNSMessage}
+import com.mle.push.apns._
 import com.mle.security.KeyStores
 import com.mle.util.{BaseConfigReader, Util}
 import org.scalatest.FunSuite
@@ -22,12 +22,22 @@ class APNSTests extends FunSuite {
     val creds = APNSCreds.load
     KeyStores.validateKeyStore(creds.file, creds.pass, "PKCS12")
   }
+
   test("can send") {
     val creds = APNSCreds.load
     val ks = keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
-    val client = new APNSClient(ks, creds.pass)
-    val fut = client.send("A", APNSMessage.simple("hey!"))
-    val not = Await.result(fut, 5.seconds)
+    val client = new APNSClient(ks, creds.pass, isSandbox = true)
+    //    val message = APNSMessage.badged("I <3 U!", 3)
+    val payload = AlertPayload(
+      "this is a body",
+      title = Some("hey"),
+      actionLocKey = Some("POMP"),
+      locKey = Some("MSG_FORMAT"),
+      locArgs = Some(Seq("Emilia", "Jaana")))
+    val advancedMessage = APNSMessage(APSPayload(Right(payload), sound = Some("default")))
+    val deviceID = "9f3c2f830256954ada78bf56894fa7586307f0eedb7763117c84e0c1eee8347a"
+    val fut = client.push(deviceID, advancedMessage)
+    val notification = Await.result(fut, 5.seconds)
   }
 
   def keyStoreFromFile(file: Path, pass: String, storeType: String = "JKS"): Try[KeyStore] = Try {
