@@ -29,6 +29,23 @@ class APNSClient(keyStore: KeyStore, keyStorePass: String, isSandbox: Boolean = 
     Future(service.push(ids, stringify(message)).toSeq)
   }
 
+  /**
+   * "When a remote notification cannot be delivered because the intended app does not exist on the device, the feedback
+   * service adds that device’s token to its list."
+   *
+   * "Query the feedback service daily to get the list of device tokens. Use the timestamp to verify that the device
+   * tokens haven’t been reregistered since the feedback entry was generated. For each device that has not been
+   * reregistered, stop sending notifications."
+   *
+   * "The feedback service’s list is cleared after you read it. Each time you connect to the feedback service, the
+   * information it returns lists only the failures that have happened since you last connected."
+   *
+   * @see https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/CommunicatingWIthAPS.html
+   */
+  def inactiveDevices: Future[Seq[InactiveDevice]] = Future(service.getInactiveDevices.toSeq.map {
+    case (hexID, asOf) => InactiveDevice(hexID, asOf.getTime)
+  })
+
   override def close(): Unit = service.stop()
 
   private def stringify(message: APNSMessage) = Json stringify (Json toJson message)
