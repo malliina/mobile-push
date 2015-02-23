@@ -15,23 +15,23 @@ import scala.concurrent.Future
  *
  * @author mle
  */
-class GCMClient(val apiKey: String) extends PushClient[AndroidMessage, Response] {
-  def push(id: String, message: AndroidMessage) = send(GCMMessage(Seq(id), message.data, message.expiresAfter))
+class GCMClient(val apiKey: String) extends PushClient[GCMMessage, Response] {
+  def push(id: String, message: GCMMessage) = send(message.toLetter(Seq(id)))
 
-  def pushAll(ids: Seq[String], message: AndroidMessage): Future[Seq[Response]] = {
+  def pushAll(ids: Seq[String], message: GCMMessage): Future[Seq[Response]] = {
     val batches = ids.grouped(MAX_RECIPIENTS_PER_REQUEST).toSeq
     Future sequence batches.map(batch => {
-      send(GCMMessage(batch, message.data, message.expiresAfter))
+      send(message.toLetter(batch))
     })
   }
 
-  def pushAllParsed(ids: Seq[String], message: AndroidMessage): Future[Seq[GCMResponse]] = {
+  def pushAllParsed(ids: Seq[String], message: GCMMessage): Future[Seq[GCMResponse]] = {
     pushAll(ids, message).map(rs => rs.map(r => GCMClient.parseOrFail(r)))
   }
 
-  def send(id: String, data: Map[String, String]): Future[Response] = send(GCMMessage(Seq(id), data))
+  def send(id: String, data: Map[String, String]): Future[Response] = send(GCMLetter(Seq(id), data))
 
-  def send(message: GCMMessage): Future[Response] = {
+  def send(message: GCMLetter): Future[Response] = {
     val body = Json toJson message
     AsyncHttp.postJson(POST_URL, body, Map(AUTHORIZATION -> s"key=$apiKey"))
   }

@@ -1,7 +1,6 @@
 package tests
 
-import com.mle.push.android.AndroidMessage
-import com.mle.push.gcm.{GCMClient, GCMResponse}
+import com.mle.push.gcm.{GCMClient, GCMMessage, GCMResponse}
 import org.scalatest.FunSuite
 
 import scala.concurrent.duration.DurationInt
@@ -22,7 +21,7 @@ class GCMTests extends FunSuite {
     val pushIDs = Seq(emuID2, emuID3)
 
     val client = new GCMClient(gcmApiKey)
-    val message = AndroidMessage(Map("title" -> "hey", "message" -> "sexy!", "key" -> "value"), expiresAfter = 20.seconds)
+    val message = GCMMessage(Map("title" -> "hey you", "message" -> "late night sexy!", "key" -> "value"))
     val response: Future[Seq[GCMResponse]] = client.pushAllParsed(pushIDs, message)
     val rs = Await.result(response, 5.seconds)
     assert(rs.forall(r => r.failure === 0))
