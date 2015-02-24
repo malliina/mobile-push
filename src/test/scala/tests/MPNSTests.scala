@@ -1,5 +1,7 @@
 package tests
 
+import java.net.{MalformedURLException, URL}
+
 import com.mle.push.mpns.{MPNSClient, TileData, ToastMessage}
 import org.scalatest.FunSuite
 
@@ -29,5 +31,11 @@ class MPNSTests extends FunSuite {
     val f = client.pushAll(devices, message)
     val rs = Await.result(f, 5.seconds)
     assert(rs.forall(r => r.getStatusCode === 200))
+  }
+  test("validate token") {
+    val validToken = devices.head
+    val invalidToken = "token123"
+    intercept[MalformedURLException](new URL(invalidToken))
+    new URL(validToken)
   }
 }

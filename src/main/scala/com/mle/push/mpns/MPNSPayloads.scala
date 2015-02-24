@@ -73,4 +73,21 @@ object MPNSPayloads {
       </wp:Tile>
     </wp:Notification>
   }
+
+  def cycle(tile: CycleTile): Elem = {
+    <wp:Notification xmlns:wp="WPNotification" Version="2.0">
+      <wp:Tile Template="CycleTile">
+        <wp:SmallBackgroundImage>{tile.smallBackgroundImage}</wp:SmallBackgroundImage>
+        <wp:CycleImage1>{tile.cycleImage1}</wp:CycleImage1>
+        <wp:CycleImage2>{tile.cycleImage2}</wp:CycleImage2>
+        <wp:CycleImage3>{tile.cycleImage3}</wp:CycleImage3>
+        <wp:CycleImage4>{tile.cycleImage4}</wp:CycleImage4>
+        <wp:CycleImage5>{tile.cycleImage5}</wp:CycleImage5>
+        <wp:CycleImage6>{tile.cycleImage6}</wp:CycleImage6>
+        <wp:CycleImage7>{tile.cycleImage7}</wp:CycleImage7>
+        <wp:CycleImage8>{tile.cycleImage8}</wp:CycleImage8>
+        <wp:CycleImage9>{tile.cycleImage9}</wp:CycleImage9>
+      </wp:Tile>
+    </wp:Notification>
+  }
 }

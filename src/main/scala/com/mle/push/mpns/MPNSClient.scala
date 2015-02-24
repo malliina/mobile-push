@@ -5,7 +5,6 @@ import java.io.StringWriter
 import com.mle.concurrent.ExecutionContexts.cached
 import com.mle.http.AsyncHttp
 import com.mle.push.PushClient
-import com.mle.push.mpns.MPNSClient.{tileHeaders, toastHeaders}
 import com.mle.util.Log
 import com.ning.http.client.{Response => NingResponse}
 
@@ -22,6 +21,14 @@ class MPNSClient extends PushClient[MPNSMessage, NingResponse] with Log {
     sendMulti(urls, bodyAsString, message.headers)
   }
 
+  /**
+   * Might throw [[NullPointerException]] if `url` is bogus, but how do you solidly validate a URL in Java? I don't
+   * know.
+   *
+   * @param url device URL
+   * @param message content
+   * @return
+   */
   override def push(url: String, message: MPNSMessage): Future[NingResponse] = send(url, message.xml, message.headers)
 
   protected def send(url: String, xml: Elem, headers: Map[String, String]): Future[NingResponse] =
@@ -84,51 +91,5 @@ object MPNSClient {
   val rawHeaders = baseHeaders(RAW_IMMEDIATE)
 }
 
-trait MPNSMessage {
-  def xml: Elem
-
-  def headers: Map[String, String]
-}
-
-trait TileMessage extends MPNSMessage {
-  override def headers: Map[String, String] = tileHeaders
-}
-
-case class ToastMessage(text1: String,
-                        text2: String,
-                        deepLink: String,
-                        silent: Boolean) extends MPNSMessage {
-  override def xml: Elem = MPNSPayloads.toast(this)
-
-  override def headers: Map[String, String] = toastHeaders
-}
-
-case class TileData(backgroundImage: String,
-                    count: Int,
-                    title: String,
-                    backBackgroundImage: String,
-                    backTitle: String,
-                    backContent: String) extends TileMessage {
-  override def xml: Elem = MPNSPayloads.tile(this)
-}
-
-case class FlipData(smallBackgroundImage: String,
-                    wideBackgroundImage: String,
-                    wideBackBackgroundImage: String,
-                    wideBackContent: String,
-                    tile: TileData) extends TileMessage {
-  override def xml: Elem = MPNSPayloads.flip(this)
-}
-
-case class IconicData(smallIconImage: String,
-                      iconImage: String,
-                      wideContent1: String,
-                      wideContent2: String,
-                      wideContent3: String,
-                      count: Int,
-                      title: String,
-                      backgroundColor: String) extends TileMessage {
-  override def xml: Elem = MPNSPayloads.iconic(this)
-}
 
 
