@@ -1,6 +1,7 @@
 package com.mle.push.mpns
 
 import java.io.StringWriter
+import java.net.URL
 
 import com.mle.concurrent.ExecutionContexts.cached
 import com.mle.http.AsyncHttp
@@ -9,6 +10,7 @@ import com.mle.util.Log
 import com.ning.http.client.{Response => NingResponse}
 
 import scala.concurrent.Future
+import scala.util.Try
 import scala.xml.{Elem, XML}
 
 /**
@@ -58,6 +60,10 @@ class MPNSClient extends PushClient[MPNSMessage, NingResponse] with Log {
 }
 
 object MPNSClient {
+  def isTokenValid(token: String): Boolean = {
+    Try(new URL(token)).filter(_.getPath.length > 0).isSuccess
+  }
+
   //  val MessageID = "X-MessageID"
   // request headers
   val XNotificationClass = "X-NotificationClass"

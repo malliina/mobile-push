@@ -3,6 +3,7 @@ package com.mle.push.apns
 import java.security.KeyStore
 
 import com.mle.push.PushClient
+import com.mle.push.apns.APNSClient.stringify
 import com.notnoop.apns.{APNS, ApnsNotification}
 import play.api.libs.json.Json
 
@@ -47,6 +48,8 @@ class APNSClient(keyStore: KeyStore, keyStorePass: String, isSandbox: Boolean = 
   })
 
   override def close(): Unit = service.stop()
+}
 
-  private def stringify(message: APNSMessage) = Json stringify (Json toJson message)
+object APNSClient {
+  def stringify(message: APNSMessage) = Json stringify (Json toJson message)
 }

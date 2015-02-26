@@ -1,7 +1,5 @@
 package tests
 
-import java.net.{MalformedURLException, URL}
-
 import com.mle.push.mpns.{MPNSClient, TileData, ToastMessage}
 import org.scalatest.FunSuite
 
@@ -17,6 +15,7 @@ class MPNSTests extends FunSuite {
     "http://s.notify.live.net/u/1/db3/HmQAAAC7ZLGhuu1q4QzaD6MdN_qhULt8BHWE0XzOHs_R73Wr0qQuOqtHfpTuHHbtSpctsi8g3ZWFgu_PE7kGLCuElK44/d2luZG93c3Bob25lZGVmYXVsdA/vnjifiZVeEyAAmiZ81DJ8w/qVX6TH1mul8u93I3qUdD2oA1fjQ"
   )
   //  val devices = Nil
+  val invalidToken = "http://.com"
 
   test("can send toast") {
     val client = new MPNSClient
@@ -33,9 +32,7 @@ class MPNSTests extends FunSuite {
     assert(rs.forall(r => r.getStatusCode === 200))
   }
   test("validate token") {
-    val validToken = devices.head
-    val invalidToken = "token123"
-    intercept[MalformedURLException](new URL(invalidToken))
-    new URL(validToken)
+    assert(devices.forall(MPNSClient.isTokenValid))
+    assert(!MPNSClient.isTokenValid(invalidToken))
   }
 }

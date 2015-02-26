@@ -9,6 +9,7 @@ import com.mle.push.apns._
 import com.mle.security.KeyStores
 import com.mle.util.{BaseConfigReader, Util}
 import org.scalatest.FunSuite
+import play.api.libs.json.Json
 
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
@@ -18,12 +19,14 @@ import scala.util.Try
  * @author Michael
  */
 class APNSTests extends FunSuite {
+  val deviceID = "9f3c2f830256954ada78bf56894fa7586307f0eedb7763117c84e0c1eee8347a"
+
   test("certificate is valid") {
     val creds = APNSCreds.load
     KeyStores.validateKeyStore(creds.file, creds.pass, "PKCS12")
   }
 
-  test("can send") {
+  test("send notification with body") {
     val creds = APNSCreds.load
     val ks = keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
     val client = new APNSClient(ks, creds.pass, isSandbox = true)
@@ -34,10 +37,18 @@ class APNSTests extends FunSuite {
       actionLocKey = Some("POMP"),
       locKey = Some("MSG_FORMAT"),
       locArgs = Some(Seq("Emilia", "Jaana")))
-    val advancedMessage = APNSMessage(APSPayload(Right(payload), sound = Some("default")))
-    val deviceID = "9f3c2f830256954ada78bf56894fa7586307f0eedb7763117c84e0c1eee8347a"
+    val advancedMessage = APNSMessage(APSPayload(Some(Right(payload)), sound = Some("default")))
     val fut = client.push(deviceID, advancedMessage)
-    val notification = Await.result(fut, 5.seconds)
+    Await.result(fut, 5.seconds)
+  }
+
+  test("send background notification") {
+    val creds = APNSCreds.load
+    val ks = keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
+    val client = new APNSClient(ks, creds.pass, isSandbox = true)
+    val message = APNSMessage.background(15)
+    println(Json.prettyPrint(Json.toJson(message)))
+    Await.result(client.push(deviceID, message), 5.seconds)
   }
 
   def keyStoreFromFile(file: Path, pass: String, storeType: String = "JKS"): Try[KeyStore] = Try {

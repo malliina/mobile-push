@@ -14,7 +14,12 @@ object APNSMessage {
 
   def badged(alert: String, badge: Int): APNSMessage = simple(alert, Option(badge))
 
-  private def simple(alert: String, badge: Option[Int]): APNSMessage = APNSMessage(APSPayload(Left(alert), badge))
+  /**
+   * @return A message that updates the app badge in the background: No message is shown and no sound is played.
+   */
+  def background(badge: Int): APNSMessage = APNSMessage(APSPayload(None, Option(badge)))
+
+  private def simple(alert: String, badge: Option[Int]): APNSMessage = APNSMessage(APSPayload(Some(Left(alert)), badge))
 
   implicit val json = new Writes[APNSMessage] {
     override def writes(o: APNSMessage): JsValue = obj("aps" -> toJson(o.aps)) ++ toJson(o.data).as[JsObject]
