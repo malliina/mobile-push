@@ -1,7 +1,6 @@
 package com.mle.push.gcm
 
-import com.mle.push.gcm.GCMResult.GCMResultError
-import play.api.libs.json.{JsResult, JsValue, Json, Reads}
+import play.api.libs.json._
 
 /**
  * @author Michael
@@ -10,47 +9,68 @@ case class GCMResult(message_id: Option[String], registration_id: Option[String]
 
 object GCMResult {
 
-  sealed trait GCMResultError
+  sealed trait GCMResultError {
+    def name: String
+  }
 
-  case object MissingRegistration extends GCMResultError
+  case object MissingRegistration extends GCMResultError {
+    override def name: String = "MissingRegistration"
+  }
 
-  case object InvalidRegistration extends GCMResultError
+  case object InvalidRegistration extends GCMResultError {
+    override def name: String = "InvalidRegistration"
+  }
 
-  case object MismatchSenderId extends GCMResultError
+  case object MismatchSenderId extends GCMResultError {
+    override def name: String = "MismatchSenderId"
+  }
 
-  case object NotRegistered extends GCMResultError
+  case object NotRegistered extends GCMResultError {
+    override def name: String = "NotRegistered"
+  }
 
-  case object MessageTooBig extends GCMResultError
+  case object MessageTooBig extends GCMResultError {
+    override def name: String = "MessageTooBig"
+  }
 
-  case object InvalidDataKey extends GCMResultError
+  case object InvalidDataKey extends GCMResultError {
+    override def name: String = "InvalidDataKey"
+  }
 
-  case object InvalidTtl extends GCMResultError
+  case object InvalidTtl extends GCMResultError {
+    override def name: String = "InvalidTtl"
+  }
 
-  case object Unavailable extends GCMResultError
+  case object Unavailable extends GCMResultError {
+    override def name: String = "Unavailable"
+  }
 
-  case object InternalServerError extends GCMResultError
+  case object InternalServerError extends GCMResultError {
+    override def name: String = "InternalServerError"
+  }
 
-  case object InvalidPackageName extends GCMResultError
+  case object InvalidPackageName extends GCMResultError {
+    override def name: String = "InvalidPackageName"
+  }
 
-  case object DeviceMessageRateExceeded extends GCMResultError
+  case object DeviceMessageRateExceeded extends GCMResultError {
+    override def name: String = "DeviceMessageRateExceeded"
+  }
 
   case class UnknownError(name: String) extends GCMResultError
 
-  implicit val errorJson: Reads[GCMResultError] = new Reads[GCMResultError] {
-    override def reads(json: JsValue): JsResult[GCMResultError] = json.validate[String].map {
-      case "MissingRegistration" => MissingRegistration
-      case "InvalidRegistration" => InvalidRegistration
-      case "MismatchSenderId" => MismatchSenderId
-      case "NotRegistered" => NotRegistered
-      case "MessageTooBig" => MessageTooBig
-      case "InvalidDataKey" => InvalidDataKey
-      case "InvalidTtl" => InvalidTtl
-      case "Unavailable" => Unavailable
-      case "InternalServerError" => InternalServerError
-      case "InvalidPackageName" => InvalidPackageName
-      case "DeviceMessageRateExceeded" => DeviceMessageRateExceeded
-      case other => UnknownError(other)
+  val knownErrors = Seq(
+    MissingRegistration, InvalidRegistration, MismatchSenderId,
+    NotRegistered, MessageTooBig, InvalidDataKey,
+    InvalidTtl, Unavailable, InternalServerError,
+    InvalidPackageName, DeviceMessageRateExceeded)
+
+  implicit val errorJson: Format[GCMResultError] = new Format[GCMResultError] {
+    override def writes(o: GCMResultError): JsValue = Json.toJson(o.name)
+
+    override def reads(json: JsValue): JsResult[GCMResultError] = {
+      json.validate[String].map(name => knownErrors.find(_.name == name) getOrElse UnknownError(name))
     }
   }
-  implicit val json = Json.reads[GCMResult]
+  implicit val json = Json.format[GCMResult]
 }
