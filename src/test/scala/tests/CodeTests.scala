@@ -5,7 +5,7 @@ import java.security.KeyStore
 import com.mle.push.adm.ADMClient
 import com.mle.push.android.AndroidMessage
 import com.mle.push.apns.{APNSClient, APNSMessage}
-import com.mle.push.gcm.{GCMMessage, GCMClient}
+import com.mle.push.gcm.{MappedGCMResponse, GCMMessage, GCMClient}
 import com.mle.push.mpns.{MPNSClient, ToastMessage}
 import com.ning.http.client.Response
 import com.notnoop.apns.ApnsNotification
@@ -31,7 +31,7 @@ class CodeTests extends FunSuite {
     val deviceRegistrationId: String = ???
     val client = new GCMClient(gcmApiKey)
     val message = GCMMessage(Map("key" -> "value"))
-    val response: Future[Response] = client.push(deviceRegistrationId, message)
+    val response: Future[MappedGCMResponse] = client.push(deviceRegistrationId, message)
   }
   test("Amazon example") {
     val clientId: String = ???

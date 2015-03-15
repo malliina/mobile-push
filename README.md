@@ -36,9 +36,9 @@ val pushedNotification: Future[ApnsNotification] = client.push(deviceHexID, mess
 ```
 val gcmApiKey: String = ???
 val deviceRegistrationId: String = ???
-val client = new GoogleMessaging(gcmApiKey)
-val message = AndroidMessage(Map("key" -> "value"), expiresAfter = 20.seconds)
-val response: Future[Response] = client.send(deviceRegistrationId, message)
+val client = new GCMClient(gcmApiKey)
+val message = GCMMessage(Map("key" -> "value"))
+val response: Future[MappedGCMResponse] = client.push(deviceRegistrationId, message)
 ```
 
 ### Amazon Device Messaging ###
