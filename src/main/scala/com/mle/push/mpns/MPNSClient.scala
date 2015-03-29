@@ -50,12 +50,11 @@ class MPNSClient extends PushClient[MPNSMessage, NingResponse] with Log {
    * @param elem xml
    * @return xml as a string
    */
-  private def serialize(elem: Elem) = {
+  private def serialize(elem: Elem): String = {
     val writer = new StringWriter
     // xmlDecl = true prepends this as the first line, as desired: <?xml version="1.0" encoding="utf-8"?>
     XML.write(writer, elem, "UTF-8", xmlDecl = true, doctype = null)
-    val str = writer.toString
-    str
+    writer.toString
   }
 }
 
