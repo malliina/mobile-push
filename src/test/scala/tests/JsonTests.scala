@@ -22,7 +22,7 @@ class JsonTests extends FunSuite {
       sound = Some("rock.mp3")),
       Map("extra" -> toJson("value"), "number" -> JsNumber(5), "kings" -> toJson(Seq("hey", "you"))))
     val str = prettyPrint(toJson(msg))
-    println(str)
+//    println(str)
 
     val msg2 = APNSMessage(APSPayload(
       alert = None,
@@ -30,7 +30,7 @@ class JsonTests extends FunSuite {
       sound = Some("rock.mp3")),
       Map("extra" -> toJson("value"), "number" -> JsNumber(5), "kings" -> toJson(Seq("hey", "you"))))
     val str2 = prettyPrint(toJson(msg2))
-    println(str2)
+//    println(str2)
   }
 }
 case class MyData(age: Int, name: String)
