@@ -1,6 +1,8 @@
 package tests
 
 import com.mle.push.apns.{APNSMessage, APSPayload, AlertPayload}
+import com.mle.push.gcm.MappedGCMResponse.TokenReplacement
+import com.mle.push.gcm.{MappedGCMResponse, GCMResult, GCMResponse}
 import org.scalatest.FunSuite
 import play.api.libs.json.Json._
 import play.api.libs.json._
@@ -22,7 +24,7 @@ class JsonTests extends FunSuite {
       sound = Some("rock.mp3")),
       Map("extra" -> toJson("value"), "number" -> JsNumber(5), "kings" -> toJson(Seq("hey", "you"))))
     val str = prettyPrint(toJson(msg))
-//    println(str)
+    //    println(str)
 
     val msg2 = APNSMessage(APSPayload(
       alert = None,
@@ -30,10 +32,41 @@ class JsonTests extends FunSuite {
       sound = Some("rock.mp3")),
       Map("extra" -> toJson("value"), "number" -> JsNumber(5), "kings" -> toJson(Seq("hey", "you"))))
     val str2 = prettyPrint(toJson(msg2))
-//    println(str2)
+    //    println(str2)
+  }
+  test("GCM responses") {
+    val exampleResponse = """{ "multicast_id": 216,
+                            |  "success": 3,
+                            |  "failure": 3,
+                            |  "canonical_ids": 1,
+                            |  "results": [
+                            |    { "message_id": "1:0408" },
+                            |    { "error": "Unavailable" },
+                            |    { "error": "InvalidRegistration" },
+                            |    { "message_id": "1:1516" },
+                            |    { "message_id": "1:2342", "registration_id": "32" },
+                            |    { "error": "NotRegistered"}
+                            |  ]
+                            |}""".stripMargin
+    val parsed = (Json parse exampleResponse).as[GCMResponse]
+    val expected = GCMResponse(216, 3, 3, 1, Seq(
+      GCMResult(Some("1:0408"), None, None),
+      GCMResult(None, None, Some(GCMResult.Unavailable)),
+      GCMResult(None, None, Some(GCMResult.InvalidRegistration)),
+      GCMResult(Some("1:1516"), None, None),
+      GCMResult(Some("1:2342"), Some("32"), None),
+      GCMResult(None, None, Some(GCMResult.NotRegistered))))
+    assert(parsed.multicast_id === 216)
+    assert(parsed === expected)
+
+    val mapped = MappedGCMResponse(Seq(1, 2, 3, 4, 5, 6).map(_.toString), parsed)
+    assert(mapped.replacements === Seq(TokenReplacement("5", "32")))
+    assert(mapped.uninstalled === Seq("6"))
   }
 }
+
 case class MyData(age: Int, name: String)
+
 object MyData {
   implicit val format = Json.format[MyData]
 }
