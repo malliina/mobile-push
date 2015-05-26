@@ -17,7 +17,7 @@ import scala.concurrent.duration.DurationInt
 /**
  * @author Michael
  */
-class CodeTests extends FunSuite {
+class CodeSamples extends FunSuite {
   test("Apple example") {
     val certKeyStore: KeyStore = ???
     val certPass: String = ???

@@ -46,7 +46,7 @@ class APNSTests extends FunSuite {
     val creds = APNSCreds.load
     val ks = keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
     val client = new APNSClient(ks, creds.pass, isSandbox = true)
-    val message = APNSMessage.background(15)
+    val message = APNSMessage.background(badge = 15)
     println(Json.prettyPrint(Json.toJson(message)))
     Await.result(client.push(deviceID, message), 5.seconds)
   }
