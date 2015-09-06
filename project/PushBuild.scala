@@ -11,8 +11,8 @@ object PushBuild extends Build {
     .enablePlugins(bintray.BintrayPlugin).settings(projectSettings: _*)
 
   lazy val projectSettings = Seq(
-    version := "0.9.4",
-    scalaVersion := "2.11.6",
+    version := "1.0.0",
+    scalaVersion := "2.11.7",
     gitUserName := "malliina",
     organization := s"com.github.${gitUserName.value}",
     developerName := "Michael Skogberg",
@@ -22,14 +22,15 @@ object PushBuild extends Build {
       sbt.Resolver.jcenterRepo,
       "Bintray malliina" at "http://dl.bintray.com/malliina/maven") ++ resolvers.value,
     libraryDependencies ++= Seq(
-      "com.github.malliina" %% "util" % "1.8.1",
-      "com.typesafe.play" %% "play-json" % "2.3.9",
-      "com.ning" % "async-http-client" % "1.8.13",
-      "com.notnoop.apns" % "apns" % "1.0.0.Beta6"),
+      "com.github.malliina" %% "util" % "1.9.0",
+      "com.typesafe.play" %% "play-json" % "2.4.2",
+      "com.ning" % "async-http-client" % "1.9.31",
+      "com.notnoop.apns" % "apns" % "1.0.0.Beta6"
+    ),
     libraryDependencies := {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, scalaMajor)) if scalaMajor >= 11 =>
-          libraryDependencies.value :+ "org.scala-lang.modules" %% "scala-xml" % "1.0.1"
+          libraryDependencies.value :+ "org.scala-lang.modules" %% "scala-xml" % "1.0.5"
         case _ =>
           libraryDependencies.value
       }

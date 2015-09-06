@@ -6,7 +6,6 @@ import java.security.KeyStore
 
 import com.mle.file.{FileUtilities, StorageFile}
 import com.mle.push.apns._
-import com.mle.security.KeyStores
 import com.mle.util.{BaseConfigReader, Util}
 import org.scalatest.FunSuite
 import play.api.libs.json.Json
@@ -19,13 +18,13 @@ import scala.util.Try
  * @author Michael
  */
 class APNSTests extends FunSuite {
-  //  val deviceID = Some("9f3c2f830256954ada78bf56894fa7586307f0eedb7763117c84e0c1eee8347a")
+//    val deviceID = Some("9f3c2f830256954ada78bf56894fa7586307f0eedb7763117c84e0c1eee8347a")
   val deviceID: Option[String] = None
 
-  test("certificate is valid") {
-    val creds = APNSCreds.load
-    KeyStores.validateKeyStore(creds.file, creds.pass, "PKCS12")
-  }
+//  test("certificate is valid") {
+//    val creds = APNSCreds.load
+//    KeyStores.validateKeyStore(creds.file, creds.pass, "PKCS12")
+//  }
 
   test("send notification with body, if enabled") {
     deviceID.foreach(token => {
