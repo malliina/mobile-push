@@ -14,21 +14,21 @@ import scala.concurrent.Future
  *
  * @author mle
  */
-class GCMClient(val apiKey: String) extends PushClient[GCMMessage, MappedGCMResponse] {
-  def push(id: String, message: GCMMessage) = sendLimitedMapped(Seq(id), message)
+class GCMClient(val apiKey: String) extends PushClient[GCMToken, GCMMessage, MappedGCMResponse] {
+  def push(id: GCMToken, message: GCMMessage) = sendLimitedMapped(Seq(id), message)
 
-  def pushAll(ids: Seq[String], message: GCMMessage): Future[Seq[MappedGCMResponse]] = {
+  def pushAll(ids: Seq[GCMToken], message: GCMMessage): Future[Seq[MappedGCMResponse]] = {
     val batches = ids.grouped(MAX_RECIPIENTS_PER_REQUEST).toSeq
     val responses = batches.map(batch => sendLimitedMapped(batch, message))
     Future sequence responses
   }
 
-  def send(id: String, data: Map[String, String]): Future[Response] = send(GCMLetter(Seq(id), data))
+  def send(id: GCMToken, data: Map[String, String]): Future[Response] = send(GCMLetter(Seq(id), data))
 
-  private def sendLimitedMapped(ids: Seq[String], message: GCMMessage): Future[MappedGCMResponse] =
+  private def sendLimitedMapped(ids: Seq[GCMToken], message: GCMMessage): Future[MappedGCMResponse] =
     sendLimited(ids, message).map(r => MappedGCMResponse(ids, parseOrFail(r)))
 
-  private def sendLimited(ids: Seq[String], message: GCMMessage): Future[Response] = send(message.toLetter(ids))
+  private def sendLimited(ids: Seq[GCMToken], message: GCMMessage): Future[Response] = send(message.toLetter(ids))
 
   private def send(message: GCMLetter): Future[Response] = {
     val body = Json toJson message

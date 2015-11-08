@@ -17,8 +17,8 @@ import scala.xml.{Elem, XML}
  *
  * @author mle
  */
-class MPNSClient extends PushClient[MPNSMessage, NingResponse] with Log {
-  override def pushAll(urls: Seq[String], message: MPNSMessage): Future[Seq[NingResponse]] = {
+class MPNSClient extends PushClient[MPNSToken, MPNSMessage, NingResponse] with Log {
+  override def pushAll(urls: Seq[MPNSToken], message: MPNSMessage): Future[Seq[NingResponse]] = {
     val bodyAsString = serialize(message.xml)
     sendMulti(urls, bodyAsString, message.headers)
   }
@@ -31,16 +31,16 @@ class MPNSClient extends PushClient[MPNSMessage, NingResponse] with Log {
    * @param message content
    * @return
    */
-  override def push(url: String, message: MPNSMessage): Future[NingResponse] = send(url, message.xml, message.headers)
+  override def push(url: MPNSToken, message: MPNSMessage): Future[NingResponse] = send(url, message.xml, message.headers)
 
-  protected def send(url: String, xml: Elem, headers: Map[String, String]): Future[NingResponse] =
+  protected def send(url: MPNSToken, xml: Elem, headers: Map[String, String]): Future[NingResponse] =
     sendSingle(url, serialize(xml), headers)
 
-  private def sendMulti(urls: Seq[String], body: String, headers: Map[String, String]) =
+  private def sendMulti(urls: Seq[MPNSToken], body: String, headers: Map[String, String]) =
     Future.sequence(urls.map(url => sendSingle(url, body, headers)))
 
-  private def sendSingle(url: String, body: String, headers: Map[String, String]) =
-    AsyncHttp.post(url, body, headers)
+  private def sendSingle(url: MPNSToken, body: String, headers: Map[String, String]) =
+    AsyncHttp.post(url.token, body, headers)
 
   /**
    * Serializes `elem` to a string, adding an xml declaration to the top. Encodes the payload
@@ -59,9 +59,7 @@ class MPNSClient extends PushClient[MPNSMessage, NingResponse] with Log {
 }
 
 object MPNSClient {
-  def isTokenValid(token: String): Boolean = {
-    Try(new URL(token)).filter(_.getPath.length > 0).isSuccess
-  }
+  def isTokenValid(token: String): Boolean = MPNSToken.isValid(token)
 
   //  val MessageID = "X-MessageID"
   // request headers

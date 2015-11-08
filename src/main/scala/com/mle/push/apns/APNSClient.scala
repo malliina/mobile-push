@@ -15,19 +15,19 @@ import scala.concurrent.Future
  * @author Michael
  */
 class APNSClient(keyStore: KeyStore, keyStorePass: String, isSandbox: Boolean = false)
-  extends PushClient[APNSMessage, ApnsNotification] with AutoCloseable {
+  extends PushClient[APNSToken, APNSMessage, ApnsNotification] with AutoCloseable {
 
   private val builder = APNS.newService().withCert(keyStore, keyStorePass)
   val service =
     if (isSandbox) builder.withSandboxDestination().build()
     else builder.withProductionDestination().build()
 
-  override def push(id: String, message: APNSMessage): Future[ApnsNotification] = {
-    Future(service.push(id, stringify(message)))
+  override def push(id: APNSToken, message: APNSMessage): Future[ApnsNotification] = {
+    Future(service.push(id.token, stringify(message)))
   }
 
-  override def pushAll(ids: Seq[String], message: APNSMessage): Future[Seq[ApnsNotification]] = {
-    Future(service.push(ids, stringify(message)).toSeq)
+  override def pushAll(ids: Seq[APNSToken], message: APNSMessage): Future[Seq[ApnsNotification]] = {
+    Future(service.push(ids.map(_.token), stringify(message)).toSeq)
   }
 
   /**

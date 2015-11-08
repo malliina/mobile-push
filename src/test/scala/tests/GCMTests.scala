@@ -1,17 +1,23 @@
 package tests
 
-import com.mle.push.gcm.{GCMClient, GCMMessage, MappedGCMResponse}
+import com.mle.push.gcm.{GCMClient, GCMMessage, GCMToken, MappedGCMResponse}
 import org.scalatest.FunSuite
 
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 
 /**
- * @author Michael
- */
+  * @author Michael
+  */
 class GCMTests extends FunSuite {
-  //  val emuID = Some("APA91bHyeY6NdQar-XXoC47PuWB0eCZErLB-xBNSlhrXQ-u_ElWM7ZFaocsoCeWBx_Or5vmj357BNTdr6atRNwAfFQ4od458OqwfJV3SSPnYa1CIN1j0EVplN8QeEjx3n6-WV6obKN60CDn0-RL3gAsILC_4ec0gAQ")
-  val emuID: Option[String] = None
+  val rawToken = "APA91bHyeY6NdQar-XXoC47PuWB0eCZErLB-xBNSlhrXQ-u_ElWM7ZFaocsoCeWBx_Or5vmj357BNTdr6atRNwAfFQ4od458OqwfJV3SSPnYa1CIN1j0EVplN8QeEjx3n6-WV6obKN60CDn0-RL3gAsILC_4ec0gAQ"
+  //  val emuID = Some(rawToken)
+  val emuID: Option[GCMToken] = None
+
+  test("token validation") {
+    val tokenOpt = GCMToken.build(rawToken)
+    assert(tokenOpt.isDefined)
+  }
 
   test("send message, if enabled") {
     emuID.foreach(token => {

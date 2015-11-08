@@ -1,6 +1,6 @@
 package tests
 
-import com.mle.push.mpns.{MPNSClient, TileData, ToastMessage}
+import com.mle.push.mpns.{MPNSToken, MPNSClient, TileData, ToastMessage}
 import org.scalatest.FunSuite
 
 import scala.concurrent.Await
@@ -15,10 +15,23 @@ class MPNSTests extends FunSuite {
   //    "http://s.notify.live.net/u/1/db3/HmQAAAC7ZLGhuu1q4QzaD6MdN_qhULt8BHWE0XzOHs_R73Wr0qQuOqtHfpTuHHbtSpctsi8g3ZWFgu_PE7kGLCuElK44/d2luZG93c3Bob25lZGVmYXVsdA/vnjifiZVeEyAAmiZ81DJ8w/qVX6TH1mul8u93I3qUdD2oA1fjQ"
   //  )
 
-  val mpnsToken = "http://s.notify.live.net/u/1/db3/H2QAAAAvWyd0kMrYHTG0P7Df7j_Saq2DLEkpDg-Ef4Yd9ia9p2QArOuttcjvzSo7byvXzfuwYtPYJxh5RuFpHNFfYGwmrm6ufNWgZ6-s7CEVBz99UBi-zT5yU_N1vbtltIls4HA/d2luZG93c3Bob25lZGVmYXVsdA/vnjifiZVeEyAAmiZ81DJ8w/b3D8tgehywO4GG7X8eQHI7abkJ0"
+  val rawToken = "http://s.notify.live.net/u/1/db3/H2QAAAAvWyd0kMrYHTG0P7Df7j_Saq2DLEkpDg-Ef4Yd9ia9p2QArOuttcjvzSo7byvXzfuwYtPYJxh5RuFpHNFfYGwmrm6ufNWgZ6-s7CEVBz99UBi-zT5yU_N1vbtltIls4HA/d2luZG93c3Bob25lZGVmYXVsdA/vnjifiZVeEyAAmiZ81DJ8w/b3D8tgehywO4GG7X8eQHI7abkJ0"
   //  val devices = Seq(mpnsToken)
-  val devices: Seq[String] = Nil
+  val devices: Seq[MPNSToken] = Nil
   val invalidToken = "http://.com"
+
+  test("token validation") {
+    val tokenOpt = MPNSToken.build(rawToken)
+    assert(tokenOpt.isDefined)
+
+    val failure = MPNSToken.build(invalidToken)
+    assert(failure.isEmpty)
+  }
+
+  test("validate token") {
+    assert(MPNSToken.isValid(rawToken))
+    assert(!MPNSClient.isTokenValid(invalidToken))
+  }
 
   test("can send toast, if enabled") {
     if (devices.nonEmpty) {
@@ -29,6 +42,7 @@ class MPNSTests extends FunSuite {
       assert(rs.forall(r => r.getStatusCode === 200))
     }
   }
+
   test("can send tile, if enabled") {
     if (devices.nonEmpty) {
       val client = new MPNSClient
@@ -37,9 +51,5 @@ class MPNSTests extends FunSuite {
       val rs = Await.result(f, 5.seconds)
       assert(rs.forall(r => r.getStatusCode === 200))
     }
-  }
-  test("validate token") {
-    assert(devices.forall(MPNSClient.isTokenValid))
-    assert(!MPNSClient.isTokenValid(invalidToken))
   }
 }

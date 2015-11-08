@@ -11,7 +11,7 @@ object PushBuild extends Build {
     .enablePlugins(bintray.BintrayPlugin).settings(projectSettings: _*)
 
   lazy val projectSettings = Seq(
-    version := "1.0.0",
+    version := "1.1.2",
     scalaVersion := "2.11.7",
     gitUserName := "malliina",
     organization := s"com.github.${gitUserName.value}",
@@ -22,9 +22,9 @@ object PushBuild extends Build {
       sbt.Resolver.jcenterRepo,
       "Bintray malliina" at "http://dl.bintray.com/malliina/maven") ++ resolvers.value,
     libraryDependencies ++= Seq(
-      "com.github.malliina" %% "util" % "1.9.0",
-      "com.typesafe.play" %% "play-json" % "2.4.2",
-      "com.ning" % "async-http-client" % "1.9.31",
+      "com.github.malliina" %% "util" % "1.8.1",
+      "com.typesafe.play" %% "play-json" % "2.3.9",
+      "com.ning" % "async-http-client" % "1.8.13",
       "com.notnoop.apns" % "apns" % "1.0.0.Beta6"
     ),
     libraryDependencies := {
