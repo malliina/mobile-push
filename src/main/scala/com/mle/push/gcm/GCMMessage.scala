@@ -14,7 +14,7 @@ case class GCMMessage(data: Map[String, String],
                       delayWhileIdle: Option[Boolean] = None,
                       restrictedPackageName: Option[String] = None,
                       dryRun: Option[Boolean] = None) {
-  def toLetter(ids: Seq[String]) = GCMLetter(
+  def toLetter(ids: Seq[GCMToken]) = GCMLetter(
     ids,
     data,
     expiresAfter,
@@ -26,6 +26,5 @@ case class GCMMessage(data: Map[String, String],
 
 object GCMMessage {
   implicit val durationFormat = JsonFormats.durationFormat
-
   implicit val json = Json.format[GCMMessage]
 }

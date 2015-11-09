@@ -2,21 +2,20 @@ package tests
 
 import com.mle.push.apns.{APNSMessage, APSPayload, AlertPayload}
 import com.mle.push.gcm.MappedGCMResponse.TokenReplacement
-import com.mle.push.gcm.{MappedGCMResponse, GCMResult, GCMResponse}
+import com.mle.push.gcm.{GCMToken, GCMResponse, GCMResult, MappedGCMResponse}
 import org.scalatest.FunSuite
 import play.api.libs.json.Json._
 import play.api.libs.json._
 
-import scala.util.Success
-
 /**
- * @author Michael
- */
+  * @author Michael
+  */
 class JsonTests extends FunSuite {
   test("can json this") {
     val obj = Json.toJson(Map("a" -> "b")).as[JsObject]
     assert((obj \ "a").as[String] === "b")
   }
+
   test("APNS serialization") {
     val msg = APNSMessage(APSPayload(
       alert = Some(Right(AlertPayload("nice body", launchImage = Some("pic.jpg")))),
@@ -34,20 +33,22 @@ class JsonTests extends FunSuite {
     val str2 = prettyPrint(toJson(msg2))
     //    println(str2)
   }
+
   test("GCM responses") {
-    val exampleResponse = """{ "multicast_id": 216,
-                            |  "success": 3,
-                            |  "failure": 3,
-                            |  "canonical_ids": 1,
-                            |  "results": [
-                            |    { "message_id": "1:0408" },
-                            |    { "error": "Unavailable" },
-                            |    { "error": "InvalidRegistration" },
-                            |    { "message_id": "1:1516" },
-                            |    { "message_id": "1:2342", "registration_id": "32" },
-                            |    { "error": "NotRegistered"}
-                            |  ]
-                            |}""".stripMargin
+    val exampleResponse =
+      """{ "multicast_id": 216,
+        |  "success": 3,
+        |  "failure": 3,
+        |  "canonical_ids": 1,
+        |  "results": [
+        |    { "message_id": "1:0408" },
+        |    { "error": "Unavailable" },
+        |    { "error": "InvalidRegistration" },
+        |    { "message_id": "1:1516" },
+        |    { "message_id": "1:2342", "registration_id": "32" },
+        |    { "error": "NotRegistered"}
+        |  ]
+        |}""".stripMargin
     val parsed = (Json parse exampleResponse).as[GCMResponse]
     val expected = GCMResponse(216, 3, 3, 1, Seq(
       GCMResult(Some("1:0408"), None, None),
@@ -59,9 +60,9 @@ class JsonTests extends FunSuite {
     assert(parsed.multicast_id === 216)
     assert(parsed === expected)
 
-    val mapped = MappedGCMResponse(Seq(1, 2, 3, 4, 5, 6).map(_.toString), parsed)
-    assert(mapped.replacements === Seq(TokenReplacement("5", "32")))
-    assert(mapped.uninstalled === Seq("6"))
+    val mapped = MappedGCMResponse(Seq(1, 2, 3, 4, 5, 6).map(n => GCMToken(n.toString)), parsed)
+    assert(mapped.replacements === Seq(TokenReplacement(GCMToken("5"), GCMToken("32"))))
+    assert(mapped.uninstalled === Seq(GCMToken("6")))
   }
 }
 

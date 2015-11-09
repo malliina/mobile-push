@@ -6,7 +6,9 @@ import java.security.KeyStore
 
 import com.mle.file.{FileUtilities, StorageFile}
 import com.mle.push.apns._
+import com.mle.security.KeyStores
 import com.mle.util.{BaseConfigReader, Util}
+import com.notnoop.apns.internal.Utilities
 import org.scalatest.FunSuite
 import play.api.libs.json.Json
 
@@ -18,13 +20,22 @@ import scala.util.Try
  * @author Michael
  */
 class APNSTests extends FunSuite {
-//    val deviceID = Some("9f3c2f830256954ada78bf56894fa7586307f0eedb7763117c84e0c1eee8347a")
-  val deviceID: Option[String] = None
+  val rawDeviceID = "9f3c2f830256954ada78bf56894fa7586307f0eedb7763117c84e0c1eee8347a"
+//    val deviceID = Some(rawDeviceID)
+  val deviceID: Option[APNSToken] = None
 
-//  test("certificate is valid") {
-//    val creds = APNSCreds.load
-//    KeyStores.validateKeyStore(creds.file, creds.pass, "PKCS12")
-//  }
+  test("certificate is valid") {
+    val creds = APNSCreds.load
+    KeyStores.validateKeyStore(creds.file, creds.pass, "PKCS12")
+  }
+
+  test("token validation") {
+    val tokenOpt = APNSToken.build(rawDeviceID)
+    assert(tokenOpt.isDefined)
+    intercept[RuntimeException](Utilities.decodeHex("deviceToken"))
+    val invalidToken = APNSToken.build("deviceToken")
+    assert(invalidToken.isEmpty)
+  }
 
   test("send notification with body, if enabled") {
     deviceID.foreach(token => {
