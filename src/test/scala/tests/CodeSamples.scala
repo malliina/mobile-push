@@ -2,11 +2,11 @@ package tests
 
 import java.security.KeyStore
 
-import com.mle.push.adm.{ADMToken, ADMClient}
-import com.mle.push.android.AndroidMessage
-import com.mle.push.apns.{APNSToken, APNSClient, APNSMessage}
-import com.mle.push.gcm.{GCMToken, MappedGCMResponse, GCMMessage, GCMClient}
-import com.mle.push.mpns.{MPNSToken, MPNSClient, ToastMessage}
+import com.malliina.push.adm.{ADMToken, ADMClient}
+import com.malliina.push.android.AndroidMessage
+import com.malliina.push.apns.{APNSToken, APNSClient, APNSMessage}
+import com.malliina.push.gcm.{GCMToken, MappedGCMResponse, GCMMessage, GCMClient}
+import com.malliina.push.mpns.{MPNSToken, MPNSClient, ToastMessage}
 import com.ning.http.client.Response
 import com.notnoop.apns.ApnsNotification
 import org.scalatest.FunSuite

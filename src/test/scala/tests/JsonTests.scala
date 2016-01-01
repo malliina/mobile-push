@@ -1,8 +1,8 @@
 package tests
 
-import com.mle.push.apns.{APNSMessage, APSPayload, AlertPayload}
-import com.mle.push.gcm.MappedGCMResponse.TokenReplacement
-import com.mle.push.gcm.{GCMToken, GCMResponse, GCMResult, MappedGCMResponse}
+import com.malliina.push.apns.{APNSMessage, APSPayload, AlertPayload}
+import com.malliina.push.gcm.MappedGCMResponse.TokenReplacement
+import com.malliina.push.gcm.{GCMResponse, GCMResult, GCMToken, MappedGCMResponse}
 import org.scalatest.FunSuite
 import play.api.libs.json.Json._
 import play.api.libs.json._
@@ -23,7 +23,7 @@ class JsonTests extends FunSuite {
       sound = Some("rock.mp3")),
       Map("extra" -> toJson("value"), "number" -> JsNumber(5), "kings" -> toJson(Seq("hey", "you"))))
     val str = prettyPrint(toJson(msg))
-    //    println(str)
+    assert(str contains "launch-image")
 
     val msg2 = APNSMessage(APSPayload(
       alert = None,
@@ -31,7 +31,19 @@ class JsonTests extends FunSuite {
       sound = Some("rock.mp3")),
       Map("extra" -> toJson("value"), "number" -> JsNumber(5), "kings" -> toJson(Seq("hey", "you"))))
     val str2 = prettyPrint(toJson(msg2))
-    //    println(str2)
+    assert(str2 contains APSPayload.ContentAvailable)
+  }
+
+  test("APS payload serializes correctly") {
+    val payload = APSPayload(
+      alert = Some(Right(AlertPayload("nice body", launchImage = Some("pic.jpg")))),
+      badge = Some(5),
+      sound = Some("rock.mp3"))
+    val p1 = toJson(payload)
+    assert(!(stringify(p1) contains APSPayload.ContentAvailable))
+    val payload2 = APSPayload(None, Some(42), None)
+    val p2 = toJson(payload2)
+    assert(stringify(p2) contains APSPayload.ContentAvailable)
   }
 
   test("GCM responses") {

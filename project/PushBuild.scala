@@ -1,29 +1,29 @@
-import com.mle.sbtutils.SbtProjects
-import com.mle.sbtutils.SbtUtils.{developerName, gitUserName}
+import com.malliina.sbtutils.SbtProjects
+import com.malliina.sbtutils.SbtUtils.{developerName, gitUserName}
 import sbt.Keys._
 import sbt._
 
 /**
- * A scala build file template.
- */
+  * A scala build file template.
+  */
 object PushBuild extends Build {
   lazy val mobileProject = SbtProjects.testableProject("mobile-push")
-    .enablePlugins(bintray.BintrayPlugin).settings(projectSettings: _*)
+    .enablePlugins(bintray.BintrayPlugin)
+    .settings(projectSettings: _*)
 
   lazy val projectSettings = Seq(
-    version := "1.2.0",
+    version := "1.3.0",
     scalaVersion := "2.11.7",
     gitUserName := "malliina",
-    organization := s"com.github.${gitUserName.value}",
+    organization := s"com.${gitUserName.value}",
     developerName := "Michael Skogberg",
     fork in Test := true,
     resolvers := Seq(
-      "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/",
-      sbt.Resolver.jcenterRepo,
-      "Bintray malliina" at "http://dl.bintray.com/malliina/maven") ++ resolvers.value,
+      Resolver.jcenterRepo,
+      Resolver.bintrayRepo("malliina", "maven")) ++ resolvers.value,
     libraryDependencies ++= Seq(
-      "com.github.malliina" %% "util" % "1.9.0",
-      "com.typesafe.play" %% "play-json" % "2.4.3",
+      "com.malliina" %% "util" % "2.1.0",
+      "com.typesafe.play" %% "play-json" % "2.4.6",
       "com.ning" % "async-http-client" % "1.9.31",
       "com.notnoop.apns" % "apns" % "1.0.0.Beta6"
     ),

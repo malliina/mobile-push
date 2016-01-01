@@ -1,6 +1,6 @@
 package tests
 
-import com.mle.push.mpns.{MPNSToken, MPNSClient, TileData, ToastMessage}
+import com.malliina.push.mpns.{MPNSToken, MPNSClient, TileData, ToastMessage}
 import org.scalatest.FunSuite
 
 import scala.concurrent.Await
