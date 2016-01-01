@@ -10,12 +10,12 @@ object BuildBuild extends Build {
         Resolver.ivyStylePatterns)
   )
 
+  override lazy val projects = Seq(root)
+
+  lazy val root = Project("plugins", file("."))
+
   def sbtPlugins = Seq(
     "com.malliina" %% "sbt-utils" % "0.3.0",
     "me.lessis" % "bintray-sbt" % "0.3.0"
   ) map addSbtPlugin
-
-  override lazy val projects = Seq(root)
-
-  lazy val root = Project("plugins", file("."))
 }
