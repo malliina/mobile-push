@@ -1,6 +1,6 @@
 package tests
 
-import com.mle.push.gcm.{GCMClient, GCMMessage, GCMToken, MappedGCMResponse}
+import com.malliina.push.gcm.{GCMClient, GCMMessage, GCMToken, MappedGCMResponse}
 import org.scalatest.FunSuite
 
 import scala.concurrent.duration.DurationInt

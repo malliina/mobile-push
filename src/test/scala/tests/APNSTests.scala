@@ -4,10 +4,10 @@ import java.io.FileInputStream
 import java.nio.file.{Path, Paths}
 import java.security.KeyStore
 
-import com.mle.file.{FileUtilities, StorageFile}
-import com.mle.push.apns._
-import com.mle.security.KeyStores
-import com.mle.util.{BaseConfigReader, Util}
+import com.malliina.file.{FileUtilities, StorageFile}
+import com.malliina.push.apns._
+import com.malliina.security.KeyStores
+import com.malliina.util.{BaseConfigReader, Util}
 import com.notnoop.apns.internal.Utilities
 import org.scalatest.FunSuite
 import play.api.libs.json.Json
@@ -21,8 +21,8 @@ import scala.util.Try
  */
 class APNSTests extends FunSuite {
   val rawDeviceID = "9f3c2f830256954ada78bf56894fa7586307f0eedb7763117c84e0c1eee8347a"
-//    val deviceID = Some(rawDeviceID)
   val deviceID: Option[APNSToken] = None
+//  val deviceID: Option[APNSToken] = APNSToken.build(rawDeviceID)
 
   test("certificate is valid") {
     val creds = APNSCreds.load
@@ -78,9 +78,7 @@ class APNSTests extends FunSuite {
 case class APNSCred(file: Path, pass: String)
 
 object APNSCreds extends BaseConfigReader[APNSCred] {
-  override def userHomeConfPath: Path = FileUtilities.userHome / "keys" / "aps.conf"
-
-  override def resourceCredential: String = ""
+  override def filePath: Option[Path] = Option(FileUtilities.userHome / "keys" / "aps.conf")
 
   override def loadOpt: Option[APNSCred] = fromUserHomeOpt
 
