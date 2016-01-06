@@ -7,6 +7,4 @@ import com.malliina.push.{Token, TokenCompanion}
   */
 case class ADMToken(token: String) extends Token
 
-object ADMToken extends TokenCompanion[ADMToken] {
-  override def isValid(token: String): Boolean = true
-}
+object ADMToken extends TokenCompanion[ADMToken]
