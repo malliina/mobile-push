@@ -4,9 +4,6 @@ import com.malliina.push.gcm.GCMResult.GCMResultError
 import com.malliina.push.gcm.MappedGCMResponse.TokenReplacement
 import play.api.libs.json.Json
 
-/**
-  * @author Michael
-  */
 case class MappedGCMResponse(ids: Seq[GCMToken], response: GCMResponse) {
   lazy val replacements: Seq[TokenReplacement] = {
     if (response.canonical_ids > 0) {

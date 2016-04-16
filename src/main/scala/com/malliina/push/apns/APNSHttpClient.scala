@@ -19,7 +19,6 @@ import scala.util.Try
   * Uses OkHttp with Jetty's "alpn-boot" in the bootclasspath for HTTP/2 support;
   * please check the build definition of this project in project/PushBuild.scala for details.
   *
-  * @author mle
   * @see https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/APNsProviderAPI.html
   * @see https://groups.google.com/forum/embed/#!topic/simple-build-tool/TpImNLs1akQ
   * @see https://github.com/square/okhttp/wiki/Building

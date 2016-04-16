@@ -6,9 +6,6 @@ import org.scalatest.FunSuite
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 
-/**
-  * @author Michael
-  */
 class GCMTests extends FunSuite {
   val rawToken = "APA91bHyeY6NdQar-XXoC47PuWB0eCZErLB-xBNSlhrXQ-u_ElWM7ZFaocsoCeWBx_Or5vmj357BNTdr6atRNwAfFQ4od458OqwfJV3SSPnYa1CIN1j0EVplN8QeEjx3n6-WV6obKN60CDn0-RL3gAsILC_4ec0gAQ"
   //  val emuID = Some(rawToken)

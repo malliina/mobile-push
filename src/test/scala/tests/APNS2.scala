@@ -10,17 +10,17 @@ import org.scalatest.FunSuite
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 
-/**
-  * @author mle
-  */
 class APNS2 extends FunSuite {
+  val testToken = APNSToken.build("6c9969eee832f6ed2a11d04d6daa404db13cc3d97f7298f0c042616fc2a5cc34").get
+
   test("a successful notifications returns an apns-id") {
     APNSHttpConf.loadOpt.foreach { creds =>
       val message = APNSMessage.simple("this is a test")
       val request = APNSRequest.withTopic(creds.topic, message)
       val sslContext = clientCertContext()
-      val client = APNSHttpClient(sslContext.getSocketFactory, isSandbox = true)
-      val result = Await.result(client.push(creds.token, request), 6.seconds)
+      val client = APNSHttpClient(sslContext.getSocketFactory, isSandbox = false)
+//      val result = Await.result(client.push(creds.token, request), 6.seconds)
+      val result = Await.result(client.push(testToken, request), 6.seconds)
       assert(result.right.toOption.isDefined)
     }
   }
@@ -37,14 +37,16 @@ class APNS2 extends FunSuite {
   }
 
   test("sample code for README") {
-    val certKeyStore: KeyStore = ???
-    val certPass: String = ???
-    val topic = APNSTopic("org.company.MyApp")
-    val deviceToken: APNSToken = APNSToken.build("my_hex_device_token_here").get
-    val message = APNSMessage.simple("Hey, sexy!")
-    val request = APNSRequest.withTopic(topic, message)
-    val client = APNSHttpClient(certKeyStore, certPass, isSandbox = true)
-    val result: Future[Either[ErrorReason, APNSIdentifier]] = client.push(deviceToken, request)
+    if(false) {
+      val certKeyStore: KeyStore = ???
+      val certPass: String = ???
+      val topic = APNSTopic("org.company.MyApp")
+      val deviceToken: APNSToken = APNSToken.build("my_hex_device_token_here").get
+      val message = APNSMessage.simple("Hey, sexy!")
+      val request = APNSRequest.withTopic(topic, message)
+      val client = APNSHttpClient(certKeyStore, certPass, isSandbox = true)
+      val result: Future[Either[ErrorReason, APNSIdentifier]] = client.push(deviceToken, request)
+    }
   }
 
   def clientCertContext(): SSLContext = {

@@ -2,9 +2,6 @@ package com.malliina.push
 
 import play.api.libs.json._
 
-/**
-  * @author mle
-  */
 abstract class SimpleCompanion[In, T](implicit r: Format[In])
   extends ValidatingCompanion[In, T] {
   def apply(in: In): T

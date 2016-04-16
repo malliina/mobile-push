@@ -2,13 +2,13 @@ package com.malliina.push
 
 import com.malliina.concurrent.FutureOps
 import com.malliina.util.Log
-import com.ning.http.client.Response
+import org.asynchttpclient.Response
 
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
- * @tparam T type of device
- */
+  * @tparam T type of device
+  */
 trait MessagingClient[T] extends Log {
   def send(dest: T): Future[Response]
 

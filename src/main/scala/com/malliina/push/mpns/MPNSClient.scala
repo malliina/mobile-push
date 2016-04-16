@@ -6,32 +6,27 @@ import com.malliina.concurrent.ExecutionContexts.cached
 import com.malliina.http.AsyncHttp
 import com.malliina.util.Log
 import com.malliina.push.PushClient
-import com.ning.http.client.{Response => NingResponse}
+import org.asynchttpclient.Response
 
 import scala.concurrent.Future
 import scala.xml.{Elem, XML}
 
-/**
- *
- * @author mle
- */
-class MPNSClient extends PushClient[MPNSToken, MPNSMessage, NingResponse] with Log {
-  override def pushAll(urls: Seq[MPNSToken], message: MPNSMessage): Future[Seq[NingResponse]] = {
+class MPNSClient extends PushClient[MPNSToken, MPNSMessage, Response] with Log {
+  override def pushAll(urls: Seq[MPNSToken], message: MPNSMessage): Future[Seq[Response]] = {
     val bodyAsString = serialize(message.xml)
     sendMulti(urls, bodyAsString, message.headers)
   }
 
-  /**
-   * Might throw [[NullPointerException]] if `url` is bogus, but how do you solidly validate a URL in Java? I don't
-   * know.
-   *
-   * @param url device URL
-   * @param message content
-   * @return
-   */
-  override def push(url: MPNSToken, message: MPNSMessage): Future[NingResponse] = send(url, message.xml, message.headers)
+  /** Might throw [[NullPointerException]] if `url` is bogus, but how do you solidly validate a URL in Java? I don't
+    * know.
+    *
+    * @param url     device URL
+    * @param message content
+    * @return
+    */
+  override def push(url: MPNSToken, message: MPNSMessage): Future[Response] = send(url, message.xml, message.headers)
 
-  protected def send(url: MPNSToken, xml: Elem, headers: Map[String, String]): Future[NingResponse] =
+  protected def send(url: MPNSToken, xml: Elem, headers: Map[String, String]): Future[Response] =
     sendSingle(url, serialize(xml), headers)
 
   private def sendMulti(urls: Seq[MPNSToken], body: String, headers: Map[String, String]) =
@@ -40,14 +35,13 @@ class MPNSClient extends PushClient[MPNSToken, MPNSMessage, NingResponse] with L
   private def sendSingle(url: MPNSToken, body: String, headers: Map[String, String]) =
     AsyncHttp.post(url.token, body, headers)
 
-  /**
-   * Serializes `elem` to a string, adding an xml declaration to the top. Encodes the payload
-   * automatically as described in
-   * http://msdn.microsoft.com/en-us/library/windowsphone/develop/hh202945(v=vs.105).aspx.
-   *
-   * @param elem xml
-   * @return xml as a string
-   */
+  /** Serializes `elem` to a string, adding an xml declaration to the top. Encodes the payload
+    * automatically as described in
+    * http://msdn.microsoft.com/en-us/library/windowsphone/develop/hh202945(v=vs.105).aspx.
+    *
+    * @param elem xml
+    * @return xml as a string
+    */
   private def serialize(elem: Elem): String = {
     val writer = new StringWriter
     // xmlDecl = true prepends this as the first line, as desired: <?xml version="1.0" encoding="utf-8"?>

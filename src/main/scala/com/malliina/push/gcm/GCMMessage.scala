@@ -5,9 +5,6 @@ import play.api.libs.json.Json
 
 import scala.concurrent.duration.Duration
 
-/**
- * @author Michael
- */
 case class GCMMessage(data: Map[String, String],
                       expiresAfter: Option[Duration] = None,
                       collapseKey: Option[String] = None,

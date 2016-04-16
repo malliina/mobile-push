@@ -5,9 +5,6 @@ import com.notnoop.apns.internal.Utilities
 
 import scala.util.Try
 
-/**
-  * @author Michael
-  */
 case class APNSToken private(token: String) extends Token
 
 object APNSToken extends TokenCompanion[APNSToken] {

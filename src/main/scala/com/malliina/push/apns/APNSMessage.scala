@@ -3,10 +3,6 @@ package com.malliina.push.apns
 import play.api.libs.json.Json._
 import play.api.libs.json._
 
-
-/**
-  * @author Michael
-  */
 case class APNSMessage(aps: APSPayload, data: Map[String, JsValue] = Map())
 
 object APNSMessage {

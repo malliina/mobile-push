@@ -5,9 +5,6 @@ import play.api.libs.json.Json
 
 import scala.concurrent.duration.Duration
 
-/**
- * @author Michael
- */
 case class AndroidMessage(data: Map[String, String], expiresAfter: Duration)
 
 object AndroidMessage {

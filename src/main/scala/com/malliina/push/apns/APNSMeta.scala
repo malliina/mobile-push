@@ -2,9 +2,6 @@ package com.malliina.push.apns
 
 import play.api.libs.json.Json
 
-/**
-  * @author mle
-  */
 case class APNSMeta(apnsTopic: APNSTopic,
                     apnsExpiration: Long,
                     apnsPriority: APNSPriority,

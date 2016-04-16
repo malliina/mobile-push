@@ -2,10 +2,7 @@ package com.malliina.push.mpns
 
 import scala.xml.{Elem, NodeSeq}
 
-/**
- * Do not automatically format this file.
- *
- * @author Michael
+/** Do not automatically format this file.
  */
 object MPNSPayloads {
   def toast(message: ToastMessage): Elem = toast(message.text1, message.text2, message.deepLink, message.silent)

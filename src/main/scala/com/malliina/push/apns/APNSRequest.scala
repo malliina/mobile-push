@@ -2,9 +2,6 @@ package com.malliina.push.apns
 
 import play.api.libs.json.Json
 
-/**
-  * @author mle
-  */
 case class APNSRequest(message: APNSMessage, meta: APNSMeta)
 
 object APNSRequest {
