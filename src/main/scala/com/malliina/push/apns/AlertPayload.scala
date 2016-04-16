@@ -3,9 +3,6 @@ package com.malliina.push.apns
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{Format, JsPath}
 
-/**
- * @author Michael
- */
 case class AlertPayload(body: String,
                         title: Option[String] = None,
                         launchImage: Option[String] = None,

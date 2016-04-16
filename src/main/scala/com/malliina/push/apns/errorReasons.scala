@@ -3,7 +3,6 @@ package com.malliina.push.apns
 import com.malliina.json.JsonEnum
 
 /**
-  * @author mle
   * @see https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/APNsProviderAPI.html Table 6.6
   */
 sealed abstract class ErrorReason(val reason: String, val description: String)

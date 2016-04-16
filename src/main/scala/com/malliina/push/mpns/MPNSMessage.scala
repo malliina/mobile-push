@@ -2,9 +2,6 @@ package com.malliina.push.mpns
 
 import scala.xml.Elem
 
-/**
- * @author Michael
- */
 trait MPNSMessage {
   def xml: Elem
 

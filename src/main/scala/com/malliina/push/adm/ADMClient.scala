@@ -2,23 +2,20 @@ package com.malliina.push.adm
 
 import com.malliina.concurrent.ExecutionContexts.cached
 import com.malliina.http.AsyncHttp
-import com.malliina.http.AsyncHttp.{RichRequestBuilder, _}
-import com.malliina.util.Log
+import com.malliina.http.AsyncHttp.{Authorization, ContentType, RichRequestBuilder, WwwFormUrlEncoded}
 import com.malliina.push.adm.ADMClient._
 import com.malliina.push.android.AndroidMessage
 import com.malliina.push.{PushClient, PushException}
-import com.ning.http.client.Response
+import com.malliina.util.Log
+import org.asynchttpclient.Response
 import play.api.libs.json.Json
 
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationInt
 
-/**
- * @author Michael
- */
 class ADMClient(val clientID: String, val clientSecret: String)
   extends PushClient[ADMToken, AndroidMessage, Response]
-  with Log {
+    with Log {
 
   def send(id: ADMToken, data: Map[String, String]): Future[Response] =
     push(id, AndroidMessage(data, expiresAfter = 60.seconds))
@@ -27,7 +24,7 @@ class ADMClient(val clientID: String, val clientSecret: String)
     val body = Json.toJson(message)
     token(clientID, clientSecret).flatMap(t => {
       AsyncHttp.postJson(s"https://api.amazon.com/messaging/registrations/${id.token}/messages", body, Map(
-        AUTHORIZATION -> s"Bearer $t",
+        Authorization -> s"Bearer $t",
         AmazonTypeVersion -> AmazonTypeVersionValue,
         AmazonAcceptType -> AmazonAcceptTypeValue
       ))
@@ -45,9 +42,9 @@ class ADMClient(val clientID: String, val clientSecret: String)
   def accessToken(clientID: String, clientSecret: String): Future[AccessToken] =
     tokenRequest(clientID, clientSecret)
       .flatMap(response => Json.parse(response.getResponseBody).validate[AccessToken].fold(
-      errors => Future.failed[AccessToken](new PushException(s"Invalid JSON in ADM response: $errors")),
-      valid => Future.successful(valid)
-    ))
+        errors => Future.failed[AccessToken](new PushException(s"Invalid JSON in ADM response: $errors")),
+        valid => Future.successful(valid)
+      ))
 
   private def tokenRequest(clientID: String, clientSecret: String): Future[Response] = {
     AsyncHttp.execute(client => {
@@ -56,7 +53,7 @@ class ADMClient(val clientID: String, val clientSecret: String)
         SCOPE -> MESSAGING_PUSH,
         CLIENT_ID -> clientID,
         CLIENT_SECRET -> clientSecret)
-    }, Map(CONTENT_TYPE -> WWW_FORM_URL_ENCODED))
+    }, Map(ContentType -> WwwFormUrlEncoded))
   }
 }
 

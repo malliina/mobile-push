@@ -9,9 +9,6 @@ import com.malliina.util.Util
 
 import scala.util.Try
 
-/**
-  * @author mle
-  */
 object TLSUtils {
   def loadContext(file: Path, keyStorePass: String, storeType: String = "JKS"): Try[SSLContext] =
     keyStoreFromFile(file, keyStorePass, storeType).map(ks => buildSSLContext(ks, keyStorePass))

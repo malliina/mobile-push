@@ -2,9 +2,6 @@ package com.malliina.push.apns
 
 import com.malliina.push.ValidatingCompanion
 
-/**
-  * @author mle
-  */
 abstract sealed class APNSPriority(val priority: Int)
 
 object APNSPriority extends ValidatingCompanion[Int, APNSPriority] {

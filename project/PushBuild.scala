@@ -12,7 +12,7 @@ object PushBuild extends Build {
     .settings(projectSettings: _*)
 
   lazy val projectSettings = Seq(
-    version := "1.4.0",
+    version := "1.5.0",
     scalaVersion := "2.11.7",
     gitUserName := "malliina",
     organization := s"com.${gitUserName.value}",
@@ -22,20 +22,10 @@ object PushBuild extends Build {
       Resolver.jcenterRepo,
       Resolver.bintrayRepo("malliina", "maven")) ++ resolvers.value,
     libraryDependencies ++= Seq(
-      "com.malliina" %% "util" % "2.1.0",
-      "com.typesafe.play" %% "play-json" % "2.4.6",
-      "com.ning" % "async-http-client" % "1.9.31",
+      "com.malliina" %% "util" % "2.4.1",
       "com.notnoop.apns" % "apns" % "1.0.0.Beta6",
-      "com.squareup.okhttp" % "okhttp" % "2.7.1"
+      "com.squareup.okhttp" % "okhttp" % "2.7.5"
     ),
-    libraryDependencies := {
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, scalaMajor)) if scalaMajor >= 11 =>
-          libraryDependencies.value :+ "org.scala-lang.modules" %% "scala-xml" % "1.0.5"
-        case _ =>
-          libraryDependencies.value
-      }
-    },
     libraryDependencies += "org.mortbay.jetty.alpn" % "alpn-boot" % "8.1.6.v20151105" % "runtime",
     javaOptions <++= (managedClasspath in Runtime) map { attList =>
       for {

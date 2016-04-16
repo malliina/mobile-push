@@ -2,10 +2,6 @@ package com.malliina.push.mpns
 
 import com.malliina.io.FileSet
 
-/**
-  *
-  * @author mle
-  */
 object PushUrls extends FileSet[PushUrl]("push.json") {
   /**
     * The same device may open different push URLs at different points in time, however the old ones still work until the

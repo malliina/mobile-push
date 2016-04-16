@@ -5,10 +5,6 @@ import play.api.libs.json.Json
 
 import scala.concurrent.duration.Duration
 
-/**
-  *
-  * @author mle
-  */
 case class GCMLetter(registration_ids: Seq[GCMToken],
                      data: Map[String, String],
                      time_to_live: Option[Duration] = None,

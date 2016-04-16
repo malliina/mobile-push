@@ -6,9 +6,6 @@ import org.scalatest.FunSuite
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
-/**
- * @author Michael
- */
 class MPNSTests extends FunSuite {
   //  val devices = Seq(
   //    "http://s.notify.live.net/u/1/db3/HmQAAAB_5whAEO6GhJpi2BjBxhKedc4c5A5vCeH50U9hOSbcDS3qNOAIFjMmfyxJ3SSSTZMpc6NdxiehrGtcFB4rl3KU/d2luZG93c3Bob25lZGVmYXVsdA/vnjifiZVeEyAAmiZ81DJ8w/GSq1vU6RyYMIc9ZnJSfs-jpZoAk",

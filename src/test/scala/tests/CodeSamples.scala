@@ -7,16 +7,12 @@ import com.malliina.push.android.AndroidMessage
 import com.malliina.push.apns.{APNSToken, APNSClient, APNSMessage}
 import com.malliina.push.gcm.{GCMToken, MappedGCMResponse, GCMMessage, GCMClient}
 import com.malliina.push.mpns.{MPNSToken, MPNSClient, ToastMessage}
-import com.ning.http.client.Response
 import com.notnoop.apns.ApnsNotification
 import org.scalatest.FunSuite
 
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationInt
 
-/**
- * @author Michael
- */
 class CodeSamples extends FunSuite {
 //  test("Apple example") {
 //    val certKeyStore: KeyStore = ???

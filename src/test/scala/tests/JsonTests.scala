@@ -7,9 +7,6 @@ import org.scalatest.FunSuite
 import play.api.libs.json.Json._
 import play.api.libs.json._
 
-/**
-  * @author Michael
-  */
 class JsonTests extends FunSuite {
   test("can json this") {
     val obj = Json.toJson(Map("a" -> "b")).as[JsObject]

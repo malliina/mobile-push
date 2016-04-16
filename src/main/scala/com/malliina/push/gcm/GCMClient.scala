@@ -2,18 +2,14 @@ package com.malliina.push.gcm
 
 import com.malliina.concurrent.ExecutionContexts.cached
 import com.malliina.http.AsyncHttp
-import com.malliina.http.AsyncHttp._
+import com.malliina.http.AsyncHttp.Authorization
 import com.malliina.push.gcm.GCMClient._
 import com.malliina.push.{PushClient, ResponseException}
-import com.ning.http.client.Response
+import org.asynchttpclient.Response
 import play.api.libs.json.Json
 
 import scala.concurrent.Future
 
-/**
- *
- * @author mle
- */
 class GCMClient(val apiKey: String) extends PushClient[GCMToken, GCMMessage, MappedGCMResponse] {
   def push(id: GCMToken, message: GCMMessage) = sendLimitedMapped(Seq(id), message)
 
@@ -32,7 +28,7 @@ class GCMClient(val apiKey: String) extends PushClient[GCMToken, GCMMessage, Map
 
   private def send(message: GCMLetter): Future[Response] = {
     val body = Json toJson message
-    AsyncHttp.postJson(POST_URL, body, Map(AUTHORIZATION -> s"key=$apiKey"))
+    AsyncHttp.postJson(POST_URL, body, Map(Authorization -> s"key=$apiKey"))
   }
 }
 
