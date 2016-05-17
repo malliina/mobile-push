@@ -10,9 +10,7 @@ Send push notifications to mobile devices. Supports:
 
 ## Installation ##
 
-```
-libraryDependencies += "com.github.malliina" %% "mobile-push" % "1.5.0"
-```
+    libraryDependencies += "com.malliina" %% "mobile-push" % "1.5.0"
 
 ## Usage ##
 

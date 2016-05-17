@@ -3,6 +3,7 @@ package com.malliina.push.adm
 import com.malliina.concurrent.ExecutionContexts.cached
 import com.malliina.http.AsyncHttp
 import com.malliina.http.AsyncHttp.{Authorization, ContentType, RichRequestBuilder, WwwFormUrlEncoded}
+import com.malliina.push.OAuthKeys._
 import com.malliina.push.adm.ADMClient._
 import com.malliina.push.android.AndroidMessage
 import com.malliina.push.{PushClient, PushException}
@@ -49,22 +50,17 @@ class ADMClient(val clientID: String, val clientSecret: String)
   private def tokenRequest(clientID: String, clientSecret: String): Future[Response] = {
     AsyncHttp.execute(client => {
       client.post("https://api.amazon.com/auth/O2/token", "").addParameters(
-        GRANT_TYPE -> CLIENT_CREDENTIALS,
-        SCOPE -> MESSAGING_PUSH,
-        CLIENT_ID -> clientID,
-        CLIENT_SECRET -> clientSecret)
+        GrantType -> ClientCredentials,
+        Scope -> MessagingPush,
+        ClientId -> clientID,
+        ClientSecret -> clientSecret)
     }, Map(ContentType -> WwwFormUrlEncoded))
   }
 }
 
 object ADMClient {
-  val GRANT_TYPE = "grant_type"
-  val CLIENT_CREDENTIALS = "client_credentials"
-  val SCOPE = "scope"
-  val MESSAGING_PUSH = "messaging:push"
-  val CLIENT_ID = "client_id"
-  val CLIENT_SECRET = "client_secret"
-  val ACCESS_TOKEN = "access_token"
+  val MessagingPush = "messaging:push"
+  val AccessToken = "access_token"
 
   val AmazonTypeVersion = "X-Amzn-Type-Version"
   val AmazonTypeVersionValue = "com.amazon.device.messaging.ADMMessage@1.0"

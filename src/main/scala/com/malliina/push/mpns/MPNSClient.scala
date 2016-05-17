@@ -1,22 +1,12 @@
 package com.malliina.push.mpns
 
-import java.io.StringWriter
-
-import com.malliina.concurrent.ExecutionContexts.cached
 import com.malliina.http.AsyncHttp
-import com.malliina.util.Log
-import com.malliina.push.PushClient
+import com.malliina.push.{Headers, WindowsClient, WindowsMessage}
 import org.asynchttpclient.Response
 
 import scala.concurrent.Future
-import scala.xml.{Elem, XML}
 
-class MPNSClient extends PushClient[MPNSToken, MPNSMessage, Response] with Log {
-  override def pushAll(urls: Seq[MPNSToken], message: MPNSMessage): Future[Seq[Response]] = {
-    val bodyAsString = serialize(message.xml)
-    sendMulti(urls, bodyAsString, message.headers)
-  }
-
+class MPNSClient extends WindowsClient[MPNSToken, WindowsMessage] {
   /** Might throw [[NullPointerException]] if `url` is bogus, but how do you solidly validate a URL in Java? I don't
     * know.
     *
@@ -24,30 +14,8 @@ class MPNSClient extends PushClient[MPNSToken, MPNSMessage, Response] with Log {
     * @param message content
     * @return
     */
-  override def push(url: MPNSToken, message: MPNSMessage): Future[Response] = send(url, message.xml, message.headers)
-
-  protected def send(url: MPNSToken, xml: Elem, headers: Map[String, String]): Future[Response] =
-    sendSingle(url, serialize(xml), headers)
-
-  private def sendMulti(urls: Seq[MPNSToken], body: String, headers: Map[String, String]) =
-    Future.sequence(urls.map(url => sendSingle(url, body, headers)))
-
-  private def sendSingle(url: MPNSToken, body: String, headers: Map[String, String]) =
-    AsyncHttp.post(url.token, body, headers)
-
-  /** Serializes `elem` to a string, adding an xml declaration to the top. Encodes the payload
-    * automatically as described in
-    * http://msdn.microsoft.com/en-us/library/windowsphone/develop/hh202945(v=vs.105).aspx.
-    *
-    * @param elem xml
-    * @return xml as a string
-    */
-  private def serialize(elem: Elem): String = {
-    val writer = new StringWriter
-    // xmlDecl = true prepends this as the first line, as desired: <?xml version="1.0" encoding="utf-8"?>
-    XML.write(writer, elem, "UTF-8", xmlDecl = true, doctype = null)
-    writer.toString
-  }
+  override def push(url: MPNSToken, message: WindowsMessage): Future[Response] =
+    send(url, message.xml, message.headers)
 }
 
 object MPNSClient {
@@ -63,28 +31,22 @@ object MPNSClient {
   val DeviceConnectionStatus = "X-DeviceConnectionStatus"
 
   // not a bug
-  val TILE = "token"
-  val TOAST = "toast"
-  val TILE_IMMEDIATE = "1"
-  val TOAST_IMMEDIATE = "2"
-  val RAW_IMMEDIATE = "3"
-
-  val CONTENT_TYPE = "Content-Type"
-  val TEXT_XML = "text/xml"
+  val Tile = "token"
+  val Toast = "toast"
+  val TileImmediate = "1"
+  val ToastImmediate = "2"
+  val RawImmediate = "3"
 
   private def baseHeaders(notificationClass: String) = Map(
-    CONTENT_TYPE -> TEXT_XML,
+    AsyncHttp.ContentType -> Headers.TextHtml,
     XNotificationClass -> notificationClass)
 
   private def headers(notificationType: String, notificationClass: String) =
     baseHeaders(notificationClass) ++ Map(NotificationType -> notificationType)
 
-  val toastHeaders = headers(TOAST, TOAST_IMMEDIATE)
+  val toastHeaders = headers(Toast, ToastImmediate)
 
-  val tileHeaders = headers(TILE, TILE_IMMEDIATE)
+  val tileHeaders = headers(Tile, TileImmediate)
 
-  val rawHeaders = baseHeaders(RAW_IMMEDIATE)
+  val rawHeaders = baseHeaders(RawImmediate)
 }
-
-
-
