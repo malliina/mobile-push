@@ -3,7 +3,8 @@ package tests
 import java.nio.file.Path
 
 import com.malliina.file.{FileUtilities, StorageFile}
-import com.malliina.push.wns.{WNSClient, WNSCredentials, WNSToken}
+import com.malliina.http.AsyncHttp
+import com.malliina.push.wns._
 import com.malliina.util.BaseConfigReader
 
 class WNSTests extends BaseSuite {
@@ -26,9 +27,20 @@ class WNSTests extends BaseSuite {
   test("can fetch token") {
     val token = maybeCreds map { creds =>
       val client = new WNSClient(creds)
-      await(client.fetchAccessToken())
+      await(client.fetchAccessToken(new AsyncHttp))
     }
     assert(token.forall(_.access_token.nonEmpty))
+  }
+
+  test("send") {
+    val token = WNSToken.build("https://db5.notify.windows.com/?token=AwYAAABq7aWoYUJUr%2fM%2bRcWZacCYWN3cutxpadhmsejNg7aOJQselRS9AEE3ubPwZlLBcjYmYNzHFezNQoPyrViQRtPlvpxMXNREJHPVCmBDMG7wZWhRb1sxDCatCYsiafv0a6I%3d").get
+    val payload = ToastElement.text("Hello, world!!!")
+    val message = WNSMessage(payload, WNSType.Toast, cache = true)
+    maybeCreds foreach { creds =>
+      val client = new WNSClient(creds)
+      val response = await(client.push(token, message))
+      assert(response.isSuccess)
+    }
   }
 }
 

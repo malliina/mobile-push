@@ -6,27 +6,35 @@ import scala.xml.{Attribute, Elem, NodeSeq, Text}
 
 case class TileElement(visual: Visual)
 
-case class ToastElement(launch: Option[String],
-                        activationType: ActivationType,
-                        scenario: Scenario,
-                        actions: Actions,
-                        visual: Visual,
-                        audio: Option[Audio]) extends Xmlable {
+case class ToastElement(visual: Visual,
+                        actions: Actions = Actions(),
+                        launch: Option[String] = None,
+                        activationType: Option[ActivationType] = None,
+                        scenario: Option[Scenario] = None,
+                        audio: Option[Audio] = None) extends Xmlable {
   val actionsXml = if(actions.isEmpty) NodeSeq.Empty else actions.xml
+  val audioXml = audio.map(_.xml) getOrElse NodeSeq.Empty
 
   override def xml: Elem =
     <toast>
+      {visual.xml}
       {actionsXml}
+      {audioXml}
     </toast>.withAttributes(
       "launch" -> launch,
-      "activationType" -> Option(activationType),
-      "scenario" -> Option(scenario)
+      "activationType" -> activationType,
+      "scenario" -> scenario
     )
+}
+
+object ToastElement {
+  def text(text: String) = ToastElement(Visual.text(text))
 }
 
 case class Commands(commands: Seq[Command]) extends Xmlable {
   override def xml: Elem = <commands>{commands.map(_.xml)}</commands>
 }
+
 case class Command(arguments: Option[String], id: Option[CommandId]) extends Xmlable {
   override def xml: Elem =
     <command/>.withAttributes(
@@ -35,33 +43,36 @@ case class Command(arguments: Option[String], id: Option[CommandId]) extends Xml
     )
 }
 
-case class Actions(actions: Seq[ActionElement]) extends Xmlable {
+case class Actions(inputs: Seq[Input] = Nil,
+                   actions: Seq[ActionElement] = Nil) extends Xmlable {
   val isEmpty = actions.isEmpty
 
   override def xml: Elem =
     <actions>
+      {inputs.map(_.xml)}
       {actions.map(_.xml)}
     </actions>
 }
 case class ActionElement(content: String,
                          arguments: String,
                          activationType: ActivationType,
-                         imageUri: Option[String],
-                         hintInputId: String) extends Xmlable {
+                         imageUri: Option[String] = None,
+                         hintInputId: Option[String] = None) extends Xmlable {
   override def xml: Elem = <action/>.withAttributes(
     "content" -> Option(content),
     "arguments" -> Option(arguments),
     "activationType" -> Option(activationType),
     "imageUri" -> imageUri,
-    "hint-inputId" -> Option(hintInputId)
+    "hint-inputId" -> hintInputId
   )
 }
+
 case class Input(id: String,
                  inputType: InputType,
-                 title: Option[String],
-                 placeHolderContent: Option[String],
-                 defaultInput: Option[String],
-                 selection: Seq[Selection]) extends Xmlable {
+                 selection: Seq[Selection],
+                 defaultInput: Option[String] = None,
+                 title: Option[String] = None,
+                 placeHolderContent: Option[String] = None) extends Xmlable {
   override def xml: Elem =
     <input>
       {selection.map(_.xml)}
@@ -74,20 +85,20 @@ case class Input(id: String,
     )
 }
 
-case class Selection(id: String, selection: String) extends Xmlable {
+case class Selection(id: String, content: String) extends Xmlable {
   override def xml: Elem = <selection/>.withAttributes(
     "id" -> Option(id),
-    "selection" -> Option(selection)
+    "content" -> Option(content)
   )
 }
 
-case class Visual(lang: Option[String],
-                  baseUri: Option[URL],
-                  branding: Option[Branding],
-                  addImageQuery: Boolean,
-                  contentId: Option[String],
-                  displayName: Option[String],
-                  bindings: Seq[Binding]) extends Xmlable {
+case class Visual(bindings: Seq[Binding],
+                  lang: Option[String] = None,
+                  baseUri: Option[URL] = None,
+                  branding: Option[Branding] = None,
+                  addImageQuery: Option[Boolean] = None,
+                  contentId: Option[String] = None,
+                  displayName: Option[String] = None) extends Xmlable {
   override def xml: Elem =
     <visual>
       {bindings.map(_.xml)}
@@ -95,22 +106,27 @@ case class Visual(lang: Option[String],
       "lane" -> lang,
       "baseUri" -> baseUri,
       "branding" -> branding,
-      "addImageQuery" -> Option(addImageQuery),
+      "addImageQuery" -> addImageQuery,
       "contentId" -> contentId,
       "displayName" -> displayName
     )
 }
 
+object Visual {
+  def text(text: String) = Visual(Seq(Binding.text(text)))
+}
+
 case class Binding(template: Template,
-                   lang: Option[String],
-                   baseUri: Option[URL],
-                   branding: Option[Branding],
-                   addImageQuery: Boolean,
-                   contentId: Option[String],
-                   displayName: Option[String],
                    texts: Seq[WnsText],
-                   images: Seq[Image],
-                   groups: Seq[Group]) extends Xmlable {
+                   images: Seq[Image] = Nil,
+                   groups: Seq[Group] = Nil,
+                   lang: Option[String] = None,
+                   baseUri: Option[URL] = None,
+                   branding: Option[Branding] = None,
+                   addImageQuery: Option[Boolean] = None,
+                   contentId: Option[String] = None,
+                   displayName: Option[String] = None,
+                   hintOverlay: Option[Int] = None) extends Xmlable {
   override def xml: Elem =
     <binding>
       {texts.map(_.xml)}
@@ -121,45 +137,52 @@ case class Binding(template: Template,
       "lang" -> lang,
       "baseUri" -> baseUri,
       "branding" -> branding,
-      "addImageQuery" -> Option(addImageQuery),
+      "addImageQuery" -> addImageQuery,
       "contentId" -> contentId,
-      "displayName" -> displayName
+      "displayName" -> displayName,
+      "hint-overlay" -> hintOverlay
     )
 }
 
+object Binding {
+  def text(text: String) = Binding(Template.ToastGeneric, Seq(WnsText(text)))
+}
+
 case class Image(src: String,
-                 placement: Option[ImagePlacement],
-                 alt: Option[String],
-                 addImageQuery: Boolean,
-                 hintCrop: Option[HintCrop],
-                 hintRemoveMargin: Boolean,
-                 hintAlign: Option[HintAlign]) extends Xmlable {
+                 placement: Option[Placement] = None,
+                 alt: Option[String] = None,
+                 addImageQuery: Option[Boolean] = None,
+                 hintCrop: Option[HintCrop] = None,
+                 hintRemoveMargin: Option[Boolean] = None,
+                 hintAlign: Option[HintAlign] = None,
+                 hintOverlay: Option[Int] = None) extends Xmlable {
   override def xml: Elem = <image/>.withAttributes(
     "src" -> Option(src),
     "placement" -> placement,
     "alt" -> alt,
-    "addImageQuery" -> Option(addImageQuery),
-    "hintCrop" -> hintCrop,
-    "hintRemoveMargin" -> Option(hintRemoveMargin),
-    "hintAlign" -> hintAlign
+    "addImageQuery" -> addImageQuery,
+    "hint-crop" -> hintCrop,
+    "hint-removeMargin" -> hintRemoveMargin,
+    "hint-align" -> hintAlign,
+    "hint-overlay" -> hintOverlay
     )
 }
 
 case class WnsText(text: String,
-                   lang: Option[String],
-                   hintStyle: Option[String],
-                   hintWrap: Boolean,
-                   hintMaxLines: Option[Int],
-                   hintMinLines: Option[Int],
-                   hintAlign: Option[HintAlign]) extends Xmlable {
+                   lang: Option[String] = None,
+                   hintStyle: Option[String] = None,
+                   hintWrap: Option[Boolean] = None,
+                   hintMaxLines: Option[Int] = None,
+                   hintMinLines: Option[Int] = None,
+                   hintAlign: Option[HintAlign] = None) extends Xmlable {
   def xml: Elem =
     <text>{text}</text>.withAttributes(
       "lang" -> lang,
-      "hintStyle" -> hintStyle,
-      "hintWrap" -> Option(hintWrap),
-      "hintMaxLines" -> hintMaxLines,
-      "hintMinLines" -> hintMinLines,
-      "hintAlign" -> hintAlign
+      "hint-style" -> hintStyle,
+      "hint-wrap" -> hintWrap,
+      "hint-maxLines" -> hintMaxLines,
+      "hint-minLines" -> hintMinLines,
+      "hint-align" -> hintAlign
     )
 }
 
@@ -197,8 +220,8 @@ case class SubGroup(hintWeight: Option[Int],
       {texts.map(_.xml)}
       {images.map(_.xml)}
     </subgroup>.withAttributes(
-      "hintWeight" -> hintWeight,
-      "hintTextStacking" -> hintTextStacking
+      "hint-weight" -> hintWeight,
+      "hint-textStacking" -> hintTextStacking
     )
 }
 

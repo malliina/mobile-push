@@ -1,42 +1,52 @@
 package com.malliina.push.wns
 
+import com.malliina.push.NamedCompanion
+
 sealed abstract class HintCrop(val name: String) extends Named
 
-case object NoHintCrop extends HintCrop("none")
+object HintCrop {
 
-case object Circle extends HintCrop("circle")
+  case object NoHintCrop extends HintCrop("none")
+
+  case object Circle extends HintCrop("circle")
+
+}
 
 sealed abstract class Template(val name: String) extends Named
 
-case object ToastGeneric extends Template("ToastGeneric")
+object Template {
+
+  case object ToastGeneric extends Template("ToastGeneric")
+
+}
 
 sealed abstract class Placement(val name: String) extends Named
 
-case object Inline extends Placement("inline")
+object Placement {
 
-case object AppLogoOverride extends Placement("appLogoOverride")
+  case object Inline extends Placement("inline")
 
-sealed abstract class ImagePlacement(val name: String) extends Named
+  case object Background extends Placement("background")
 
-object ImagePlacement {
+  case object AppLogoOverride extends Placement("appLogoOverride")
 
-  case object Inline extends ImagePlacement("inline")
-
-  case object Background extends ImagePlacement("background")
-
-  case object Peek extends ImagePlacement("peek")
+  case object Peek extends Placement("peek")
 
 }
 
 sealed abstract class Branding(val name: String) extends Named
 
-case object NoBranding extends Branding("none")
+object Branding {
 
-case object Logo extends Branding("logo")
+  case object NoBranding extends Branding("none")
 
-case object Name extends Branding("name")
+  case object Logo extends Branding("logo")
 
-case object NameAndLogo extends Branding("nameAndLogo")
+  case object Name extends Branding("name")
+
+  case object NameAndLogo extends Branding("nameAndLogo")
+
+}
 
 sealed abstract class HintAlign(val name: String) extends Named
 
@@ -76,7 +86,10 @@ object InputType {
 
 sealed abstract class CommandId(val name: String) extends Named
 
-object CommandId {
+object CommandId extends NamedCompanion[CommandId] {
+
+  override val all: Seq[CommandId] =
+    Seq(Snooze, Dismiss, Video, Voice, Decline)
 
   case object Snooze extends CommandId("snooze")
 

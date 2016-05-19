@@ -1,8 +1,13 @@
 package com.malliina.push.wns
 
+import com.malliina.push.NamedCompanion
+
 sealed abstract class ActivationType(val name: String) extends Named
 
-object ActivationType {
+object ActivationType extends NamedCompanion[ActivationType] {
+
+  override val all: Seq[ActivationType] =
+    Seq(Foreground, Background, Protocol, System)
 
   case object Foreground extends ActivationType("foreground")
 
