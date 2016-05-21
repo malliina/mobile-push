@@ -1,4 +1,4 @@
-# mobile-push #
+# mobile-push
 
 Send push notifications to mobile devices. Supports:
 
@@ -6,13 +6,14 @@ Send push notifications to mobile devices. Supports:
 - Apple Push Notification service using the legacy binary protocol
 - Google Cloud Messaging (GCM)
 - Amazon Device Messaging (ADM)
+- Windows Push Notification Services (WNS)
 - Microsoft Push Notification Service (MPNS)
 
-## Installation ##
+## Installation
 
-    libraryDependencies += "com.malliina" %% "mobile-push" % "1.5.0"
+    libraryDependencies += "com.malliina" %% "mobile-push" % "1.6.0"
 
-## Usage ##
+## Usage
 
 To push notifications to iOS devices, you need to obtain a certificate for your app. To push notifications to Android
 devices, you must first obtain API keys from the provider (Google or Amazon).
@@ -20,7 +21,7 @@ devices, you must first obtain API keys from the provider (Google or Amazon).
 To receive notifications, mobile devices must first register with your notification server. Setting this up is beyond
 the scope of this library; let's assume you already have all this.
 
-### Apple Push Notification service, using HTTP/2 ###
+### Apple Push Notification service, using HTTP/2
 
     val certKeyStore: KeyStore = ???
     val certPass: String = ???
@@ -31,7 +32,7 @@ the scope of this library; let's assume you already have all this.
     val client = APNSHttpClient(certKeyStore, certPass, isSandbox = true)
     val result: Future[Either[ErrorReason, APNSIdentifier]] = client.push(deviceToken, request)
 
-### Apple Push Notification service, legacy ###
+### Apple Push Notification service, legacy
 
     val certKeyStore: KeyStore = ???
     val certPass: String = ???
@@ -40,7 +41,7 @@ the scope of this library; let's assume you already have all this.
     val message = APNSMessage.simple("Hey, sexy!")
     val pushedNotification: Future[ApnsNotification] = client.push(deviceHexID, message)
 
-### Google Cloud Messaging ###
+### Google Cloud Messaging
 
     val gcmApiKey: String = ???
     val deviceRegistrationId: GCMToken = GCMToken("registration_id_here")
@@ -48,7 +49,7 @@ the scope of this library; let's assume you already have all this.
     val message = GCMMessage(Map("key" -> "value"))
     val response: Future[MappedGCMResponse] = client.push(deviceRegistrationId, message)
 
-### Amazon Device Messaging ###
+### Amazon Device Messaging
 
     val clientId: String = ???
     val clientSecret: String = ???
@@ -56,10 +57,21 @@ the scope of this library; let's assume you already have all this.
     val client = new ADMClient(clientId, clientSecret)
     val message = AndroidMessage(Map("key" -> "value"), expiresAfter = 20.seconds)
     val response: Future[Response] = client.push(deviceID, message)
+    
+### Windows Push Notification Services
 
-### Microsoft Push Notification Service ###
+    val packageSid: String = ???
+    val clientSecret: String = ???
+    val credentials = WNSCredentials(packageSid, clientSecret)
+    val client = new WNSClient(credentials)
+    val payload = ToastElement.text("Hello, world!")
+    val message = WNSMessage(payload)
+    val token = WNSToken.build("https://db5.notify.windows.com/?token=AwYAAABq7aWo").get
+    val response: Future[WNSResponse] = client.push(token, message)
 
-    val deviceURL: MPNSToken = MPNSToken.build("my_device_url_here").get
+### Microsoft Push Notification Service
+
+    val token: MPNSToken = MPNSToken.build("my_device_url_here").get
     val client = new MPNSClient
     val message = ToastMessage("text1", "text2", deepLink = "/App/Xaml/DeepLinkPage.xaml?param=value", silent = true)
-    val response: Future[Response] = client.push(deviceURL, message)
+    val response: Future[Response] = client.push(token, message)

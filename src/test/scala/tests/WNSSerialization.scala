@@ -30,7 +30,7 @@ class WNSSerialization extends FunSuite {
   test("example") {
     // https://msdn.microsoft.com/en-us/windows/uwp/controls-and-patterns/tiles-and-notifications-adaptive-interactive-toasts
     val toast = ToastElement(
-      Visual(Seq(Binding(Template.ToastGeneric,
+      Visual(Seq(Binding(ToastTemplate.ToastGeneric,
         Seq(WnsText("Spicy Heaven"), WnsText("When do you plan to come in tomorrow?")),
         Seq(Image("A.png", Option(Placement.AppLogoOverride))),
         Nil, None, None, None, None, None, None))),

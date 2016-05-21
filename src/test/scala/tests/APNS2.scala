@@ -19,7 +19,6 @@ class APNS2 extends BaseSuite {
       val request = APNSRequest.withTopic(creds.topic, message)
       val sslContext = clientCertContext()
       val client = APNSHttpClient(sslContext.getSocketFactory, isSandbox = false)
-//      val result = Await.result(client.push(creds.token, request), 6.seconds)
       val result = await(client.push(testToken, request))
       assert(result.right.toOption.isDefined)
     }

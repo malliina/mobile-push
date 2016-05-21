@@ -4,16 +4,26 @@ import java.net.URL
 
 import scala.xml.{Attribute, Elem, NodeSeq, Text}
 
-case class TileElement(visual: Visual)
+case class TileElement(visual: Visual[TileTemplate]) extends XmlNotification {
 
-case class ToastElement(visual: Visual,
+  override def notificationType: NotificationType = NotificationType.Tile
+
+  override def xml: Elem =
+    <tile>
+      {visual.xml}
+    </tile>
+}
+
+case class ToastElement(visual: Visual[ToastTemplate],
                         actions: Actions = Actions(),
                         launch: Option[String] = None,
                         activationType: Option[ActivationType] = None,
                         scenario: Option[Scenario] = None,
-                        audio: Option[Audio] = None) extends Xmlable {
-  val actionsXml = if(actions.isEmpty) NodeSeq.Empty else actions.xml
+                        audio: Option[Audio] = None) extends XmlNotification {
+  val actionsXml = if (actions.isEmpty) NodeSeq.Empty else actions.xml
   val audioXml = audio.map(_.xml) getOrElse NodeSeq.Empty
+
+  override def notificationType: NotificationType = NotificationType.Toast
 
   override def xml: Elem =
     <toast>
@@ -28,16 +38,35 @@ case class ToastElement(visual: Visual,
 }
 
 object ToastElement {
-  def text(text: String) = ToastElement(Visual.text(text))
+  def text(text: String) = ToastElement(Visual.toastText(text))
+}
+
+case class Badge(value: BadgeValue = BadgeValue.None) extends XmlNotification {
+
+  override def notificationType: NotificationType = NotificationType.Badge
+
+  override def xml: Elem = <badge/>.withAttributes(
+    "value" -> Option(value.name)
+  )
+}
+
+/**
+  *
+  * @param payload base64-encoded
+  */
+case class Raw(payload: String) extends WNSNotification {
+  override def notificationType: NotificationType = NotificationType.Raw
 }
 
 case class Commands(commands: Seq[Command]) extends Xmlable {
-  override def xml: Elem = <commands>{commands.map(_.xml)}</commands>
+  override def xml: Elem = <commands>
+    {commands.map(_.xml)}
+  </commands>
 }
 
 case class Command(arguments: Option[String], id: Option[CommandId]) extends Xmlable {
   override def xml: Elem =
-    <command/>.withAttributes(
+      <command/>.withAttributes(
       "arguments" -> arguments,
       "id" -> id
     )
@@ -53,6 +82,7 @@ case class Actions(inputs: Seq[Input] = Nil,
       {actions.map(_.xml)}
     </actions>
 }
+
 case class ActionElement(content: String,
                          arguments: String,
                          activationType: ActivationType,
@@ -92,13 +122,13 @@ case class Selection(id: String, content: String) extends Xmlable {
   )
 }
 
-case class Visual(bindings: Seq[Binding],
-                  lang: Option[String] = None,
-                  baseUri: Option[URL] = None,
-                  branding: Option[Branding] = None,
-                  addImageQuery: Option[Boolean] = None,
-                  contentId: Option[String] = None,
-                  displayName: Option[String] = None) extends Xmlable {
+case class Visual[T <: Template](bindings: Seq[Binding[T]],
+                                 lang: Option[String] = None,
+                                 baseUri: Option[URL] = None,
+                                 branding: Option[Branding] = None,
+                                 addImageQuery: Option[Boolean] = None,
+                                 contentId: Option[String] = None,
+                                 displayName: Option[String] = None) extends Xmlable {
   override def xml: Elem =
     <visual>
       {bindings.map(_.xml)}
@@ -113,20 +143,20 @@ case class Visual(bindings: Seq[Binding],
 }
 
 object Visual {
-  def text(text: String) = Visual(Seq(Binding.text(text)))
+  def toastText(text: String) = Visual(Seq(Binding.toastText(text)))
 }
 
-case class Binding(template: Template,
-                   texts: Seq[WnsText],
-                   images: Seq[Image] = Nil,
-                   groups: Seq[Group] = Nil,
-                   lang: Option[String] = None,
-                   baseUri: Option[URL] = None,
-                   branding: Option[Branding] = None,
-                   addImageQuery: Option[Boolean] = None,
-                   contentId: Option[String] = None,
-                   displayName: Option[String] = None,
-                   hintOverlay: Option[Int] = None) extends Xmlable {
+case class Binding[T <: Template](template: T,
+                                  texts: Seq[WnsText],
+                                  images: Seq[Image] = Nil,
+                                  groups: Seq[Group] = Nil,
+                                  lang: Option[String] = None,
+                                  baseUri: Option[URL] = None,
+                                  branding: Option[Branding] = None,
+                                  addImageQuery: Option[Boolean] = None,
+                                  contentId: Option[String] = None,
+                                  displayName: Option[String] = None,
+                                  hintOverlay: Option[Int] = None) extends Xmlable {
   override def xml: Elem =
     <binding>
       {texts.map(_.xml)}
@@ -145,7 +175,8 @@ case class Binding(template: Template,
 }
 
 object Binding {
-  def text(text: String) = Binding(Template.ToastGeneric, Seq(WnsText(text)))
+  def toastText(text: String) =
+    Binding[ToastTemplate](ToastTemplate.ToastGeneric, Seq(WnsText(text)))
 }
 
 case class Image(src: String,
@@ -165,18 +196,20 @@ case class Image(src: String,
     "hint-removeMargin" -> hintRemoveMargin,
     "hint-align" -> hintAlign,
     "hint-overlay" -> hintOverlay
-    )
+  )
 }
 
 case class WnsText(text: String,
                    lang: Option[String] = None,
-                   hintStyle: Option[String] = None,
+                   hintStyle: Option[TextStyle] = None,
                    hintWrap: Option[Boolean] = None,
                    hintMaxLines: Option[Int] = None,
                    hintMinLines: Option[Int] = None,
                    hintAlign: Option[HintAlign] = None) extends Xmlable {
   def xml: Elem =
-    <text>{text}</text>.withAttributes(
+    <text>
+      {text}
+    </text>.withAttributes(
       "lang" -> lang,
       "hint-style" -> hintStyle,
       "hint-wrap" -> hintWrap,

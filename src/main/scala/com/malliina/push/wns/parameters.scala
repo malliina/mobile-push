@@ -12,11 +12,11 @@ object HintCrop {
 
 }
 
-sealed abstract class Template(val name: String) extends Named
+sealed abstract class ToastTemplate(val name: String) extends Template
 
-object Template {
+object ToastTemplate {
 
-  case object ToastGeneric extends Template("ToastGeneric")
+  case object ToastGeneric extends ToastTemplate("ToastGeneric")
 
 }
 
@@ -100,5 +100,95 @@ object CommandId extends NamedCompanion[CommandId] {
   case object Voice extends CommandId("voice")
 
   case object Decline extends CommandId("decline")
+
+}
+
+sealed abstract class BadgeValue(val name: String) extends Named
+
+object BadgeValue {
+
+  case class Number(num: Int) extends BadgeValue(num.toString)
+
+  case object None extends BadgeValue("none")
+
+  case object Activity extends BadgeValue("activity")
+
+  case object Alert extends BadgeValue("alert")
+
+  case object Alarm extends BadgeValue("alarm")
+
+  case object Available extends BadgeValue("available")
+
+  case object Away extends BadgeValue("away")
+
+  case object Busy extends BadgeValue("busy")
+
+  case object NewMessage extends BadgeValue("newMessage")
+
+  case object Paused extends BadgeValue("paused")
+
+  case object Playing extends BadgeValue("playing")
+
+  case object Unavailable extends BadgeValue("unavailable")
+
+  case object Error extends BadgeValue("error")
+
+  case object Attention extends BadgeValue("attention")
+
+}
+
+sealed abstract class TileTemplate(val name: String) extends Template
+
+object TileTemplate {
+
+  case object TileSmall extends TileTemplate("TileSmall")
+
+  case object TileMedium extends TileTemplate("TileMedium")
+
+  case object TileWide extends TileTemplate("TileWide")
+
+  case object TileLarge extends TileTemplate("TileLarge")
+
+}
+
+sealed trait Template extends Named
+
+sealed abstract class TextStyle(val name: String) extends Named
+
+object TextStyle {
+
+  case object Caption extends TextStyle("caption")
+
+  case object CaptionSubtle extends TextStyle("captionSubtle")
+
+  case object Body extends TextStyle("body")
+
+  case object BodySubtle extends TextStyle("bodySubtle")
+
+  case object Base extends TextStyle("base")
+
+  case object BaseSubtle extends TextStyle("baseSubtle")
+
+  case object Subtitle extends TextStyle("subtitle")
+
+  case object SubtitleSubtle extends TextStyle("subtitleSubtle")
+
+  case object Title extends TextStyle("title")
+
+  case object TitleSubtle extends TextStyle("titleSubtle")
+
+  case object TitleNumeral extends TextStyle("titleNumeral")
+
+  case object Subheader extends TextStyle("subheader")
+
+  case object SubheaderSubtle extends TextStyle("subheaderSubtle")
+
+  case object SubheaderNumeral extends TextStyle("subheaderNumeral")
+
+  case object Header extends TextStyle("header")
+
+  case object HeaderSubtle extends TextStyle("headerSubtle")
+
+  case object HeaderNumber extends TextStyle("headerNumber")
 
 }

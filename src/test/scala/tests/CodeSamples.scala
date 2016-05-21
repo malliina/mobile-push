@@ -2,11 +2,12 @@ package tests
 
 import java.security.KeyStore
 
-import com.malliina.push.adm.{ADMToken, ADMClient}
+import com.malliina.push.adm.{ADMClient, ADMToken}
 import com.malliina.push.android.AndroidMessage
-import com.malliina.push.apns.{APNSToken, APNSClient, APNSMessage}
-import com.malliina.push.gcm.{GCMToken, MappedGCMResponse, GCMMessage, GCMClient}
-import com.malliina.push.mpns.{MPNSToken, MPNSClient, ToastMessage}
+import com.malliina.push.apns.{APNSClient, APNSMessage, APNSToken}
+import com.malliina.push.gcm.{GCMClient, GCMMessage, GCMToken, MappedGCMResponse}
+import com.malliina.push.mpns.{MPNSClient, MPNSToken, ToastMessage}
+import com.malliina.push.wns._
 import com.notnoop.apns.ApnsNotification
 import org.scalatest.FunSuite
 
@@ -46,4 +47,15 @@ class CodeSamples extends FunSuite {
 //    val message = ToastMessage("text1", "text2", deepLink = "/App/Xaml/DeepLinkPage.xaml?param=value", silent = true)
 //    val response: Future[Response] = client.push(deviceURL, message)
 //  }
+
+//    test("WNS example") {
+//      val packageSid: String = ???
+//      val clientSecret: String = ???
+//      val credentials = WNSCredentials(packageSid, clientSecret)
+//      val client = new WNSClient(credentials)
+//      val payload = ToastElement.text("Hello, world!")
+//      val message = WNSMessage(payload)
+//      val token = WNSToken.build("https://db5.notify.windows.com/?token=AwYAAABq7aWo").get
+//      val response: Future[WNSResponse] = client.push(token, message)
+//    }
 }

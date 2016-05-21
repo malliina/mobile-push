@@ -4,6 +4,7 @@ import com.malliina.concurrent.ExecutionContexts.cached
 import com.malliina.http.AsyncHttp
 import com.malliina.http.AsyncHttp._
 import com.malliina.push.Headers.TextHtml
+import com.malliina.push.Headers.OctetStream
 import com.malliina.push.OAuthKeys._
 import com.malliina.push._
 import com.malliina.push.wns.WNSClient._
@@ -45,13 +46,13 @@ class WNSClient(creds: WNSCredentials) extends PushClient[WNSToken, WNSMessage, 
   private def withUrls[T](message: WNSMessage)(code: PushMeta => Future[T]): Future[T] =
     usingAsync(new AsyncHttp()) { client =>
       fetchAccessToken(client) flatMap { accessToken =>
+        val contentType = if(message.notification.isRaw) OctetStream else TextHtml
         val allHeaders = message.headers ++ Map(
           Authorization -> s"Bearer ${accessToken.access_token}",
-          ContentType -> TextHtml,
+          ContentType -> contentType,
           RequestStatus -> "true"
         )
-        val payload = WindowsClient.serialize(message.xml)
-        code(PushMeta(client, payload, allHeaders))
+        code(PushMeta(client, message.payload, allHeaders))
       }
     }
 

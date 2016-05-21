@@ -12,7 +12,7 @@ object PushBuild extends Build {
     .settings(projectSettings: _*)
 
   lazy val projectSettings = Seq(
-    version := "1.5.0",
+    version := "1.6.0",
     scalaVersion := "2.11.7",
     gitUserName := "malliina",
     organization := s"com.${gitUserName.value}",

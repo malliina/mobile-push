@@ -1,29 +1,29 @@
 package com.malliina.push.wns
 
-import com.malliina.push.WindowsMessage
 import com.malliina.push.wns.WNSClient.{CachePolicy, Tag, Ttl, WnsType}
 
 import scala.concurrent.duration.Duration
-import scala.xml.Elem
 
-case class WNSMessage(body: Xmlable,
-                      wnsType: WNSType,
-                      cache: Boolean,
+case class WNSMessage(notification: WNSNotification,
+                      cache: Option[Boolean] = None,
                       ttl: Option[Duration] = None,
-                      tag: Option[String] = None) extends WindowsMessage {
+                      tag: Option[String] = None) {
 
-  override def xml: Elem = body.xml
+  def payload: String = notification.payload
 
-  override def headers: Map[String, String] = ttlHeaders ++ tagHeaders ++ Map(
-    WnsType -> wnsType.name,
-    CachePolicy -> cacheHeaderValue
-  )
+  def headers: Map[String, String] =
+    ttlHeaders ++ tagHeaders ++ cacheHeaders ++
+      Map(WnsType -> notification.notificationType.name)
 
-  def cacheHeaderValue = if (cache) "cache" else "no-cache"
+  private def cacheHeaders =
+    mappify(CachePolicy, cache.map(c => if(c) "cache" else "no-cache"))
 
   private def ttlHeaders =
-    ttl.map(dur => Map(Ttl -> s"${dur.toSeconds}")) getOrElse Map.empty
+    mappify(Ttl, ttl.map(_.toSeconds.toString))
 
   private def tagHeaders =
-    tag.map(t => Map(Tag -> t)) getOrElse Map.empty
+    mappify(Tag, tag)
+
+  private def mappify(key: String, value: Option[String]) =
+    value.map(v => Map(key -> v)) getOrElse Map.empty
 }

@@ -34,8 +34,8 @@ class WNSTests extends BaseSuite {
 
   test("send") {
     val token = WNSToken.build("https://db5.notify.windows.com/?token=AwYAAABq7aWoYUJUr%2fM%2bRcWZacCYWN3cutxpadhmsejNg7aOJQselRS9AEE3ubPwZlLBcjYmYNzHFezNQoPyrViQRtPlvpxMXNREJHPVCmBDMG7wZWhRb1sxDCatCYsiafv0a6I%3d").get
-    val payload = ToastElement.text("Hello, world!!!")
-    val message = WNSMessage(payload, WNSType.Toast, cache = true)
+    val payload = ToastElement.text("Hello, world!")
+    val message = WNSMessage(payload)
     maybeCreds foreach { creds =>
       val client = new WNSClient(creds)
       val response = await(client.push(token, message))
