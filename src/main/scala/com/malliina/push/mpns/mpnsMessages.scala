@@ -1,21 +1,17 @@
 package com.malliina.push.mpns
 
+import com.malliina.push.WindowsMessage
+
 import scala.xml.Elem
 
-trait MPNSMessage {
-  def xml: Elem
-
-  def headers: Map[String, String]
-}
-
-trait TileMessage extends MPNSMessage {
+trait TileMessage extends WindowsMessage {
   override def headers: Map[String, String] = MPNSClient.tileHeaders
 }
 
 case class ToastMessage(text1: String,
                         text2: String,
                         deepLink: String,
-                        silent: Boolean) extends MPNSMessage {
+                        silent: Boolean) extends WindowsMessage {
   override def xml: Elem = MPNSPayloads.toast(this)
 
   override def headers: Map[String, String] = MPNSClient.toastHeaders

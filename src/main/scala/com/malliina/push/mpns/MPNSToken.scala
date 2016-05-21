@@ -9,7 +9,9 @@ import scala.util.Try
 case class MPNSToken private(token: String) extends Token
 
 object MPNSToken extends TokenCompanion[MPNSToken] {
-  override def isValid(token: String): Boolean = {
-    Try(new URL(token)).filter(_.getPath.length > 0).isSuccess
-  }
+  override def isValid(token: String): Boolean =
+    toUrl(token).isSuccess
+
+  def toUrl(in: String): Try[URL] =
+    Try(new URL(in)).filter(_.getPath.length > 0)
 }

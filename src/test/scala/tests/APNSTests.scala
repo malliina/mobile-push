@@ -8,12 +8,8 @@ import com.malliina.push.apns._
 import com.malliina.security.KeyStores
 import com.malliina.util.BaseConfigReader
 import com.notnoop.apns.internal.Utilities
-import org.scalatest.FunSuite
 
-import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
-
-class APNSTests extends FunSuite {
+class APNSTests extends BaseSuite {
 
   val enabled: Boolean = true
   val rawDeviceID = "6c9969eee832f6ed2a11d04d6daa404db13cc3d97f7298f0c042616fc2a5cc34"
@@ -50,7 +46,7 @@ class APNSTests extends FunSuite {
         locArgs = Some(Seq("Emilia", "Jaana")))
       val message = APNSMessage(APSPayload(Some(Right(payload)), sound = Some("default")))
       val fut = client.push(creds.token, message)
-      Await.result(fut, 5.seconds)
+      await(fut)
     }
   }
 
@@ -61,7 +57,7 @@ class APNSTests extends FunSuite {
       val client = new APNSClient(ks, creds.pass, isSandbox = false)
       val message = APNSMessage.badged("I <3 U!", 3)
       val fut = client.push(creds.token, message)
-      Await.result(fut, 5.seconds)
+      await(fut)
     }
   }
 
@@ -71,7 +67,7 @@ class APNSTests extends FunSuite {
       val ks = TLSUtils.keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
       val client = new APNSClient(ks, creds.pass, isSandbox = true)
       val message = APNSMessage.background(badge = 16)
-      Await.result(client.push(creds.token, message), 5.seconds)
+      await(client.push(creds.token, message))
     }
   }
 }

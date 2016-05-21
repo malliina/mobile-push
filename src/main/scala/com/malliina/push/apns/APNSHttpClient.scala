@@ -24,7 +24,7 @@ import scala.util.Try
   * @see https://github.com/square/okhttp/wiki/Building
   */
 class APNSHttpClient(socketFactory: SSLSocketFactory, isSandbox: Boolean = false)
-  extends PushClient[APNSToken, APNSRequest, Either[ErrorReason, APNSIdentifier]] {
+  extends PushClient[APNSToken, APNSRequest, Either[APNSError, APNSIdentifier]] {
 
   val host = if (isSandbox) DevHost else ProdHost
   val jsonMediaType = MediaType.parse("application/json")
@@ -35,10 +35,10 @@ class APNSHttpClient(socketFactory: SSLSocketFactory, isSandbox: Boolean = false
     .setSslSocketFactory(socketFactory)
     .setProtocols(List(Protocol.HTTP_2, Protocol.HTTP_1_1))
 
-  override def push(id: APNSToken, message: APNSRequest): Future[Either[ErrorReason, APNSIdentifier]] =
+  override def push(id: APNSToken, message: APNSRequest): Future[Either[APNSError, APNSIdentifier]] =
     send(id, message).map(parseResponse)
 
-  override def pushAll(ids: Seq[APNSToken], message: APNSRequest): Future[Seq[Either[ErrorReason, APNSIdentifier]]] =
+  override def pushAll(ids: Seq[APNSToken], message: APNSRequest): Future[Seq[Either[APNSError, APNSIdentifier]]] =
     Future.traverse(ids)(push(_, message))
 
   def send(id: APNSToken, message: APNSRequest) = {
@@ -67,13 +67,13 @@ class APNSHttpClient(socketFactory: SSLSocketFactory, isSandbox: Boolean = false
 
   def url(token: APNSToken) = s"$host/3/device/${token.token}"
 
-  def parseResponse(response: Response): Either[ErrorReason, APNSIdentifier] = {
+  def parseResponse(response: Response): Either[APNSError, APNSIdentifier] = {
     if (response.code() == 200) {
       val apnsId = Option(response.header(ApnsId)).map(APNSIdentifier.apply)
       apnsId.map(Right.apply).getOrElse(Left(UnknownReason))
     } else {
       val json = Try(Json.parse(response.body().byteStream()))
-      val maybeReason = json.toOption.flatMap(js => (js \ ErrorReason.ReasonKey).asOpt[ErrorReason])
+      val maybeReason = json.toOption.flatMap(js => (js \ APNSError.ReasonKey).asOpt[APNSError])
       Left(maybeReason getOrElse UnknownReason)
     }
   }

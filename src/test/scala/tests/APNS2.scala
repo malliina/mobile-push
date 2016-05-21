@@ -10,7 +10,7 @@ import org.scalatest.FunSuite
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 
-class APNS2 extends FunSuite {
+class APNS2 extends BaseSuite {
   val testToken = APNSToken.build("6c9969eee832f6ed2a11d04d6daa404db13cc3d97f7298f0c042616fc2a5cc34").get
 
   test("a successful notifications returns an apns-id") {
@@ -19,8 +19,7 @@ class APNS2 extends FunSuite {
       val request = APNSRequest.withTopic(creds.topic, message)
       val sslContext = clientCertContext()
       val client = APNSHttpClient(sslContext.getSocketFactory, isSandbox = false)
-//      val result = Await.result(client.push(creds.token, request), 6.seconds)
-      val result = Await.result(client.push(testToken, request), 6.seconds)
+      val result = await(client.push(testToken, request))
       assert(result.right.toOption.isDefined)
     }
   }
@@ -31,7 +30,7 @@ class APNS2 extends FunSuite {
       val request = APNSRequest.withTopic(creds.topic, message)
       val sslContext = clientCertContext()
       val client = APNSHttpClient(sslContext.getSocketFactory, isSandbox = false)
-      val result = Await.result(client.push(creds.token, request), 6.seconds)
+      val result = await(client.push(creds.token, request))
       assert(result.left.toOption.contains(BadDeviceToken))
     }
   }
@@ -45,7 +44,7 @@ class APNS2 extends FunSuite {
       val message = APNSMessage.simple("Hey, sexy!")
       val request = APNSRequest.withTopic(topic, message)
       val client = APNSHttpClient(certKeyStore, certPass, isSandbox = true)
-      val result: Future[Either[ErrorReason, APNSIdentifier]] = client.push(deviceToken, request)
+      val result: Future[Either[APNSError, APNSIdentifier]] = client.push(deviceToken, request)
     }
   }
 
