@@ -1,10 +1,15 @@
 package com.malliina.push.wns
 
 import com.malliina.push.NamedCompanion
+import play.api.libs.json._
+
+import scala.util.Try
 
 sealed abstract class HintCrop(val name: String) extends Named
 
-object HintCrop {
+object HintCrop extends NamedCompanion[HintCrop] {
+
+  override def all: Seq[HintCrop] = Seq(NoHintCrop, Circle)
 
   case object NoHintCrop extends HintCrop("none")
 
@@ -14,7 +19,9 @@ object HintCrop {
 
 sealed abstract class ToastTemplate(val name: String) extends Template
 
-object ToastTemplate {
+object ToastTemplate extends NamedCompanion[ToastTemplate] {
+
+  override def all: Seq[ToastTemplate] = Seq(ToastGeneric)
 
   case object ToastGeneric extends ToastTemplate("ToastGeneric")
 
@@ -22,7 +29,9 @@ object ToastTemplate {
 
 sealed abstract class Placement(val name: String) extends Named
 
-object Placement {
+object Placement extends NamedCompanion[Placement] {
+
+  override def all: Seq[Placement] = Seq(Inline, Background, AppLogoOverride, Peek)
 
   case object Inline extends Placement("inline")
 
@@ -36,7 +45,9 @@ object Placement {
 
 sealed abstract class Branding(val name: String) extends Named
 
-object Branding {
+object Branding extends NamedCompanion[Branding] {
+
+  override def all: Seq[Branding] = Seq(NoBranding, Logo, Name, NameAndLogo)
 
   case object NoBranding extends Branding("none")
 
@@ -50,7 +61,9 @@ object Branding {
 
 sealed abstract class HintAlign(val name: String) extends Named
 
-object HintAlign {
+object HintAlign extends NamedCompanion[HintAlign] {
+
+  override def all: Seq[HintAlign] = Seq(Left, Center, Right, Stretch)
 
   case object Left extends HintAlign("left")
 
@@ -64,7 +77,9 @@ object HintAlign {
 
 sealed abstract class TextStacking(val name: String) extends Named
 
-object TextStacking {
+object TextStacking extends NamedCompanion[TextStacking] {
+
+  override def all: Seq[TextStacking] = Seq(Top, Center, Bottom)
 
   case object Top extends TextStacking("top")
 
@@ -76,7 +91,9 @@ object TextStacking {
 
 sealed abstract class InputType(val name: String) extends Named
 
-object InputType {
+object InputType extends NamedCompanion[InputType] {
+
+  override def all: Seq[InputType] = Seq(Text, Selection)
 
   case object Text extends InputType("text")
 
@@ -106,6 +123,25 @@ object CommandId extends NamedCompanion[CommandId] {
 sealed abstract class BadgeValue(val name: String) extends Named
 
 object BadgeValue {
+  val named: Seq[BadgeValue] = Seq(None, Activity, Alert, Alarm, Available, Away,
+    Busy, NewMessage, Paused, Playing, Unavailable, Error,
+    Attention)
+
+  val reader = Reads[BadgeValue] { json =>
+    def num = json.validate[Int].map(Number)
+    def str = json.validate[String].flatMap(fromName)
+    num orElse str
+  }
+  val writer = Writes[BadgeValue](v => Json.toJson(v.name))
+  implicit val json = Format[BadgeValue](reader, writer)
+
+  def fromName(n: String): JsResult[BadgeValue] = {
+    val maybeValue = Try(n.toInt).map(i => Number(i)).toOption orElse named.find(_.name == n)
+    maybeValue
+      .map(b => JsSuccess(b))
+      .getOrElse(JsError(s"Unknown badge value: $n"))
+  }
+
 
   case class Number(num: Int) extends BadgeValue(num.toString)
 
@@ -139,7 +175,10 @@ object BadgeValue {
 
 sealed abstract class TileTemplate(val name: String) extends Template
 
-object TileTemplate {
+object TileTemplate extends NamedCompanion[TileTemplate] {
+
+  override def all: Seq[TileTemplate] =
+    Seq(TileSmall, TileMedium, TileWide, TileLarge)
 
   case object TileSmall extends TileTemplate("TileSmall")
 
@@ -155,7 +194,12 @@ sealed trait Template extends Named
 
 sealed abstract class TextStyle(val name: String) extends Named
 
-object TextStyle {
+object TextStyle extends NamedCompanion[TextStyle] {
+
+  override def all: Seq[TextStyle] =
+    Seq(Caption, CaptionSubtle, Body, BodySubtle, Base, BaseSubtle,
+      Subtitle, SubtitleSubtle, Title, TitleSubtle, TitleNumeral, Subheader,
+      SubheaderSubtle, SubheaderNumeral, Header, HeaderSubtle, HeaderNumber)
 
   case object Caption extends TextStyle("caption")
 

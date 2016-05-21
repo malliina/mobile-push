@@ -2,44 +2,9 @@ package com.malliina.push.wns
 
 import java.net.URL
 
-import scala.xml.{Attribute, Elem, NodeSeq, Text}
+import play.api.libs.json._
 
-case class TileElement(visual: Visual[TileTemplate]) extends XmlNotification {
-
-  override def notificationType: NotificationType = NotificationType.Tile
-
-  override def xml: Elem =
-    <tile>
-      {visual.xml}
-    </tile>
-}
-
-case class ToastElement(visual: Visual[ToastTemplate],
-                        actions: Actions = Actions(),
-                        launch: Option[String] = None,
-                        activationType: Option[ActivationType] = None,
-                        scenario: Option[Scenario] = None,
-                        audio: Option[Audio] = None) extends XmlNotification {
-  val actionsXml = if (actions.isEmpty) NodeSeq.Empty else actions.xml
-  val audioXml = audio.map(_.xml) getOrElse NodeSeq.Empty
-
-  override def notificationType: NotificationType = NotificationType.Toast
-
-  override def xml: Elem =
-    <toast>
-      {visual.xml}
-      {actionsXml}
-      {audioXml}
-    </toast>.withAttributes(
-      "launch" -> launch,
-      "activationType" -> activationType,
-      "scenario" -> scenario
-    )
-}
-
-object ToastElement {
-  def text(text: String) = ToastElement(Visual.toastText(text))
-}
+import scala.xml.{Attribute, Elem, Text}
 
 case class Badge(value: BadgeValue = BadgeValue.None) extends XmlNotification {
 
@@ -50,6 +15,10 @@ case class Badge(value: BadgeValue = BadgeValue.None) extends XmlNotification {
   )
 }
 
+object Badge {
+  implicit val json = Json.format[Badge]
+}
+
 /**
   *
   * @param payload base64-encoded
@@ -58,10 +27,19 @@ case class Raw(payload: String) extends WNSNotification {
   override def notificationType: NotificationType = NotificationType.Raw
 }
 
+object Raw {
+  implicit val json = Json.format[Raw]
+}
+
 case class Commands(commands: Seq[Command]) extends Xmlable {
   override def xml: Elem = <commands>
     {commands.map(_.xml)}
   </commands>
+}
+
+object Commands {
+  implicit val cJson = Command.json
+  implicit val json = Json.format[Commands]
 }
 
 case class Command(arguments: Option[String], id: Option[CommandId]) extends Xmlable {
@@ -72,15 +50,8 @@ case class Command(arguments: Option[String], id: Option[CommandId]) extends Xml
     )
 }
 
-case class Actions(inputs: Seq[Input] = Nil,
-                   actions: Seq[ActionElement] = Nil) extends Xmlable {
-  val isEmpty = actions.isEmpty
-
-  override def xml: Elem =
-    <actions>
-      {inputs.map(_.xml)}
-      {actions.map(_.xml)}
-    </actions>
+object Command {
+  implicit val json = Json.format[Command]
 }
 
 case class ActionElement(content: String,
@@ -95,6 +66,21 @@ case class ActionElement(content: String,
     "imageUri" -> imageUri,
     "hint-inputId" -> hintInputId
   )
+}
+
+object ActionElement {
+  implicit val json = Json.format[ActionElement]
+}
+
+case class Selection(id: String, content: String) extends Xmlable {
+  override def xml: Elem = <selection/>.withAttributes(
+    "id" -> Option(id),
+    "content" -> Option(content)
+  )
+}
+
+object Selection {
+  implicit val json = Json.format[Selection]
 }
 
 case class Input(id: String,
@@ -115,20 +101,53 @@ case class Input(id: String,
     )
 }
 
-case class Selection(id: String, content: String) extends Xmlable {
-  override def xml: Elem = <selection/>.withAttributes(
-    "id" -> Option(id),
-    "content" -> Option(content)
-  )
+object Input {
+  implicit val json = Json.format[Input]
 }
 
-case class Visual[T <: Template](bindings: Seq[Binding[T]],
-                                 lang: Option[String] = None,
-                                 baseUri: Option[URL] = None,
-                                 branding: Option[Branding] = None,
-                                 addImageQuery: Option[Boolean] = None,
-                                 contentId: Option[String] = None,
-                                 displayName: Option[String] = None) extends Xmlable {
+case class ToastVisual(bindings: Seq[ToastBinding],
+                       lang: Option[String] = None,
+                       baseUri: Option[URL] = None,
+                       branding: Option[Branding] = None,
+                       addImageQuery: Option[Boolean] = None,
+                       contentId: Option[String] = None,
+                       displayName: Option[String] = None) extends Visual[ToastTemplate]
+
+object ToastVisual {
+  implicit val url = Binding.urlFormat
+  implicit val json = Json.format[ToastVisual]
+
+  def text(text: String) = ToastVisual(Seq(ToastBinding.text(text)))
+}
+
+case class TileVisual(bindings: Seq[TileBinding],
+                       lang: Option[String] = None,
+                       baseUri: Option[URL] = None,
+                       branding: Option[Branding] = None,
+                       addImageQuery: Option[Boolean] = None,
+                       contentId: Option[String] = None,
+                       displayName: Option[String] = None) extends Visual[TileTemplate]
+
+object TileVisual {
+  implicit val url = Binding.urlFormat
+  implicit val json = Json.format[TileVisual]
+}
+
+trait Visual[T <: Template] extends Xmlable {
+  def bindings: Seq[Binding[T]]
+
+  def lang: Option[String]
+
+  def baseUri: Option[URL]
+
+  def branding: Option[Branding]
+
+  def addImageQuery: Option[Boolean]
+
+  def contentId: Option[String]
+
+  def displayName: Option[String]
+
   override def xml: Elem =
     <visual>
       {bindings.map(_.xml)}
@@ -140,43 +159,6 @@ case class Visual[T <: Template](bindings: Seq[Binding[T]],
       "contentId" -> contentId,
       "displayName" -> displayName
     )
-}
-
-object Visual {
-  def toastText(text: String) = Visual(Seq(Binding.toastText(text)))
-}
-
-case class Binding[T <: Template](template: T,
-                                  texts: Seq[WnsText],
-                                  images: Seq[Image] = Nil,
-                                  groups: Seq[Group] = Nil,
-                                  lang: Option[String] = None,
-                                  baseUri: Option[URL] = None,
-                                  branding: Option[Branding] = None,
-                                  addImageQuery: Option[Boolean] = None,
-                                  contentId: Option[String] = None,
-                                  displayName: Option[String] = None,
-                                  hintOverlay: Option[Int] = None) extends Xmlable {
-  override def xml: Elem =
-    <binding>
-      {texts.map(_.xml)}
-      {images.map(_.xml)}
-      {groups.map(_.xml)}
-    </binding>.withAttributes(
-      "template" -> Option(template),
-      "lang" -> lang,
-      "baseUri" -> baseUri,
-      "branding" -> branding,
-      "addImageQuery" -> addImageQuery,
-      "contentId" -> contentId,
-      "displayName" -> displayName,
-      "hint-overlay" -> hintOverlay
-    )
-}
-
-object Binding {
-  def toastText(text: String) =
-    Binding[ToastTemplate](ToastTemplate.ToastGeneric, Seq(WnsText(text)))
 }
 
 case class Image(src: String,
@@ -199,6 +181,10 @@ case class Image(src: String,
   )
 }
 
+object Image {
+  implicit val json = Json.format[Image]
+}
+
 case class WnsText(text: String,
                    lang: Option[String] = None,
                    hintStyle: Option[TextStyle] = None,
@@ -219,6 +205,10 @@ case class WnsText(text: String,
     )
 }
 
+object WnsText {
+  implicit val json = Json.format[WnsText]
+}
+
 case class Audio(src: Option[String] = None,
                  silent: Boolean = false,
                  loop: Boolean = false) extends Xmlable {
@@ -231,17 +221,11 @@ case class Audio(src: Option[String] = None,
 }
 
 object Audio {
+  implicit val json = Json.format[Audio]
   val Default = Audio()
   val Mute = Audio(silent = true)
 
   def once(source: String) = Audio(src = Option(source))
-}
-
-case class Group(subGroups: Seq[SubGroup]) extends Xmlable {
-  override def xml: Elem =
-    <group>
-      {subGroups.map(_.xml)}
-    </group>
 }
 
 case class SubGroup(hintWeight: Option[Int],
@@ -256,6 +240,21 @@ case class SubGroup(hintWeight: Option[Int],
       "hint-weight" -> hintWeight,
       "hint-textStacking" -> hintTextStacking
     )
+}
+
+object SubGroup {
+  implicit val json = Json.format[SubGroup]
+}
+
+case class Group(subGroups: Seq[SubGroup]) extends Xmlable {
+  override def xml: Elem =
+    <group>
+      {subGroups.map(_.xml)}
+    </group>
+}
+
+object Group {
+  implicit val json = Json.format[Group]
 }
 
 trait Xmlable extends XmlOps {
