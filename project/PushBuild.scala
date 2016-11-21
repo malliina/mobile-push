@@ -3,17 +3,16 @@ import com.malliina.sbtutils.SbtUtils.{developerName, gitUserName}
 import sbt.Keys._
 import sbt._
 
-/**
-  * A scala build file template.
+/** A scala build file template.
   */
-object PushBuild extends Build {
+object PushBuild {
   lazy val mobileProject = SbtProjects.testableProject("mobile-push")
     .enablePlugins(bintray.BintrayPlugin)
     .settings(projectSettings: _*)
 
   lazy val projectSettings = Seq(
     version := "1.6.1",
-    scalaVersion := "2.11.7",
+    scalaVersion := "2.11.8",
     gitUserName := "malliina",
     organization := s"com.${gitUserName.value}",
     developerName := "Michael Skogberg",

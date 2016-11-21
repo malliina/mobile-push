@@ -7,7 +7,6 @@ import com.malliina.push.OAuthKeys._
 import com.malliina.push.adm.ADMClient._
 import com.malliina.push.android.AndroidMessage
 import com.malliina.push.{PushClient, PushException}
-import com.malliina.util.Log
 import org.asynchttpclient.Response
 import play.api.libs.json.Json
 
@@ -15,8 +14,7 @@ import scala.concurrent.Future
 import scala.concurrent.duration.DurationInt
 
 class ADMClient(val clientID: String, val clientSecret: String)
-  extends PushClient[ADMToken, AndroidMessage, Response]
-    with Log {
+  extends PushClient[ADMToken, AndroidMessage, Response] {
 
   def send(id: ADMToken, data: Map[String, String]): Future[Response] =
     push(id, AndroidMessage(data, expiresAfter = 60.seconds))

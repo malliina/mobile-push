@@ -15,10 +15,10 @@ object TLSUtils {
 
   def keyStoreFromFile(file: Path, keyStorePass: String, storeType: String = "JKS"): Try[KeyStore] = Try {
     val ks = KeyStore.getInstance(storeType)
-    Util.using(new FileInputStream(file.toFile))(keyStream => {
+    Util.using(new FileInputStream(file.toFile)) { keyStream =>
       ks.load(keyStream, keyStorePass.toCharArray)
       ks
-    })
+    }
   }
 
   def buildSSLContext(keyStore: KeyStore, keyStorePass: String): SSLContext = {
