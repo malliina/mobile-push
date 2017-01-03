@@ -11,6 +11,8 @@ Send push notifications to mobile devices. Supports:
 
 ## Installation
 
+    resolvers += Resolver.bintrayRepo("malliina", "maven")
+
     libraryDependencies += "com.malliina" %% "mobile-push" % "1.6.1"
 
 ## Usage
