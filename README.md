@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/malliina/mobile-push.svg?branch=master)](https://travis-ci.org/malliina/mobile-push)
+[![Maven Central](https://img.shields.io/maven-central/v/com.malliina/mobile-push_2.11.svg)]()
 
 # mobile-push
 
