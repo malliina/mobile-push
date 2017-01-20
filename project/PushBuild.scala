@@ -6,12 +6,11 @@ import sbt._
 /** A scala build file template.
   */
 object PushBuild {
-  lazy val mobileProject = SbtProjects.testableProject("mobile-push")
-    .enablePlugins(bintray.BintrayPlugin)
+  lazy val mobileProject = SbtProjects.mavenPublishProject("mobile-push")
     .settings(projectSettings: _*)
 
   lazy val projectSettings = Seq(
-    version := "1.6.1",
+    version := "1.6.2",
     scalaVersion := "2.11.8",
     gitUserName := "malliina",
     organization := s"com.${gitUserName.value}",
@@ -21,7 +20,7 @@ object PushBuild {
       Resolver.jcenterRepo,
       Resolver.bintrayRepo("malliina", "maven")) ++ resolvers.value,
     libraryDependencies ++= Seq(
-      "com.malliina" %% "util" % "2.4.1",
+      "com.malliina" %% "util" % "2.5.0",
       "com.notnoop.apns" % "apns" % "1.0.0.Beta6",
       "com.squareup.okhttp" % "okhttp" % "2.7.5"
     ),
@@ -32,7 +31,6 @@ object PushBuild {
         path = file.getAbsolutePath
         if path.contains("jetty.alpn")
       } yield "-Xbootclasspath/p:" + path
-    },
-    licenses +=("MIT", url("http://opensource.org/licenses/MIT"))
+    }
   )
 }

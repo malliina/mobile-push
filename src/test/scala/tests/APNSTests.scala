@@ -10,16 +10,14 @@ import com.malliina.util.BaseConfigReader
 import com.notnoop.apns.internal.Utilities
 
 class APNSTests extends BaseSuite {
-
-  val enabled: Boolean = true
   val rawDeviceID = "6c9969eee832f6ed2a11d04d6daa404db13cc3d97f7298f0c042616fc2a5cc34"
 
-  test("certificate is valid") {
+  ignore("certificate is valid") {
     val creds = APNSCreds.load
     KeyStores.validateKeyStore(creds.file, creds.pass, "PKCS12")
   }
 
-  test("universal HTTP2 certificate is valid") {
+  ignore("universal HTTP2 certificate is valid") {
     val creds = APNSHttpConf.load
     KeyStores.validateKeyStore(creds.file, creds.pass, "PKCS12")
   }
@@ -32,43 +30,37 @@ class APNSTests extends BaseSuite {
     assert(invalidToken.isEmpty)
   }
 
-  test("send notification with body, if enabled") {
-    if (enabled) {
-      val creds = APNSHttpConf.load
-      val ks = TLSUtils.keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
-      val client = new APNSClient(ks, creds.pass, isSandbox = false)
-      //    val message = APNSMessage.badged("I <3 U!", 3)
-      val payload = AlertPayload(
-        "this is a body",
-        title = Some("hey"),
-        actionLocKey = Some("POMP"),
-        locKey = Some("MSG_FORMAT"),
-        locArgs = Some(Seq("Emilia", "Jaana")))
-      val message = APNSMessage(APSPayload(Some(Right(payload)), sound = Some("default")))
-      val fut = client.push(creds.token, message)
-      await(fut)
-    }
+  ignore("send notification with body, if enabled") {
+    val creds = APNSHttpConf.load
+    val ks = TLSUtils.keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
+    val client = new APNSClient(ks, creds.pass, isSandbox = false)
+    //    val message = APNSMessage.badged("I <3 U!", 3)
+    val payload = AlertPayload(
+      "this is a body",
+      title = Some("hey"),
+      actionLocKey = Some("POMP"),
+      locKey = Some("MSG_FORMAT"),
+      locArgs = Some(Seq("Emilia", "Jaana")))
+    val message = APNSMessage(APSPayload(Some(Right(payload)), sound = Some("default")))
+    val fut = client.push(creds.token, message)
+    await(fut)
   }
 
-  test("send pimp notification") {
-    if (enabled) {
-      val creds = APNSHttpConf.load
-      val ks = TLSUtils.keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
-      val client = new APNSClient(ks, creds.pass, isSandbox = false)
-      val message = APNSMessage.badged("I <3 U!", 3)
-      val fut = client.push(creds.token, message)
-      await(fut)
-    }
+  ignore("send pimp notification") {
+    val creds = APNSHttpConf.load
+    val ks = TLSUtils.keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
+    val client = new APNSClient(ks, creds.pass, isSandbox = false)
+    val message = APNSMessage.badged("I <3 U!", 3)
+    val fut = client.push(creds.token, message)
+    await(fut)
   }
 
-  test("send background notification, if enabled") {
-    if (enabled) {
-      val creds = APNSHttpConf.load
-      val ks = TLSUtils.keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
-      val client = new APNSClient(ks, creds.pass, isSandbox = true)
-      val message = APNSMessage.background(badge = 16)
-      await(client.push(creds.token, message))
-    }
+  ignore("send background notification, if enabled") {
+    val creds = APNSHttpConf.load
+    val ks = TLSUtils.keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
+    val client = new APNSClient(ks, creds.pass, isSandbox = true)
+    val message = APNSMessage.background(badge = 16)
+    await(client.push(creds.token, message))
   }
 }
 

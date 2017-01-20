@@ -20,6 +20,7 @@ class WNSSerialization extends FunSuite {
       <elem>
         {i}
       </elem>
+
     val elems = Seq(elem(1), elem(2))
     val result =
       <result>
@@ -50,7 +51,7 @@ class WNSSerialization extends FunSuite {
       None,
       None,
       None)
-    println(format(toast.xml))
+    //println(format(toast.xml))
   }
 
   def format(node: Node) = printer.format(node)

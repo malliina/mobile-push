@@ -26,7 +26,7 @@ class MPNSTests extends BaseSuite {
     assert(!MPNSClient.isTokenValid(invalidToken))
   }
 
-  test("can send toast, if enabled") {
+  ignore("can send toast") {
     if (devices.nonEmpty) {
       val client = new MPNSClient
       val message = ToastMessage("hey", "you all åäö", "/ServicePage.xaml", silent = false)
@@ -36,7 +36,7 @@ class MPNSTests extends BaseSuite {
     }
   }
 
-  test("can send tile, if enabled") {
+  ignore("can send tile") {
     if (devices.nonEmpty) {
       val client = new MPNSClient
       val message = TileData("img.jpg", 1, "Title here - Good Night", "no.jpg", "Back title here", "Back content here")
