@@ -8,7 +8,7 @@ object PushBuild {
     .settings(projectSettings: _*)
 
   lazy val projectSettings = Seq(
-    version := "1.7.0",
+    version := "1.7.1",
     scalaVersion := "2.11.8",
     gitUserName := "malliina",
     organization := s"com.${gitUserName.value}",
@@ -20,7 +20,8 @@ object PushBuild {
     libraryDependencies ++= Seq(
       "com.malliina" %% "util" % "2.5.0",
       "com.notnoop.apns" % "apns" % "1.0.0.Beta6",
-      "com.squareup.okhttp" % "okhttp" % "2.7.5"
+      "com.squareup.okhttp" % "okhttp" % "2.7.5",
+      "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
     ),
     libraryDependencies += "org.mortbay.jetty.alpn" % "alpn-boot" % "8.1.6.v20151105" % "runtime",
     javaOptions <++= (managedClasspath in Runtime) map { attList =>
