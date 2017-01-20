@@ -3,14 +3,12 @@ import com.malliina.sbtutils.SbtUtils.{developerName, gitUserName}
 import sbt.Keys._
 import sbt._
 
-/** A scala build file template.
-  */
 object PushBuild {
   lazy val mobileProject = SbtProjects.mavenPublishProject("mobile-push")
     .settings(projectSettings: _*)
 
   lazy val projectSettings = Seq(
-    version := "1.6.2",
+    version := "1.7.0",
     scalaVersion := "2.11.8",
     gitUserName := "malliina",
     organization := s"com.${gitUserName.value}",

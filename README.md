@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/malliina/mobile-push.svg?branch=master)](https://travis-ci.org/malliina/mobile-push)
+
 # mobile-push
 
 Send push notifications to mobile devices. Supports:
@@ -11,9 +13,7 @@ Send push notifications to mobile devices. Supports:
 
 ## Installation
 
-    resolvers += Resolver.bintrayRepo("malliina", "maven")
-
-    libraryDependencies += "com.malliina" %% "mobile-push" % "1.6.1"
+    libraryDependencies += "com.malliina" %% "mobile-push" % "1.7.0"
 
 ## Usage
 
