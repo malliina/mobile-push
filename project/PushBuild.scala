@@ -8,15 +8,10 @@ object PushBuild {
     .settings(projectSettings: _*)
 
   lazy val projectSettings = Seq(
-    version := "1.7.1",
     scalaVersion := "2.11.8",
     gitUserName := "malliina",
-    organization := s"com.${gitUserName.value}",
+    organization := "com.malliina",
     developerName := "Michael Skogberg",
-    fork in Test := true,
-    resolvers := Seq(
-      Resolver.jcenterRepo,
-      Resolver.bintrayRepo("malliina", "maven")) ++ resolvers.value,
     libraryDependencies ++= Seq(
       "com.malliina" %% "util" % "2.5.0",
       "com.notnoop.apns" % "apns" % "1.0.0.Beta6",
@@ -24,7 +19,9 @@ object PushBuild {
       "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
     ),
     libraryDependencies += "org.mortbay.jetty.alpn" % "alpn-boot" % "8.1.6.v20151105" % "runtime",
-    javaOptions <++= (managedClasspath in Runtime) map { attList =>
+    fork in Test := true,
+    javaOptions ++= {
+      val attList = (managedClasspath in Runtime).value
       for {
         file <- attList.map(_.data)
         path = file.getAbsolutePath
