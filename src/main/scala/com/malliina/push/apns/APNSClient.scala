@@ -4,18 +4,18 @@ import java.security.KeyStore
 
 import com.malliina.push.PushClient
 import com.malliina.push.apns.APNSClient.stringify
-import com.notnoop.apns.{APNS, ApnsNotification}
+import com.notnoop.apns.{APNS, ApnsNotification, ApnsService}
 import play.api.libs.json.Json
 
 import scala.collection.JavaConversions._
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class APNSClient(keyStore: KeyStore, keyStorePass: String, isSandbox: Boolean = false)
-  extends PushClient[APNSToken, APNSMessage, ApnsNotification] with AutoCloseable {
+class APNSClient(keyStore: KeyStore, keyStorePass: String, isSandbox: Boolean = false)(implicit ec: ExecutionContext)
+  extends PushClient[APNSToken, APNSMessage, ApnsNotification]
+    with AutoCloseable {
 
   private val builder = APNS.newService().withCert(keyStore, keyStorePass)
-  val service =
+  val service: ApnsService =
     if (isSandbox) builder.withSandboxDestination().build()
     else builder.withProductionDestination().build()
 
@@ -48,5 +48,5 @@ class APNSClient(keyStore: KeyStore, keyStorePass: String, isSandbox: Boolean = 
 }
 
 object APNSClient {
-  def stringify(message: APNSMessage) = Json stringify (Json toJson message)
+  def stringify(message: APNSMessage): String = Json stringify (Json toJson message)
 }

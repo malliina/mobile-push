@@ -10,14 +10,15 @@ import com.malliina.util.BaseConfigReader
 import com.notnoop.apns.internal.Utilities
 
 class APNSTests extends BaseSuite {
-  val rawDeviceID = "6c9969eee832f6ed2a11d04d6daa404db13cc3d97f7298f0c042616fc2a5cc34"
+  implicit val ec = concurrent.ExecutionContext.Implicits.global
+  val rawDeviceID = "9f3c2f830256954ada78bf56894fa7586307f0eedb7763117c84e0c1eee8347a"
 
-  ignore("certificate is valid") {
+  test("certificate is valid") {
     val creds = APNSCreds.load
     KeyStores.validateKeyStore(creds.file, creds.pass, "PKCS12")
   }
 
-  ignore("universal HTTP2 certificate is valid") {
+  test("universal HTTP2 certificate is valid") {
     val creds = APNSHttpConf.load
     KeyStores.validateKeyStore(creds.file, creds.pass, "PKCS12")
   }
@@ -33,8 +34,7 @@ class APNSTests extends BaseSuite {
   ignore("send notification with body, if enabled") {
     val creds = APNSHttpConf.load
     val ks = TLSUtils.keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
-    val client = new APNSClient(ks, creds.pass, isSandbox = false)
-    //    val message = APNSMessage.badged("I <3 U!", 3)
+    val client = new APNSClient(ks, creds.pass, isSandbox = true)
     val payload = AlertPayload(
       "this is a body",
       title = Some("hey"),
@@ -49,7 +49,7 @@ class APNSTests extends BaseSuite {
   ignore("send pimp notification") {
     val creds = APNSHttpConf.load
     val ks = TLSUtils.keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
-    val client = new APNSClient(ks, creds.pass, isSandbox = false)
+    val client = new APNSClient(ks, creds.pass, isSandbox = true)
     val message = APNSMessage.badged("I <3 U!", 3)
     val fut = client.push(creds.token, message)
     await(fut)

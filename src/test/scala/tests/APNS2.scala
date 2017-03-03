@@ -9,15 +9,13 @@ import com.malliina.push.apns._
 import scala.concurrent.Future
 
 class APNS2 extends BaseSuite {
-  val testToken = APNSToken.build("6c9969eee832f6ed2a11d04d6daa404db13cc3d97f7298f0c042616fc2a5cc34").get
-
   ignore("a successful notifications returns an apns-id") {
     APNSHttpConf.loadOpt.foreach { creds =>
       val message = APNSMessage.simple("this is a test")
       val request = APNSRequest.withTopic(creds.topic, message)
       val sslContext = clientCertContext()
       val client = APNSHttpClient(sslContext.getSocketFactory, isSandbox = false)
-      val result = await(client.push(testToken, request))
+      val result = await(client.push(creds.token, request))
       assert(result.right.toOption.isDefined)
     }
   }
@@ -27,7 +25,7 @@ class APNS2 extends BaseSuite {
       val message = APNSMessage.simple("this is a test")
       val request = APNSRequest.withTopic(creds.topic, message)
       val sslContext = clientCertContext()
-      val client = APNSHttpClient(sslContext.getSocketFactory, isSandbox = false)
+      val client = APNSHttpClient(sslContext.getSocketFactory, isSandbox = true)
       val result = await(client.push(creds.token, request))
       assert(result.left.toOption.contains(BadDeviceToken))
     }
