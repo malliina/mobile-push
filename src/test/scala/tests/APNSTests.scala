@@ -13,12 +13,12 @@ class APNSTests extends BaseSuite {
   implicit val ec = concurrent.ExecutionContext.Implicits.global
   val rawDeviceID = "9f3c2f830256954ada78bf56894fa7586307f0eedb7763117c84e0c1eee8347a"
 
-  test("certificate is valid") {
+  ignore("certificate is valid") {
     val creds = APNSCreds.load
     KeyStores.validateKeyStore(creds.file, creds.pass, "PKCS12")
   }
 
-  test("universal HTTP2 certificate is valid") {
+  ignore("universal HTTP2 certificate is valid") {
     val creds = APNSHttpConf.load
     KeyStores.validateKeyStore(creds.file, creds.pass, "PKCS12")
   }
