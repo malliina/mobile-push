@@ -22,18 +22,22 @@ class GCMClient(val apiKey: String) extends PushClient[GCMToken, GCMMessage, Map
   def send(id: GCMToken, data: Map[String, String]): Future[Response] = send(GCMLetter(Seq(id), data))
 
   private def sendLimitedMapped(ids: Seq[GCMToken], message: GCMMessage): Future[MappedGCMResponse] =
-    sendLimited(ids, message).map(r => MappedGCMResponse(ids, parseOrFail(r)))
+    sendLimited(ids, message).map { r =>
+      MappedGCMResponse(ids, parseOrFail(r))
+    }
 
   private def sendLimited(ids: Seq[GCMToken], message: GCMMessage): Future[Response] = send(message.toLetter(ids))
 
   private def send(message: GCMLetter): Future[Response] = {
     val body = Json toJson message
+    println(s"Sending '$body'")
     AsyncHttp.postJson(POST_URL, body, Map(Authorization -> s"key=$apiKey"))
   }
 }
 
 object GCMClient {
-  val POST_URL = "https://android.googleapis.com/gcm/send"
+  //  val POST_URL = "https://android.googleapis.com/gcm/send"
+  val POST_URL = "https://gcm-http.googleapis.com/gcm/send"
   val REGISTRATION_IDS = "registration_ids"
   val DATA = "data"
   val TIME_TO_LIVE = "time_to_live"
