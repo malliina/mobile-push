@@ -19,5 +19,5 @@ object PushUrls extends FileSet[PushUrl]("push.json") {
     *
     * @param url push url to remove
     */
-  def removeURL(url: String) = get().find(_.url == url).foreach(elem => removeID(id(elem)))
+  def removeURL(url: String) = get().find(_.url.token == url).foreach(elem => removeID(id(elem)))
 }

@@ -5,7 +5,7 @@ resolvers ++= Seq(
   ivyResolver("malliina bintray sbt", "https://dl.bintray.com/malliina/sbt-plugins/")
 )
 
-addSbtPlugin("com.malliina" %% "sbt-utils" % "0.6.1")
+addSbtPlugin("com.malliina" %% "sbt-utils" % "0.6.3")
 
 def ivyResolver(name: String, urlStr: String) =
   Resolver.url(name, url(urlStr))(Resolver.ivyStylePatterns)
