@@ -1,6 +1,6 @@
 package com.malliina.push
 
-import org.asynchttpclient.Response
+import com.malliina.http.WebResponse
 import play.api.libs.json.JsError
 
 class PushException(message: String)
@@ -12,7 +12,7 @@ class NotJsonException(val input: String)
 class JsonException(val input: String, val error: JsError)
   extends PushException(s"Parse error for input: $input, error: $error")
 
-class ResponseException(val response: Response)
-  extends PushException(s"Invalid response code: ${response.getStatusCode}") {
-  def code = response.getStatusCode
+class ResponseException(val response: WebResponse)
+  extends PushException(s"Invalid response code: ${response.code}") {
+  def code = response.code
 }

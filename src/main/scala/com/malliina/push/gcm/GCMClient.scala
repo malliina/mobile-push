@@ -1,11 +1,10 @@
 package com.malliina.push.gcm
 
 import com.malliina.concurrent.ExecutionContexts.cached
-import com.malliina.http.AsyncHttp
 import com.malliina.http.AsyncHttp.Authorization
+import com.malliina.http.{AsyncHttp, WebResponse}
 import com.malliina.push.gcm.GCMClient._
 import com.malliina.push.{PushClient, ResponseException}
-import org.asynchttpclient.Response
 import play.api.libs.json.Json
 
 import scala.concurrent.Future
@@ -19,18 +18,19 @@ class GCMClient(val apiKey: String) extends PushClient[GCMToken, GCMMessage, Map
     Future sequence responses
   }
 
-  def send(id: GCMToken, data: Map[String, String]): Future[Response] = send(GCMLetter(Seq(id), data))
+  def send(id: GCMToken, data: Map[String, String]): Future[WebResponse] =
+    send(GCMLetter(Seq(id), data))
 
   private def sendLimitedMapped(ids: Seq[GCMToken], message: GCMMessage): Future[MappedGCMResponse] =
     sendLimited(ids, message).map { r =>
       MappedGCMResponse(ids, parseOrFail(r))
     }
 
-  private def sendLimited(ids: Seq[GCMToken], message: GCMMessage): Future[Response] = send(message.toLetter(ids))
+  private def sendLimited(ids: Seq[GCMToken], message: GCMMessage): Future[WebResponse] =
+    send(message.toLetter(ids))
 
-  private def send(message: GCMLetter): Future[Response] = {
+  private def send(message: GCMLetter): Future[WebResponse] = {
     val body = Json toJson message
-    println(s"Sending '$body'")
     AsyncHttp.postJson(POST_URL, body, Map(Authorization -> s"key=$apiKey"))
   }
 }
@@ -43,9 +43,9 @@ object GCMClient {
   val TIME_TO_LIVE = "time_to_live"
   val MAX_RECIPIENTS_PER_REQUEST = 1000
 
-  def parseOrFail(response: Response): GCMResponse =
-    if (response.getStatusCode == 200) {
-      Json.parse(response.getResponseBody).as[GCMResponse]
+  def parseOrFail(response: WebResponse): GCMResponse =
+    if (response.code == 200) {
+      response.parse[GCMResponse].get
     } else {
       throw new ResponseException(response)
     }

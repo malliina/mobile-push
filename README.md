@@ -59,7 +59,7 @@ the scope of this library; let's assume you already have all this.
     val deviceID: ADMToken = ADMToken("adm_token_here")
     val client = new ADMClient(clientId, clientSecret)
     val message = AndroidMessage(Map("key" -> "value"), expiresAfter = 20.seconds)
-    val response: Future[Response] = client.push(deviceID, message)
+    val response: Future[HttpResponse] = client.push(deviceID, message)
     
 ### Windows Push Notification Services
 

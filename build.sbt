@@ -3,14 +3,16 @@ import com.malliina.sbtutils.SbtUtils.{developerName, gitUserName}
 
 lazy val mobileProject = SbtProjects.mavenPublishProject("mobile-push")
 
-scalaVersion := "2.12.2"
+scalaVersion := "2.12.3"
+
 crossScalaVersions := Seq("2.11.11", scalaVersion.value)
 releaseCrossBuild := true
 gitUserName := "malliina"
 organization := "com.malliina"
 developerName := "Michael Skogberg"
+resolvers += "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/"
 libraryDependencies ++= Seq(
-  "com.malliina" %% "util" % "2.6.0",
+  "com.malliina" %% "util" % "2.8.0",
   "com.notnoop.apns" % "apns" % "1.0.0.Beta6",
   "com.squareup.okhttp" % "okhttp" % "2.7.5",
   "org.scala-lang.modules" %% "scala-xml" % "1.0.6",

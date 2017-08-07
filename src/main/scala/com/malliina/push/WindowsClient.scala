@@ -3,26 +3,26 @@ package com.malliina.push
 import java.io.StringWriter
 
 import com.malliina.concurrent.ExecutionContexts.cached
-import com.malliina.http.AsyncHttp
-import org.asynchttpclient.Response
+import com.malliina.http.{AsyncHttp, WebResponse}
+import org.apache.http.entity.ContentType
 
 import scala.concurrent.Future
 import scala.xml.{Elem, XML}
 
-trait WindowsClient[T <: Token, M <: WindowsMessage] extends PushClient[T, M, Response] {
-  override def pushAll(urls: Seq[T], message: M): Future[Seq[Response]] = {
+trait WindowsClient[T <: Token, M <: WindowsMessage] extends PushClient[T, M, WebResponse] {
+  override def pushAll(urls: Seq[T], message: M): Future[Seq[WebResponse]] = {
     val bodyAsString = WindowsClient.serialize(message.xml)
     sendMulti(urls, bodyAsString, message.headers)
   }
 
-  protected def send(url: T, xml: Elem, headers: Map[String, String]): Future[Response] =
+  protected def send(url: T, xml: Elem, headers: Map[String, String]): Future[WebResponse] =
     sendSingle(url, WindowsClient.serialize(xml), headers)
 
   protected def sendMulti(urls: Seq[T], body: String, headers: Map[String, String]) =
     Future.sequence(urls.map(url => sendSingle(url, body, headers)))
 
   protected def sendSingle(url: T, body: String, headers: Map[String, String]) =
-    AsyncHttp.post(url.token, body, headers)
+    AsyncHttp.post(url.token, body, ContentType.APPLICATION_XML.withCharset("UTF-8"), headers)
 }
 
 object WindowsClient {

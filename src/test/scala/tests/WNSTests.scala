@@ -2,6 +2,7 @@ package tests
 
 import java.nio.file.Path
 
+import com.malliina.concurrent.ExecutionContexts.cached
 import com.malliina.file.{FileUtilities, StorageFile}
 import com.malliina.http.AsyncHttp
 import com.malliina.push.wns._
