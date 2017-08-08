@@ -1,18 +1,13 @@
 package com.malliina.push.wns
 
-import java.nio.charset.StandardCharsets
-
 import com.malliina.concurrent.ExecutionContexts.cached
-import com.malliina.http.{AsyncHttp, WebResponse}
 import com.malliina.http.AsyncHttp._
+import com.malliina.http.{AsyncHttp, WebResponse}
 import com.malliina.push.Headers.{OctetStream, TextHtml}
 import com.malliina.push.OAuthKeys._
 import com.malliina.push._
 import com.malliina.push.wns.WNSClient._
-import org.apache.http.HttpResponse
-import org.apache.http.entity.StringEntity
-import org.apache.http.util.EntityUtils
-import play.api.libs.json.{JsError, Json, Reads}
+import play.api.libs.json.{JsError, Reads}
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
