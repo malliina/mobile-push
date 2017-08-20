@@ -12,7 +12,7 @@ organization := "com.malliina"
 developerName := "Michael Skogberg"
 resolvers += "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/"
 libraryDependencies ++= Seq(
-  "com.malliina" %% "util" % "2.8.0",
+  "com.malliina" %% "util" % "2.8.1",
   "com.notnoop.apns" % "apns" % "1.0.0.Beta6",
   "com.squareup.okhttp" % "okhttp" % "2.7.5",
   "org.scala-lang.modules" %% "scala-xml" % "1.0.6",
