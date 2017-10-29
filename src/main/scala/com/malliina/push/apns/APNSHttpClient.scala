@@ -50,7 +50,7 @@ class APNSHttpClient(socketFactory: SSLSocketFactory, isSandbox: Boolean = false
   override def pushAll(ids: Seq[APNSToken], message: APNSRequest): Future[Seq[Either[APNSError, APNSIdentifier]]] =
     Future.traverse(ids)(push(_, message))
 
-  def send(id: APNSToken, message: APNSRequest) = {
+  def send(id: APNSToken, message: APNSRequest): Future[Response] = {
     val meta = message.meta
     val bodyAsString = Json.stringify(Json.toJson(message.message))
     val body = RequestBody.create(jsonMediaType, bodyAsString)
