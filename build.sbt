@@ -5,8 +5,6 @@ lazy val mobileProject = SbtProjects.mavenPublishProject("mobile-push")
 
 scalaVersion := "2.12.4"
 
-crossScalaVersions := Seq("2.11.11", scalaVersion.value)
-releaseCrossBuild := true
 gitUserName := "malliina"
 organization := "com.malliina"
 developerName := "Michael Skogberg"
