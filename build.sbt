@@ -1,7 +1,7 @@
 import com.malliina.sbtutils.SbtProjects
 import com.malliina.sbtutils.SbtUtils.{developerName, gitUserName}
 
-lazy val mobileProject = SbtProjects.mavenPublishProject("mobile-push").disablePlugins(BintrayPlugin)
+lazy val mobileProject = SbtProjects.mavenPublishProject("mobile-push")
 
 scalaVersion := "2.12.4"
 
