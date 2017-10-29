@@ -81,7 +81,7 @@ class APNSHttpClient(socketFactory: SSLSocketFactory, isSandbox: Boolean = false
       val apnsId = Option(response.header(ApnsId)).map(APNSIdentifier.apply)
       apnsId.map(Right.apply).getOrElse(Left(UnknownReason))
     } else {
-      val json = Try(Json.parse(response.body().byteStream()))
+      val json = Try(Json.parse(response.body().string()))
       val maybeReason = json.toOption.flatMap(js => (js \ APNSError.ReasonKey).asOpt[APNSError])
       Left(maybeReason getOrElse UnknownReason)
     }

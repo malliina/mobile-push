@@ -14,7 +14,7 @@ Send push notifications to mobile devices. Supports:
 
 ## Installation
 
-    libraryDependencies += "com.malliina" %% "mobile-push" % "1.7.3"
+    libraryDependencies += "com.malliina" %% "mobile-push" % "1.7.7"
 
 ## Usage
 
