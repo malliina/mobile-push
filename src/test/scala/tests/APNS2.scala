@@ -1,7 +1,6 @@
 package tests
 
 import java.security.KeyStore
-import javax.net.ssl.SSLContext
 
 import com.malliina.push.TLSUtils
 import com.malliina.push.apns._
@@ -13,7 +12,7 @@ class APNS2 extends BaseSuite {
     APNSHttpConf.loadOpt.foreach { creds =>
       val message = APNSMessage.simple("this is a test")
       val request = APNSRequest.withTopic(creds.topic, message)
-      val sslContext = clientCertContext()
+      val sslContext = certContext(creds)
       val client = APNSHttpClient(sslContext.getSocketFactory, isSandbox = false)
       val result = await(client.push(creds.token, request))
       assert(result.right.toOption.isDefined)
@@ -24,7 +23,7 @@ class APNS2 extends BaseSuite {
     APNSHttpConf.loadOpt.foreach { creds =>
       val message = APNSMessage.simple("this is a test")
       val request = APNSRequest.withTopic(creds.topic, message)
-      val sslContext = clientCertContext()
+      val sslContext = certContext(creds)
       val client = APNSHttpClient(sslContext.getSocketFactory, isSandbox = true)
       val result = await(client.push(creds.token, request))
       assert(result.left.toOption.contains(BadDeviceToken))
@@ -42,8 +41,7 @@ class APNS2 extends BaseSuite {
     val result: Future[Either[APNSError, APNSIdentifier]] = client.push(deviceToken, request)
   }
 
-  def clientCertContext(): SSLContext = {
-    val creds = APNSHttpConf.load
+  def certContext(creds: APNSCred) = {
     val pass = creds.pass
     TLSUtils.keyStoreFromFile(creds.file, pass, "PKCS12")
       .map(ks => TLSUtils.buildSSLContext(ks, pass))

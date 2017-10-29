@@ -3,7 +3,7 @@ import com.malliina.sbtutils.SbtUtils.{developerName, gitUserName}
 
 lazy val mobileProject = SbtProjects.mavenPublishProject("mobile-push")
 
-scalaVersion := "2.12.3"
+scalaVersion := "2.12.4"
 
 crossScalaVersions := Seq("2.11.11", scalaVersion.value)
 releaseCrossBuild := true
@@ -14,9 +14,9 @@ resolvers += "Sonatype releases" at "https://oss.sonatype.org/content/repositori
 libraryDependencies ++= Seq(
   "com.malliina" %% "util" % "2.8.2",
   "com.notnoop.apns" % "apns" % "1.0.0.Beta6",
-  "com.squareup.okhttp" % "okhttp" % "2.7.5",
+  "com.squareup.okhttp3" % "okhttp" % "3.9.0",
   "org.scala-lang.modules" %% "scala-xml" % "1.0.6",
-  "org.mortbay.jetty.alpn" % "alpn-boot" % "8.1.6.v20151105" % "runtime"
+  "org.mortbay.jetty.alpn" % "alpn-boot" % "8.1.11.v20170118" % "runtime"
 )
 fork in Test := true
 javaOptions ++= {

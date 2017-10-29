@@ -3,14 +3,16 @@ package com.malliina.push.apns
 import java.io.IOException
 import java.nio.file.Path
 import java.security.KeyStore
-import javax.net.ssl.SSLSocketFactory
+import java.security.cert.X509Certificate
+import javax.net.ssl.{SSLSocketFactory, X509TrustManager}
 
 import com.malliina.concurrent.ExecutionContexts.cached
-import com.malliina.push.apns.APNSHttpClient.{ApnsExpiration, ApnsId, ApnsPriority, ApnsTopic, ContentLength, DevHost, ProdHost, UTF8}
+import com.malliina.push.apns.APNSHttpClient._
 import com.malliina.push.{PushClient, TLSUtils}
-import com.squareup.okhttp._
+import okhttp3.{MediaType, _}
 import play.api.libs.json.Json
 
+import scala.collection.JavaConverters.seqAsJavaList
 import scala.concurrent.{Future, Promise}
 import scala.util.Try
 
@@ -19,7 +21,7 @@ import scala.util.Try
   * Uses OkHttp with Jetty's "alpn-boot" in the bootclasspath for HTTP/2 support;
   * please check the build definition of this project in project/PushBuild.scala for details.
   *
-  * @see https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/APNsProviderAPI.html
+  * @see https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html
   * @see https://groups.google.com/forum/embed/#!topic/simple-build-tool/TpImNLs1akQ
   * @see https://github.com/square/okhttp/wiki/Building
   */
@@ -29,11 +31,18 @@ class APNSHttpClient(socketFactory: SSLSocketFactory, isSandbox: Boolean = false
   val host = if (isSandbox) DevHost else ProdHost
   val jsonMediaType = MediaType.parse("application/json")
 
-  import collection.JavaConversions._
+  val tm = new X509TrustManager {
+    override def checkServerTrusted(x509Certificates: Array[X509Certificate], s: String): Unit = ()
 
-  val client = new OkHttpClient()
-    .setSslSocketFactory(socketFactory)
-    .setProtocols(List(Protocol.HTTP_2, Protocol.HTTP_1_1))
+    override def checkClientTrusted(x509Certificates: Array[X509Certificate], s: String): Unit = ()
+
+    override def getAcceptedIssuers: Array[X509Certificate] = Array.empty[X509Certificate]
+  }
+
+  val client = new OkHttpClient.Builder()
+    .sslSocketFactory(socketFactory, tm)
+    .protocols(seqAsJavaList(List(Protocol.HTTP_2, Protocol.HTTP_1_1)))
+    .build()
 
   override def push(id: APNSToken, message: APNSRequest): Future[Either[APNSError, APNSIdentifier]] =
     send(id, message).map(parseResponse)
@@ -79,9 +88,9 @@ class APNSHttpClient(socketFactory: SSLSocketFactory, isSandbox: Boolean = false
   }
 
   class PromisingCallback(p: Promise[Response]) extends Callback {
-    override def onFailure(request: Request, e: IOException): Unit = p.tryFailure(e)
+    override def onFailure(call: Call, e: IOException): Unit = p.tryFailure(e)
 
-    override def onResponse(response: Response): Unit = p.trySuccess(response)
+    override def onResponse(call: Call, response: Response): Unit = p.trySuccess(response)
   }
 
   object PromisingCallback {
