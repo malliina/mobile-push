@@ -1,5 +1,6 @@
 package tests
 
+import java.nio.file.Paths
 import java.security.KeyStore
 
 import com.malliina.push.TLSUtils
@@ -15,7 +16,19 @@ class APNS2 extends BaseSuite {
       val sslContext = certContext(creds)
       val client = APNSHttpClient(sslContext.getSocketFactory, isSandbox = false)
       val result = await(client.push(creds.token, request))
-      assert(result.right.toOption.isDefined)
+      assert(result.isRight)
+    }
+  }
+
+  ignore("token-authenticated notification") {
+    APNSHttpConf.loadOpt.foreach { creds =>
+      APNSConfLoader.default.loadOpt.foreach { conf =>
+        val client = APNSTokenClient(conf, isSandbox = false)
+        val message = APNSMessage.simple("this is a token test")
+        val request = APNSRequest.withTopic(creds.topic, message)
+        val result = await(client.push(creds.token, request))
+        assert(result.isRight)
+      }
     }
   }
 
@@ -30,7 +43,21 @@ class APNS2 extends BaseSuite {
     }
   }
 
-  ignore("sample code for README") {
+  ignore("token sample code README") {
+    val conf = APNSTokenConf(
+      Paths.get("path/to/downloaded-priv-key.p8"),
+      KeyId("key_id_here"),
+      TeamId("team_id_here")
+    )
+    val client = APNSTokenClient(conf, isSandbox = true)
+    val topic = APNSTopic("org.company.MyApp")
+    val deviceToken: APNSToken = APNSToken.build("my_hex_device_token_here").get
+    val message = APNSMessage.simple("Hey, sexy token!")
+    val request = APNSRequest.withTopic(topic, message)
+    val result: Future[Either[APNSError, APNSIdentifier]] = client.push(deviceToken, request)
+  }
+
+  ignore("cert sample code for README") {
     val certKeyStore: KeyStore = ???
     val certPass: String = ???
     val topic = APNSTopic("org.company.MyApp")

@@ -14,7 +14,7 @@ Send push notifications to mobile devices. Supports:
 
 ## Installation
 
-    libraryDependencies += "com.malliina" %% "mobile-push" % "1.7.7"
+    libraryDependencies += "com.malliina" %% "mobile-push" % "1.8.0"
 
 ## Usage
 
@@ -24,7 +24,21 @@ devices, you must first obtain API keys from the provider (Google or Amazon).
 To receive notifications, mobile devices must first register with your notification server. Setting this up is beyond
 the scope of this library; let's assume you already have all this.
 
-### Apple Push Notification service, using HTTP/2
+### Apple Push Notification service, using token authentication
+
+    val conf = APNSTokenConf(
+      Paths.get("path/to/downloaded-priv-key.p8"),
+      KeyId("key_id_here"),
+      TeamId("team_id_here")
+    )
+    val client = APNSTokenClient(conf, isSandbox = true)
+    val topic = APNSTopic("org.company.MyApp")
+    val deviceToken: APNSToken = APNSToken.build("my_hex_device_token_here").get
+    val message = APNSMessage.simple("Hey, sexy token!")
+    val request = APNSRequest.withTopic(topic, message)
+    val result: Future[Either[APNSError, APNSIdentifier]] = client.push(deviceToken, request)
+
+### Apple Push Notification service, using certificate authentication
 
     val certKeyStore: KeyStore = ???
     val certPass: String = ???
@@ -35,7 +49,7 @@ the scope of this library; let's assume you already have all this.
     val client = APNSHttpClient(certKeyStore, certPass, isSandbox = true)
     val result: Future[Either[ErrorReason, APNSIdentifier]] = client.push(deviceToken, request)
 
-### Apple Push Notification service, legacy
+### Apple Push Notification service, legacy binary protocol
 
     val certKeyStore: KeyStore = ???
     val certPass: String = ???
