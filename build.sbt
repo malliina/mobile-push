@@ -11,9 +11,9 @@ developerName := "Michael Skogberg"
 resolvers += "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/"
 libraryDependencies ++= Seq(
   "com.malliina" %% "util" % "2.8.2",
+  "com.malliina" %% "okclient" % "1.3.5",
   "com.nimbusds" % "nimbus-jose-jwt" % "5.1",
   "com.notnoop.apns" % "apns" % "1.0.0.Beta6",
-  "com.squareup.okhttp3" % "okhttp" % "3.9.0",
   "org.scala-lang.modules" %% "scala-xml" % "1.0.6",
   "org.mortbay.jetty.alpn" % "alpn-boot" % "8.1.11.v20170118" % "runtime"
 )
@@ -26,4 +26,3 @@ javaOptions ++= {
     if path.contains("jetty.alpn")
   } yield "-Xbootclasspath/p:" + path
 }
-
