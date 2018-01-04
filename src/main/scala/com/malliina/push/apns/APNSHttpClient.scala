@@ -1,5 +1,6 @@
 package com.malliina.push.apns
 
+import java.io.{FileInputStream, InputStream}
 import java.nio.file.Path
 import java.security.KeyStore
 import javax.net.ssl.SSLSocketFactory
@@ -93,6 +94,9 @@ object APNSHttpClient {
     apply(TLSUtils.buildSSLContext(keyStore, keyStorePass).getSocketFactory, isSandbox)
 
   def fromCert(cert: Path, keyStorePass: String, keyStoreType: String, isSandbox: Boolean): Try[APNSHttpClient] =
-    TLSUtils.loadContext(cert, keyStorePass, keyStoreType)
+    fromCert(new FileInputStream(cert.toFile), keyStorePass, keyStoreType, isSandbox)
+
+  def fromCert(certResource: InputStream, keyStorePass: String, keyStoreType: String, isSandbox: Boolean): Try[APNSHttpClient] =
+    TLSUtils.loadContext(certResource, keyStorePass, keyStoreType)
       .map(ctx => new APNSCertClient(ctx.getSocketFactory, isSandbox))
 }

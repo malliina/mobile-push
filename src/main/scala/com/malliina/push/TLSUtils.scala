@@ -1,7 +1,6 @@
 package com.malliina.push
 
-import java.io.FileInputStream
-import java.nio.file.Path
+import java.io.InputStream
 import java.security.KeyStore
 import javax.net.ssl.{KeyManagerFactory, SSLContext}
 
@@ -10,12 +9,13 @@ import com.malliina.util.Util
 import scala.util.Try
 
 object TLSUtils {
-  def loadContext(file: Path, keyStorePass: String, storeType: String = "JKS"): Try[SSLContext] =
-    keyStoreFromFile(file, keyStorePass, storeType).map(ks => buildSSLContext(ks, keyStorePass))
 
-  def keyStoreFromFile(file: Path, keyStorePass: String, storeType: String = "JKS"): Try[KeyStore] = Try {
+  def loadContext(resource: InputStream, keyStorePass: String, storeType: String = "JKS"): Try[SSLContext] =
+    keyStoreFromResource(resource, keyStorePass, storeType).map(ks => buildSSLContext(ks, keyStorePass))
+
+  def keyStoreFromResource(resource: InputStream, keyStorePass: String, storeType: String): Try[KeyStore] = Try {
     val ks = KeyStore.getInstance(storeType)
-    Util.using(new FileInputStream(file.toFile)) { keyStream =>
+    Util.using(resource) { keyStream =>
       ks.load(keyStream, keyStorePass.toCharArray)
       ks
     }

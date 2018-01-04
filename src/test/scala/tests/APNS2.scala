@@ -1,5 +1,6 @@
 package tests
 
+import java.io.FileInputStream
 import java.nio.file.Paths
 import java.security.KeyStore
 
@@ -70,7 +71,7 @@ class APNS2 extends BaseSuite {
 
   def certContext(creds: APNSCred) = {
     val pass = creds.pass
-    TLSUtils.keyStoreFromFile(creds.file, pass, "PKCS12")
+    TLSUtils.keyStoreFromResource(new FileInputStream(creds.file.toFile), pass, "PKCS12")
       .map(ks => TLSUtils.buildSSLContext(ks, pass))
       .get
   }
