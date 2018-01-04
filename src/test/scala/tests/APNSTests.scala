@@ -1,5 +1,6 @@
 package tests
 
+import java.io.FileInputStream
 import java.nio.file.{Path, Paths}
 
 import com.malliina.file.{FileUtilities, StorageFile}
@@ -34,7 +35,7 @@ class APNSTests extends BaseSuite {
 
   ignore("send notification with body, if enabled") {
     val creds = APNSHttpConf.load
-    val ks = TLSUtils.keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
+    val ks = TLSUtils.keyStoreFromResource(new FileInputStream(creds.file.toFile), creds.pass, "PKCS12").get
     val client = new APNSClient(ks, creds.pass, isSandbox = true)
     val payload = AlertPayload(
       "this is a body",
@@ -49,7 +50,7 @@ class APNSTests extends BaseSuite {
 
   ignore("send pimp notification") {
     val creds = APNSHttpConf.load
-    val ks = TLSUtils.keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
+    val ks = TLSUtils.keyStoreFromResource(new FileInputStream(creds.file.toFile), creds.pass, "PKCS12").get
     val client = new APNSClient(ks, creds.pass, isSandbox = true)
     val message = APNSMessage.badged("I <3 U!", 3)
     val fut = client.push(creds.token, message)
@@ -58,7 +59,7 @@ class APNSTests extends BaseSuite {
 
   ignore("send background notification, if enabled") {
     val creds = APNSHttpConf.load
-    val ks = TLSUtils.keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
+    val ks = TLSUtils.keyStoreFromResource(new FileInputStream(creds.file.toFile), creds.pass, "PKCS12").get
     val client = new APNSClient(ks, creds.pass, isSandbox = true)
     val message = APNSMessage.background(badge = 16)
     await(client.push(creds.token, message))
