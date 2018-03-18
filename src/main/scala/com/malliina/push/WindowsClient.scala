@@ -3,7 +3,7 @@ package com.malliina.push
 import java.io.StringWriter
 
 import com.malliina.concurrent.ExecutionContexts.cached
-import com.malliina.http.{AsyncHttp, WebResponse}
+import com.malliina.http.{AsyncHttp, FullUrl, WebResponse}
 import org.apache.http.entity.ContentType
 
 import scala.concurrent.Future
@@ -18,11 +18,11 @@ trait WindowsClient[T <: Token, M <: WindowsMessage] extends PushClient[T, M, We
   protected def send(url: T, xml: Elem, headers: Map[String, String]): Future[WebResponse] =
     sendSingle(url, WindowsClient.serialize(xml), headers)
 
-  protected def sendMulti(urls: Seq[T], body: String, headers: Map[String, String]) =
+  protected def sendMulti(urls: Seq[T], body: String, headers: Map[String, String]): Future[Seq[WebResponse]] =
     Future.sequence(urls.map(url => sendSingle(url, body, headers)))
 
-  protected def sendSingle(url: T, body: String, headers: Map[String, String]) =
-    AsyncHttp.post(url.token, body, ContentType.APPLICATION_XML.withCharset("UTF-8"), headers)
+  protected def sendSingle(url: T, body: String, headers: Map[String, String]): Future[WebResponse] =
+    AsyncHttp.post(FullUrl.build(url.token).toOption.get, body, ContentType.APPLICATION_XML.withCharset("UTF-8"), headers)
 }
 
 object WindowsClient {

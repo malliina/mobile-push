@@ -2,7 +2,7 @@ package com.malliina.push.gcm
 
 import com.malliina.concurrent.ExecutionContexts.cached
 import com.malliina.http.AsyncHttp.Authorization
-import com.malliina.http.{AsyncHttp, WebResponse}
+import com.malliina.http.{AsyncHttp, FullUrl, WebResponse}
 import com.malliina.push.gcm.GCMClient._
 import com.malliina.push.{PushClient, ResponseException}
 import play.api.libs.json.Json
@@ -37,7 +37,7 @@ class GCMClient(val apiKey: String) extends PushClient[GCMToken, GCMMessage, Map
 
 object GCMClient {
   //  val POST_URL = "https://android.googleapis.com/gcm/send"
-  val POST_URL = "https://gcm-http.googleapis.com/gcm/send"
+  val POST_URL = FullUrl.https("gcm-http.googleapis.com", "/gcm/send")
   val REGISTRATION_IDS = "registration_ids"
   val DATA = "data"
   val TIME_TO_LIVE = "time_to_live"

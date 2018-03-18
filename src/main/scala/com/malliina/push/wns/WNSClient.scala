@@ -2,7 +2,7 @@ package com.malliina.push.wns
 
 import com.malliina.concurrent.ExecutionContexts.cached
 import com.malliina.http.AsyncHttp._
-import com.malliina.http.{AsyncHttp, WebResponse}
+import com.malliina.http.{AsyncHttp, FullUrl, WebResponse}
 import com.malliina.push.Headers.{OctetStream, TextHtml}
 import com.malliina.push.OAuthKeys._
 import com.malliina.push._
@@ -58,7 +58,7 @@ class WNSClient(creds: WNSCredentials) extends PushClient[WNSToken, WNSMessage, 
                  token: WNSToken,
                  body: String,
                  headers: Map[String, String]): Future[WNSResponse] = {
-    val response = client.postAny(token.token, body, org.apache.http.entity.ContentType.APPLICATION_XML, headers)
+    val response = client.postAny(FullUrl.build(token.token).toOption.get, body, org.apache.http.entity.ContentType.APPLICATION_XML, headers)
     response.map(WNSResponse.fromResponse)
   }
 
@@ -70,7 +70,7 @@ class WNSClient(creds: WNSCredentials) extends PushClient[WNSToken, WNSMessage, 
       Scope -> NotificationHost
     )
     val response = AsyncHttp.withClient(_.postEmpty(
-      "https://login.live.com/accesstoken.srf",
+      FullUrl.https("login.live.com", "/accesstoken.srf"),
       Map(ContentTypeHeaderName -> WwwFormUrlEncoded),
       parameters
     ))

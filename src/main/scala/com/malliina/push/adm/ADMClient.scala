@@ -2,7 +2,7 @@ package com.malliina.push.adm
 
 import com.malliina.concurrent.ExecutionContexts.cached
 import com.malliina.http.AsyncHttp.{Authorization, ContentTypeHeaderName}
-import com.malliina.http.{AsyncHttp, WebResponse}
+import com.malliina.http.{AsyncHttp, FullUrl, WebResponse}
 import com.malliina.push.OAuthKeys._
 import com.malliina.push.adm.ADMClient._
 import com.malliina.push.android.AndroidMessage
@@ -27,7 +27,7 @@ class ADMClient(val clientID: String, val clientSecret: String)
         AmazonAcceptType -> AmazonAcceptTypeValue,
         ContentTypeHeaderName -> AsyncHttp.MimeTypeJson
       )
-      AsyncHttp.withClient(_.post(s"https://api.amazon.com/messaging/registrations/${id.token}/messages", body, headers))
+      AsyncHttp.withClient(_.post(FullUrl.https("api.amazon.com", s"/messaging/registrations/${id.token}/messages"), body, headers))
     }
   }
 
@@ -55,7 +55,7 @@ class ADMClient(val clientID: String, val clientSecret: String)
         ClientId -> clientID,
         ClientSecret -> clientSecret
       )
-      client.postForm("https://api.amazon.com/auth/O2/token", parameters)
+      client.postForm(FullUrl.https("api.amazon.com", "/auth/O2/token"), parameters)
     }
   }
 }

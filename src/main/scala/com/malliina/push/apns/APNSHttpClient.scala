@@ -2,10 +2,10 @@ package com.malliina.push.apns
 
 import java.nio.file.Path
 import java.security.KeyStore
-import javax.net.ssl.SSLSocketFactory
 
+import javax.net.ssl.SSLSocketFactory
 import com.malliina.concurrent.ExecutionContexts.cached
-import com.malliina.http.OkClient
+import com.malliina.http.{OkClient, OkHttpResponse}
 import com.malliina.push.apns.APNSHttpClient._
 import com.malliina.push.{PushClient, TLSUtils}
 import okhttp3.{MediaType, _}
@@ -35,7 +35,7 @@ class APNSHttpClient(client: OkClient, isSandbox: Boolean = false)
   override def pushAll(ids: Seq[APNSToken], message: APNSRequest): Future[Seq[Either[APNSError, APNSIdentifier]]] =
     Future.traverse(ids)(push(_, message))
 
-  def send(id: APNSToken, message: APNSRequest): Future[Response] = {
+  def send(id: APNSToken, message: APNSRequest): Future[OkHttpResponse] = {
     val meta = message.meta
     val bodyAsString = Json.stringify(Json.toJson(message.message))
     val body = RequestBody.create(jsonMediaType, bodyAsString)
@@ -62,12 +62,12 @@ class APNSHttpClient(client: OkClient, isSandbox: Boolean = false)
 
   def url(token: APNSToken) = s"$host/3/device/${token.token}"
 
-  def parseResponse(response: Response): Either[APNSError, APNSIdentifier] = {
-    if (response.code() == 200) {
-      val apnsId = Option(response.header(ApnsId)).map(APNSIdentifier.apply)
+  def parseResponse(response: OkHttpResponse): Either[APNSError, APNSIdentifier] = {
+    if (response.code == 200) {
+      val apnsId = Option(response.inner.header(ApnsId)).map(APNSIdentifier.apply)
       apnsId.map(Right.apply).getOrElse(Left(UnknownReason))
     } else {
-      val json = Try(Json.parse(response.body().string()))
+      val json = Try(Json.parse(response.asString))
       val maybeReason = json.toOption.flatMap(js => (js \ APNSError.ReasonKey).asOpt[APNSError])
       Left(maybeReason getOrElse UnknownReason)
     }
