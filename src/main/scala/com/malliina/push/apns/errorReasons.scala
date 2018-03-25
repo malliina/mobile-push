@@ -1,6 +1,6 @@
 package com.malliina.push.apns
 
-import com.malliina.json.JsonEnum
+import com.malliina.push.json.JsonEnum
 
 /**
   * @see https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/APNsProviderAPI.html Table 6.6

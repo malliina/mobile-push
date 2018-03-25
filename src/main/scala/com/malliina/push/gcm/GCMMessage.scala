@@ -1,6 +1,5 @@
 package com.malliina.push.gcm
 
-import com.malliina.json.JsonFormats
 import play.api.libs.json.Json
 
 import scala.concurrent.duration.Duration
@@ -22,6 +21,6 @@ case class GCMMessage(data: Map[String, String],
 }
 
 object GCMMessage {
-  implicit val durationFormat = JsonFormats.durationFormat
+  implicit val durationFormat = com.malliina.json.PrimitiveFormats.durationFormat
   implicit val json = Json.format[GCMMessage]
 }

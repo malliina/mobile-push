@@ -1,6 +1,6 @@
 package com.malliina.push.gcm
 
-import com.malliina.json.JsonFormats
+import com.malliina.json.PrimitiveFormats
 import play.api.libs.json.Json
 
 import scala.concurrent.duration.Duration
@@ -14,6 +14,6 @@ case class GCMLetter(registration_ids: Seq[GCMToken],
                      dry_run: Option[Boolean] = None)
 
 object GCMLetter {
-  implicit val durationFormat = JsonFormats.durationFormat
+  implicit val durationFormat = PrimitiveFormats.durationFormat
   implicit val format = Json.format[GCMLetter]
 }

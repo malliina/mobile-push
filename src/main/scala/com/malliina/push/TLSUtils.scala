@@ -3,9 +3,8 @@ package com.malliina.push
 import java.io.FileInputStream
 import java.nio.file.Path
 import java.security.KeyStore
-import javax.net.ssl.{KeyManagerFactory, SSLContext}
 
-import com.malliina.util.Util
+import javax.net.ssl.{KeyManagerFactory, SSLContext}
 
 import scala.util.Try
 
@@ -15,9 +14,12 @@ object TLSUtils {
 
   def keyStoreFromFile(file: Path, keyStorePass: String, storeType: String = "JKS"): Try[KeyStore] = Try {
     val ks = KeyStore.getInstance(storeType)
-    Util.using(new FileInputStream(file.toFile)) { keyStream =>
+    val keyStream = new FileInputStream(file.toFile)
+    try {
       ks.load(keyStream, keyStorePass.toCharArray)
       ks
+    } finally {
+      keyStream.close()
     }
   }
 

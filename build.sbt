@@ -10,7 +10,6 @@ organization := "com.malliina"
 developerName := "Michael Skogberg"
 resolvers += "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/"
 libraryDependencies ++= Seq(
-  "com.malliina" %% "util" % "2.9.1",
   "com.malliina" %% "okclient" % "1.4.1",
   "com.nimbusds" % "nimbus-jose-jwt" % "5.7",
   "com.notnoop.apns" % "apns" % "1.0.0.Beta6",

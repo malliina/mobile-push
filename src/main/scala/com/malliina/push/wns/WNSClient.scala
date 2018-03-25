@@ -1,13 +1,13 @@
 package com.malliina.push.wns
 
-import com.malliina.concurrent.ExecutionContexts.cached
-import com.malliina.http.AsyncHttp._
-import com.malliina.http.{AsyncHttp, FullUrl, WebResponse}
-import com.malliina.push.Headers.{OctetStream, TextHtml}
+import com.malliina.http._
+import com.malliina.push.Execution.cached
+import com.malliina.push.Headers.{OctetStream, TextHtml, _}
 import com.malliina.push.OAuthKeys._
 import com.malliina.push._
 import com.malliina.push.wns.WNSClient._
-import play.api.libs.json.{JsError, Reads}
+import okhttp3.RequestBody
+import play.api.libs.json.Reads
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
@@ -27,7 +27,7 @@ object WNSClient {
 
 class WNSClient(creds: WNSCredentials) extends PushClient[WNSToken, WNSMessage, WNSResponse] {
 
-  case class PushMeta(client: AsyncHttp, payload: String, headers: Map[String, String])
+  case class PushMeta(client: OkClient, payload: String, headers: Map[String, String])
 
   def push(token: WNSToken, message: WNSMessage): Future[WNSResponse] =
     withUrls(message) { meta =>
@@ -42,55 +42,49 @@ class WNSClient(creds: WNSCredentials) extends PushClient[WNSToken, WNSMessage, 
     }
 
   private def withUrls[T](message: WNSMessage)(code: PushMeta => Future[T]): Future[T] =
-    usingAsync(new AsyncHttp()) { client =>
+    AsyncHttp.usingAsync(OkClient.default) { client =>
       fetchAccessToken(client) flatMap { accessToken =>
         val contentType = if (message.notification.isRaw) OctetStream else TextHtml
         val allHeaders = message.headers ++ Map(
           Authorization -> s"Bearer ${accessToken.access_token}",
-          ContentTypeHeaderName -> contentType,
+          ContentType -> contentType,
           RequestStatus -> "true"
         )
         code(PushMeta(client, message.payload, allHeaders))
       }
     }
 
-  def pushSingle(client: AsyncHttp,
+  def pushSingle(client: OkClient,
                  token: WNSToken,
                  body: String,
                  headers: Map[String, String]): Future[WNSResponse] = {
-    val response = client.postAny(FullUrl.build(token.token).toOption.get, body, org.apache.http.entity.ContentType.APPLICATION_XML, headers)
-    response.map(WNSResponse.fromResponse)
+    val requestBody = RequestBody.create(XmlMediaType, body)
+    client.post(FullUrl.build(token.token).toOption.get, requestBody, headers).map(WNSResponse.fromResponse)
   }
 
-  def fetchAccessToken(client: AsyncHttp): Future[WNSAccessToken] = {
+  def fetchAccessToken(client: OkClient): Future[WNSAccessToken] = {
     val parameters = Map(
       GrantType -> ClientCredentials,
       ClientId -> creds.packageSID,
       ClientSecret -> creds.clientSecret,
       Scope -> NotificationHost
     )
-    val response = AsyncHttp.withClient(_.postEmpty(
+    val response = client.postForm(
       FullUrl.https("login.live.com", "/accesstoken.srf"),
-      Map(ContentTypeHeaderName -> WwwFormUrlEncoded),
+      Map(ContentType -> FormType),
       parameters
-    ))
+    )
     response.flatMap(r => Future.fromTry(parseResponse[WNSAccessToken](r)))
   }
 
-  def parseResponse[T: Reads](response: WebResponse): Try[T] = {
+  def parseResponse[T: Reads](response: HttpResponse): Try[T] = {
     if (response.code == 200) {
       response.parse[T].fold(
-        invalid => Failure(new JsonException(response.asString, JsError(invalid))),
+        invalid => Failure(new JsonException(response.asString, invalid)),
         valid => Success(valid)
       )
     } else {
       Failure(new ResponseException(response))
     }
-  }
-
-  def usingAsync[T <: AutoCloseable, U](res: T)(code: T => Future[U]): Future[U] = {
-    val result = code(res)
-    result.onComplete(_ => res.close())
-    result
   }
 }

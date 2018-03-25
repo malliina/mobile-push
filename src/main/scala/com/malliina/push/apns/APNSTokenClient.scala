@@ -16,7 +16,7 @@ import okhttp3.Request
 import scala.io.Source
 
 object APNSTokenClient {
-  def default = apply(APNSConfLoader.default.load, isSandbox = false)
+  def default = apply(APNSTokenConf.default.right.get, isSandbox = false)
 
   def apply(conf: APNSTokenConf, isSandbox: Boolean): APNSTokenClient =
     new APNSTokenClient(conf, isSandbox)

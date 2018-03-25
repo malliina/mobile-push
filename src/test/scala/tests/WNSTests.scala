@@ -1,12 +1,9 @@
 package tests
 
-import java.nio.file.Path
-
-import com.malliina.concurrent.ExecutionContexts.cached
-import com.malliina.file.{FileUtilities, StorageFile}
-import com.malliina.http.AsyncHttp
+import com.malliina.http.OkClient
 import com.malliina.push.wns._
-import com.malliina.util.BaseConfigReader
+import com.malliina.push.{ConfHelper, PushUtils}
+import com.malliina.values.ErrorMessage
 
 class WNSTests extends BaseSuite {
   lazy val maybeCreds = WNSConfReader.loadOpt
@@ -28,7 +25,7 @@ class WNSTests extends BaseSuite {
   ignore("can fetch token") {
     val token = maybeCreds map { creds =>
       val client = new WNSClient(creds)
-      await(client.fetchAccessToken(new AsyncHttp))
+      await(client.fetchAccessToken(OkClient.default))
     }
     assert(token.forall(_.access_token.nonEmpty))
   }
@@ -45,11 +42,13 @@ class WNSTests extends BaseSuite {
   }
 }
 
-object WNSConfReader extends BaseConfigReader[WNSCredentials] {
-  override def filePath: Option[Path] = Option(FileUtilities.userHome / "keys" / "wns.key")
+object WNSConfReader extends ConfHelper[WNSCredentials] {
+  val file = PushUtils.userHome.resolve("keys/wns.key")
 
-  override def fromMapOpt(map: Map[String, String]): Option[WNSCredentials] = for {
-    sid <- map get "sid"
-    secret <- map get "clientSecret"
+  def loadOpt = fromFile(file).toOption
+
+  override def parse(readKey: String => Either[ErrorMessage, String]): Either[ErrorMessage, WNSCredentials] = for {
+    sid <- readKey("sid")
+    secret <- readKey("clientSecret")
   } yield WNSCredentials(sid, secret)
 }

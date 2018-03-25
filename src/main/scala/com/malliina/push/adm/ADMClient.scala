@@ -1,37 +1,39 @@
 package com.malliina.push.adm
 
-import com.malliina.concurrent.ExecutionContexts.cached
-import com.malliina.http.AsyncHttp.{Authorization, ContentTypeHeaderName}
-import com.malliina.http.{AsyncHttp, FullUrl, WebResponse}
+import com.malliina.http.{FullUrl, HttpResponse}
+import com.malliina.push.Execution.cached
+import com.malliina.push.Headers._
 import com.malliina.push.OAuthKeys._
 import com.malliina.push.adm.ADMClient._
 import com.malliina.push.android.AndroidMessage
-import com.malliina.push.{PushClient, PushException}
+import com.malliina.push.{AsyncHttp, PushClient, PushException}
 import play.api.libs.json.Json
 
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationInt
 
 class ADMClient(val clientID: String, val clientSecret: String)
-  extends PushClient[ADMToken, AndroidMessage, WebResponse] {
+  extends PushClient[ADMToken, AndroidMessage, HttpResponse] {
 
-  def send(id: ADMToken, data: Map[String, String]): Future[WebResponse] =
+  def send(id: ADMToken, data: Map[String, String]): Future[HttpResponse] =
     push(id, AndroidMessage(data, expiresAfter = 60.seconds))
 
-  def push(id: ADMToken, message: AndroidMessage): Future[WebResponse] = {
+  def push(id: ADMToken, message: AndroidMessage): Future[HttpResponse] = {
     val body = Json.toJson(message)
     token(clientID, clientSecret).flatMap { t =>
       val headers = Map(
         Authorization -> s"Bearer $t",
         AmazonTypeVersion -> AmazonTypeVersionValue,
         AmazonAcceptType -> AmazonAcceptTypeValue,
-        ContentTypeHeaderName -> AsyncHttp.MimeTypeJson
+        ContentType -> JsonType
       )
-      AsyncHttp.withClient(_.post(FullUrl.https("api.amazon.com", s"/messaging/registrations/${id.token}/messages"), body, headers))
+      AsyncHttp.withClient { client =>
+        client.postJson(FullUrl.https("api.amazon.com", s"/messaging/registrations/${id.token}/messages"), body, headers)
+      }
     }
   }
 
-  override def pushAll(ids: Seq[ADMToken], message: AndroidMessage): Future[Seq[WebResponse]] =
+  override def pushAll(ids: Seq[ADMToken], message: AndroidMessage): Future[Seq[HttpResponse]] =
     Future.traverse(ids)(id => push(id, message))
 
   def token(clientID: String, clientSecret: String): Future[String] =
@@ -47,8 +49,8 @@ class ADMClient(val clientID: String, val clientSecret: String)
       )
     }
 
-  private def tokenRequest(clientID: String, clientSecret: String): Future[WebResponse] = {
-    AsyncHttp.withClient { (client: AsyncHttp) =>
+  private def tokenRequest(clientID: String, clientSecret: String): Future[HttpResponse] = {
+    AsyncHttp.withClient { client =>
       val parameters = Map(
         GrantType -> ClientCredentials,
         Scope -> MessagingPush,

@@ -2,8 +2,8 @@ package com.malliina.push.apns
 
 import java.nio.file.{Path, Paths}
 
-import com.malliina.file.{FileUtilities, StorageFile}
-import com.malliina.util.BaseConfigReader
+import com.malliina.push.ConfHelper
+import com.malliina.values.ErrorMessage
 
 /** Apple Team ID.
   */
@@ -18,22 +18,17 @@ case class KeyId(id: String)
   */
 case class APNSTokenConf(privateKey: Path, keyId: KeyId, teamId: TeamId)
 
-object APNSConfLoader {
-  val DefaultFile = FileUtilities.userHome / "keys" / "apns" / "jwt.conf"
+object APNSTokenConf extends ConfHelper[APNSTokenConf] {
+  val DefaultFile = (Paths get sys.props("user.home")).resolve("keys/apns/jwt.conf")
 
   def default = fromFile(DefaultFile)
 
-  def fromFile(file: Path): APNSConfLoader = new APNSConfLoader(file)
+  def parse(read: String => Either[ErrorMessage, String]): Either[ErrorMessage, APNSTokenConf] = {
+    for {
+      file <- read("private_key")
+      teamId <- read("team_id")
+      keyId <- read("key_id")
+    } yield APNSTokenConf(Paths get file, KeyId(keyId), TeamId(teamId))
+  }
 }
 
-class APNSConfLoader(file: Path) extends BaseConfigReader[APNSTokenConf] {
-  override def filePath: Option[Path] = Option(file)
-
-  override def loadOpt: Option[APNSTokenConf] = fromUserHomeOpt
-
-  override def fromMapOpt(map: Map[String, String]): Option[APNSTokenConf] = for {
-    file <- map get "private_key"
-    teamId <- map get "team_id"
-    keyId <- map get "key_id"
-  } yield APNSTokenConf(Paths get file, KeyId(keyId), TeamId(teamId))
-}

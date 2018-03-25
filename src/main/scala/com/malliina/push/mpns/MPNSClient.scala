@@ -1,6 +1,6 @@
 package com.malliina.push.mpns
 
-import com.malliina.http.{AsyncHttp, WebResponse}
+import com.malliina.http.HttpResponse
 import com.malliina.push.{Headers, WindowsClient, WindowsMessage}
 
 import scala.concurrent.Future
@@ -13,7 +13,7 @@ class MPNSClient extends WindowsClient[MPNSToken, WindowsMessage] {
     * @param message content
     * @return
     */
-  override def push(url: MPNSToken, message: WindowsMessage): Future[WebResponse] =
+  override def push(url: MPNSToken, message: WindowsMessage): Future[HttpResponse] =
     send(url, message.xml, message.headers)
 }
 
@@ -37,7 +37,7 @@ object MPNSClient {
   val RawImmediate = "3"
 
   private def baseHeaders(notificationClass: String) = Map(
-    AsyncHttp.ContentTypeHeaderName -> Headers.TextHtml,
+    Headers.ContentType -> Headers.TextHtml,
     XNotificationClass -> notificationClass)
 
   private def headers(notificationType: String, notificationClass: String) =

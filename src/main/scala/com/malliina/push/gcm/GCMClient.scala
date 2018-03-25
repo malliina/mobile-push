@@ -1,10 +1,10 @@
 package com.malliina.push.gcm
 
-import com.malliina.concurrent.ExecutionContexts.cached
-import com.malliina.http.AsyncHttp.Authorization
-import com.malliina.http.{AsyncHttp, FullUrl, WebResponse}
+import com.malliina.http.{FullUrl, HttpResponse}
+import com.malliina.push.Execution.cached
+import com.malliina.push.Headers._
 import com.malliina.push.gcm.GCMClient._
-import com.malliina.push.{PushClient, ResponseException}
+import com.malliina.push.{AsyncHttp, PushClient, ResponseException}
 import play.api.libs.json.Json
 
 import scala.concurrent.Future
@@ -18,7 +18,7 @@ class GCMClient(val apiKey: String) extends PushClient[GCMToken, GCMMessage, Map
     Future sequence responses
   }
 
-  def send(id: GCMToken, data: Map[String, String]): Future[WebResponse] =
+  def send(id: GCMToken, data: Map[String, String]): Future[HttpResponse] =
     send(GCMLetter(Seq(id), data))
 
   private def sendLimitedMapped(ids: Seq[GCMToken], message: GCMMessage): Future[MappedGCMResponse] =
@@ -26,12 +26,12 @@ class GCMClient(val apiKey: String) extends PushClient[GCMToken, GCMMessage, Map
       MappedGCMResponse(ids, parseOrFail(r))
     }
 
-  private def sendLimited(ids: Seq[GCMToken], message: GCMMessage): Future[WebResponse] =
+  private def sendLimited(ids: Seq[GCMToken], message: GCMMessage): Future[HttpResponse] =
     send(message.toLetter(ids))
 
-  private def send(message: GCMLetter): Future[WebResponse] = {
-    val body = Json toJson message
-    AsyncHttp.postJson(POST_URL, body, Map(Authorization -> s"key=$apiKey"))
+  private def send(message: GCMLetter): Future[HttpResponse] = {
+    val body = Json.toJson(message)
+    AsyncHttp.withClient(_.postJson(POST_URL, body, Map(Authorization -> s"key=$apiKey")))
   }
 }
 
@@ -43,9 +43,9 @@ object GCMClient {
   val TIME_TO_LIVE = "time_to_live"
   val MAX_RECIPIENTS_PER_REQUEST = 1000
 
-  def parseOrFail(response: WebResponse): GCMResponse =
+  def parseOrFail(response: HttpResponse): GCMResponse =
     if (response.code == 200) {
-      response.parse[GCMResponse].get
+      response.parse[GCMResponse].toOption.get
     } else {
       throw new ResponseException(response)
     }
