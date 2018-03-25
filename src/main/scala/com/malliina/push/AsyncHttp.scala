@@ -1,7 +1,6 @@
 package com.malliina.push
 
 import com.malliina.http.OkClient
-import com.malliina.push.Execution.cached
 
 import scala.concurrent.Future
 

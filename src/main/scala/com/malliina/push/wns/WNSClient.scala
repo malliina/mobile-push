@@ -1,7 +1,6 @@
 package com.malliina.push.wns
 
 import com.malliina.http._
-import com.malliina.push.Execution.cached
 import com.malliina.push.Headers.{OctetStream, TextHtml, _}
 import com.malliina.push.OAuthKeys._
 import com.malliina.push._

@@ -3,7 +3,6 @@ package com.malliina.push
 import java.io.StringWriter
 
 import com.malliina.http.{FullUrl, HttpResponse, OkClient}
-import com.malliina.push.Execution.cached
 import okhttp3.RequestBody
 
 import scala.concurrent.Future
