@@ -3,7 +3,7 @@ import com.malliina.sbtutils.SbtUtils.{developerName, gitUserName}
 
 lazy val mobileProject = SbtProjects.mavenPublishProject("mobile-push")
 
-scalaVersion := "2.12.5"
+scalaVersion := "2.12.6"
 
 gitUserName := "malliina"
 organization := "com.malliina"

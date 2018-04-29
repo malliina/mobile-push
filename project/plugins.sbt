@@ -1,4 +1,4 @@
-scalaVersion := "2.12.5"
+scalaVersion := "2.12.6"
 
 resolvers ++= Seq(
   ivyResolver("bintray-sbt-plugin-releases", "http://dl.bintray.com/content/sbt/sbt-plugin-releases"),

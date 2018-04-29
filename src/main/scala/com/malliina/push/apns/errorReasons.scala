@@ -1,13 +1,13 @@
 package com.malliina.push.apns
 
-import com.malliina.push.json.JsonEnum
+import com.malliina.push.json.OpenEnum
 
 /**
   * @see https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/APNsProviderAPI.html Table 6.6
   */
 sealed abstract class APNSError(val reason: String, val description: String)
 
-object APNSError extends JsonEnum[APNSError] {
+object APNSError extends OpenEnum[APNSError] {
   val ReasonKey = "reason"
   override val all: Seq[APNSError] = Seq(
     PayloadEmpty, PayloadTooLarge, BadTopic,
@@ -17,7 +17,12 @@ object APNSError extends JsonEnum[APNSError] {
     BadCertificateEnvironment, BadCertificate, Forbidden,
     BadPath, MethodNotAllowed, TooManyRequests,
     IdleTimeout, Shutdown, InternalServerError,
-    ServiceUnavailable, MissingTopic)
+    ServiceUnavailable, MissingTopic, TooManyProviderTokenUpdates,
+    BadCollapseId, ExpiredProviderToken, InvalidProviderToken,
+    MissingProviderToken
+  )
+
+  override def default(name: String): APNSError = OtherReason(name)
 
   override def resolveName(item: APNSError): String = item.reason
 }
@@ -67,5 +72,17 @@ case object InternalServerError extends APNSError("InternalServerError", "An int
 case object ServiceUnavailable extends APNSError("ServiceUnavailable", "The service is unavailable.")
 
 case object MissingTopic extends APNSError("MissingTopic", "The apns-topic header of the request was not specified and was required. The apns-topic header is mandatory when the client is connected using a certificate that supports multiple topics.")
+
+case object TooManyProviderTokenUpdates extends APNSError("TooManyProviderTokenUpdates", "The provider token is being updated too often.")
+
+case object BadCollapseId extends APNSError("BadCollapseId", "The collapse identifier exceeds the maximum allowed size.")
+
+case object ExpiredProviderToken extends APNSError("ExpiredProviderToken", "The provider token is stale and a new token should be generated.")
+
+case object InvalidProviderToken extends APNSError("InvalidProviderToken", "The provider token is not valid or the token signature could not be verified.")
+
+case object MissingProviderToken extends APNSError("MissingProviderToken", "No provider certificate was used to connect to APNs and Authorization header was missing or no provider token was specified.")
+
+case class OtherReason(r: String) extends APNSError(r, "Generic error.")
 
 case object UnknownReason extends APNSError("UnknownReason", "An unknown error occurred.")
