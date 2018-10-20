@@ -3,14 +3,14 @@ import com.malliina.sbtutils.SbtUtils.{developerName, gitUserName}
 
 lazy val mobileProject = SbtProjects.mavenPublishProject("mobile-push")
 
-scalaVersion := "2.12.6"
+scalaVersion := "2.12.7"
 
 gitUserName := "malliina"
 organization := "com.malliina"
 developerName := "Michael Skogberg"
 resolvers += "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/"
 libraryDependencies ++= Seq(
-  "com.malliina" %% "okclient" % "1.6.0",
+  "com.malliina" %% "okclient" % "1.6.1",
   "com.nimbusds" % "nimbus-jose-jwt" % "6.0.1",
   "com.notnoop.apns" % "apns" % "1.0.0.Beta6",
   "org.scala-lang.modules" %% "scala-xml" % "1.1.0",
@@ -22,6 +22,6 @@ javaOptions ++= {
   for {
     file <- attList.map(_.data)
     path = file.getAbsolutePath
-    if path.contains("jetty.alpn")
+    if path.contains("alpn-boot")
   } yield "-Xbootclasspath/p:" + path
 }
