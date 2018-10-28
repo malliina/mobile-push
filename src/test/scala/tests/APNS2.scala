@@ -2,6 +2,8 @@ package tests
 
 import java.nio.file.Paths
 import java.security.KeyStore
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 import com.malliina.push.TLSUtils
 import com.malliina.push.apns._
@@ -30,6 +32,18 @@ class APNS2 extends BaseSuite {
         assert(result.isRight)
       }
     }
+  }
+
+  ignore("provider token refresh") {
+    val client = APNSTokenClient.default
+    val now = Instant.now()
+    val first = client.validToken(now)
+    val second = client.validToken(now)
+    assert(first === second)
+    val third = client.validToken(now.plus(30, ChronoUnit.MINUTES))
+    assert(first === third)
+    val fourth = client.validToken(now.plus(50, ChronoUnit.MINUTES))
+    assert(first !== fourth)
   }
 
   ignore("using a development token with the production API returns BadDeviceToken") {

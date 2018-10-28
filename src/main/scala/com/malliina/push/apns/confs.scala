@@ -31,4 +31,3 @@ object APNSTokenConf extends ConfHelper[APNSTokenConf] {
     } yield APNSTokenConf(Paths get file, KeyId(keyId), TeamId(teamId))
   }
 }
-
