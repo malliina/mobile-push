@@ -10,8 +10,8 @@ organization := "com.malliina"
 developerName := "Michael Skogberg"
 resolvers += "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/"
 libraryDependencies ++= Seq(
-  "com.malliina" %% "okclient" % "1.6.1",
-  "com.nimbusds" % "nimbus-jose-jwt" % "6.0.1",
+  "com.malliina" %% "okclient" % "1.7.1",
+  "com.nimbusds" % "nimbus-jose-jwt" % "6.4.2",
   "com.notnoop.apns" % "apns" % "1.0.0.Beta6",
   "org.scala-lang.modules" %% "scala-xml" % "1.1.1",
   "org.mortbay.jetty.alpn" % "alpn-boot" % "8.1.12.v20180117" % "runtime"
