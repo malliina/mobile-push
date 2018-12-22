@@ -5,3 +5,4 @@ lib_managed/
 target/
 .idea_modules/
 .hydra
+.bloop

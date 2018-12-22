@@ -1,10 +1,11 @@
 package tests
 
-import com.malliina.push.gcm.{GCMClient, GCMMessage, GCMToken, MappedGCMResponse}
+import com.malliina.push.fcm.FCMLegacyClient
+import com.malliina.push.gcm._
 
 import scala.concurrent.Future
 
-class GCMTests extends BaseSuite {
+class GoogleTests extends BaseSuite {
   val rawToken = "APA91bHyeY6NdQar-XXoC47PuWB0eCZErLB-xBNSlhrXQ-u_ElWM7ZFaocsoCeWBx_Or5vmj357BNTdr6atRNwAfFQ4od458OqwfJV3SSPnYa1CIN1j0EVplN8QeEjx3n6-WV6obKN60CDn0-RL3gAsILC_4ec0gAQ"
   //  val token = GCMToken(rawToken)
   // emulator token
@@ -21,10 +22,24 @@ class GCMTests extends BaseSuite {
     //    val gcmApiKey: String = "AIzaSyBLwdU7XGCdEPlwkGXW7V2eMRRFieNGYmA"
     val pushIDs = Seq(token)
 
-    val client = new GCMClient(gcmApiKey)
-    val message = GCMMessage(Map("title" -> "hey you", "message" -> "late night sexy åäö", "key" -> "value", "a" -> "b"))
+    val client = GCMClient(gcmApiKey)
+    val message = GCMMessage(Map("title" -> "hey you", "message" -> "late åäö", "key" -> "value", "a" -> "b"))
     val response: Future[Seq[MappedGCMResponse]] = client.pushAll(pushIDs, message)
     val rs = await(response)
+    assert(rs.forall(r => r.response.failure === 0))
+    rs.foreach(println)
+  }
+
+  ignore("FCM") {
+    val tokens = Seq(
+      GCMToken("euPV3FwOfAw:APA91bFGBF4aucsQYmZF4OdGp6WDUXfAbxzi2m7UQ2nustPqyA6ASgvXXjUwZ2x8z-s-3fZo6xtVyrWoGRInaL2dXp1pHQYMt2aQ1CnP4EAX3Z8WiojWNJnBORuuTbOiXFJ1A7549AT-")
+    )
+    val gcmApiKey: String = "AIzaSyBTtiOW0u5J11LzRMSqQlGrQYl4l-CgG-I"
+    val client = FCMLegacyClient(gcmApiKey)
+    val message = GCMMessage(Map("title" -> "hey you", "message" -> "late åäö", "key" -> "value", "a" -> "b"))
+    val response: Future[Seq[MappedGCMResponse]] = client.pushAll(tokens, message)
+    val rs = await(response)
+    println(rs)
     assert(rs.forall(r => r.response.failure === 0))
     rs.foreach(println)
   }

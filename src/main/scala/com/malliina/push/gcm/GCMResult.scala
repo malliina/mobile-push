@@ -6,55 +6,31 @@ case class GCMResult(message_id: Option[String], registration_id: Option[String]
 
 object GCMResult {
 
-  sealed trait GCMResultError {
-    def name: String
-  }
+  sealed abstract class GCMResultError(val name: String)
 
-  case object MissingRegistration extends GCMResultError {
-    override def name: String = "MissingRegistration"
-  }
+  case object MissingRegistration extends GCMResultError("MissingRegistration")
 
-  case object InvalidRegistration extends GCMResultError {
-    override def name: String = "InvalidRegistration"
-  }
+  case object InvalidRegistration extends GCMResultError("InvalidRegistration")
 
-  case object MismatchSenderId extends GCMResultError {
-    override def name: String = "MismatchSenderId"
-  }
+  case object MismatchSenderId extends GCMResultError("MismatchSenderId")
 
-  case object NotRegistered extends GCMResultError {
-    override def name: String = "NotRegistered"
-  }
+  case object NotRegistered extends GCMResultError("NotRegistered")
 
-  case object MessageTooBig extends GCMResultError {
-    override def name: String = "MessageTooBig"
-  }
+  case object MessageTooBig extends GCMResultError("MessageTooBig")
 
-  case object InvalidDataKey extends GCMResultError {
-    override def name: String = "InvalidDataKey"
-  }
+  case object InvalidDataKey extends GCMResultError("InvalidDataKey")
 
-  case object InvalidTtl extends GCMResultError {
-    override def name: String = "InvalidTtl"
-  }
+  case object InvalidTtl extends GCMResultError("InvalidTtl")
 
-  case object Unavailable extends GCMResultError {
-    override def name: String = "Unavailable"
-  }
+  case object Unavailable extends GCMResultError("Unavailable")
 
-  case object InternalServerError extends GCMResultError {
-    override def name: String = "InternalServerError"
-  }
+  case object InternalServerError extends GCMResultError("InternalServerError")
 
-  case object InvalidPackageName extends GCMResultError {
-    override def name: String = "InvalidPackageName"
-  }
+  case object InvalidPackageName extends GCMResultError("InvalidPackageName")
 
-  case object DeviceMessageRateExceeded extends GCMResultError {
-    override def name: String = "DeviceMessageRateExceeded"
-  }
+  case object DeviceMessageRateExceeded extends GCMResultError("DeviceMessageRateExceeded")
 
-  case class UnknownError(name: String) extends GCMResultError
+  case class UnknownError(n: String) extends GCMResultError(n)
 
   val knownErrors = Seq(
     MissingRegistration, InvalidRegistration, MismatchSenderId,

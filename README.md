@@ -7,6 +7,7 @@ Send push notifications to mobile devices. Supports:
 
 - Apple Push Notification service (APNs) using HTTP/2
 - Apple Push Notification service using the legacy binary protocol
+- Firebase Cloud Messaging (FCM) using the legacy HTTP API
 - Google Cloud Messaging (GCM)
 - Amazon Device Messaging (ADM)
 - Windows Push Notification Services (WNS)
@@ -14,7 +15,7 @@ Send push notifications to mobile devices. Supports:
 
 ## Installation
 
-    libraryDependencies += "com.malliina" %% "mobile-push" % "1.13.0"
+    libraryDependencies += "com.malliina" %% "mobile-push" % "1.16.0"
 
 ## Usage
 
@@ -58,11 +59,19 @@ the scope of this library; let's assume you already have all this.
     val message = APNSMessage.simple("Hey, sexy!")
     val pushedNotification: Future[ApnsNotification] = client.push(deviceHexID, message)
 
+### Firebase Cloud Messaging, legacy HTTP API
+
+    val gcmApiKey: String = ???
+    val deviceRegistrationId: GCMToken = GCMToken("registration_id_here")
+    val client = FCMLegacyClient(gcmApiKey)
+    val message = GCMMessage(Map("key" -> "value"))
+    val response: Future[MappedGCMResponse] = client.push(deviceRegistrationId, message)
+
 ### Google Cloud Messaging
 
     val gcmApiKey: String = ???
     val deviceRegistrationId: GCMToken = GCMToken("registration_id_here")
-    val client = new GCMClient(gcmApiKey)
+    val client = GCMClient(gcmApiKey)
     val message = GCMMessage(Map("key" -> "value"))
     val response: Future[MappedGCMResponse] = client.push(deviceRegistrationId, message)
 
@@ -71,7 +80,7 @@ the scope of this library; let's assume you already have all this.
     val clientId: String = ???
     val clientSecret: String = ???
     val deviceID: ADMToken = ADMToken("adm_token_here")
-    val client = new ADMClient(clientId, clientSecret)
+    val client = ADMClient(clientId, clientSecret)
     val message = AndroidMessage(Map("key" -> "value"), expiresAfter = 20.seconds)
     val response: Future[HttpResponse] = client.push(deviceID, message)
     

@@ -12,6 +12,19 @@ import play.api.libs.json.Json
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationInt
 
+object ADMClient {
+  val MessagingPush = "messaging:push"
+  val AccessToken = "access_token"
+
+  val AmazonTypeVersion = "X-Amzn-Type-Version"
+  val AmazonTypeVersionValue = "com.amazon.device.messaging.ADMMessage@1.0"
+  val AmazonAcceptType = "X-Amzn-Accept-Type"
+  val AmazonAcceptTypeValue = "com.amazon.device.messaging.ADMSendResult@1.0"
+
+  def apply(clientID: String, clientSecret: String): ADMClient =
+    new ADMClient(clientID, clientSecret)
+}
+
 class ADMClient(val clientID: String, val clientSecret: String)
   extends PushClient[ADMToken, AndroidMessage, HttpResponse] {
 
@@ -60,14 +73,4 @@ class ADMClient(val clientID: String, val clientSecret: String)
       client.postForm(FullUrl.https("api.amazon.com", "/auth/O2/token"), parameters)
     }
   }
-}
-
-object ADMClient {
-  val MessagingPush = "messaging:push"
-  val AccessToken = "access_token"
-
-  val AmazonTypeVersion = "X-Amzn-Type-Version"
-  val AmazonTypeVersionValue = "com.amazon.device.messaging.ADMMessage@1.0"
-  val AmazonAcceptType = "X-Amzn-Accept-Type"
-  val AmazonAcceptTypeValue = "com.amazon.device.messaging.ADMSendResult@1.0"
 }
