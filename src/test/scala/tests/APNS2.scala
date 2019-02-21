@@ -58,6 +58,7 @@ class APNS2 extends BaseSuite {
   }
 
   ignore("token sample code README") {
+    //#apns-token
     val conf = APNSTokenConf(
       Paths.get("path/to/downloaded-priv-key.p8"),
       KeyId("key_id_here"),
@@ -69,9 +70,11 @@ class APNS2 extends BaseSuite {
     val message = APNSMessage.simple("Hey, sexy token!")
     val request = APNSRequest.withTopic(topic, message)
     val result: Future[Either[APNSError, APNSIdentifier]] = client.push(deviceToken, request)
+    //#apns-token
   }
 
   ignore("cert sample code for README") {
+    //#apns-cert
     val certKeyStore: KeyStore = ???
     val certPass: String = ???
     val topic = APNSTopic("org.company.MyApp")
@@ -80,6 +83,7 @@ class APNS2 extends BaseSuite {
     val request = APNSRequest.withTopic(topic, message)
     val client = APNSHttpClient(certKeyStore, certPass, isSandbox = true)
     val result: Future[Either[APNSError, APNSIdentifier]] = client.push(deviceToken, request)
+    //#apns-cert
   }
 
   def certContext(creds: APNSCred) = {
