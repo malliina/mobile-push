@@ -50,7 +50,7 @@ val docs = project
       val log = streams.value.log
       val commitStatus = Process(Seq("git", "commit", "-m", "Update documentation")).run(log).exitValue()
       if (commitStatus != 0) {
-        sys.error(s"Unexpected status code $commitStatus for git add/commit.")
+        sys.error(s"Unexpected status code $commitStatus for git commit.")
       }
     },
     updateDocs := updateDocs.dependsOn(mdoc.toTask("")).value
