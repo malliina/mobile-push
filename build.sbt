@@ -1,5 +1,3 @@
-import sbtrelease.ReleaseStateTransformations._
-
 import scala.sys.process.Process
 
 val updateDocs = taskKey[Unit]("Updates README.md")
@@ -56,17 +54,4 @@ val docs = project
     updateDocs := updateDocs.dependsOn(mdoc.toTask("")).value
   )
 
-releaseProcess in mobileProject := Seq[ReleaseStep](
-  checkSnapshotDependencies,
-  inquireVersions,
-  runTest,
-  setReleaseVersion,
-  releaseStepTask(updateDocs in docs),
-  commitReleaseVersion,
-  tagRelease,
-  publishArtifacts, // : ReleaseStep, checks whether `publishTo` is properly set up
-  setNextVersion,
-  commitNextVersion,
-  releaseStepCommand("sonatypeReleaseAll"),
-  pushChanges
-)
+beforePublish in mobileProject := (updateDocs in docs).value
