@@ -2,7 +2,7 @@ import sbtrelease.ReleaseStateTransformations._
 
 import scala.sys.process.Process
 
-val updateDocs = taskKey[File]("Updates README.md")
+val updateDocs = taskKey[Unit]("Updates README.md")
 
 val commonSettings = Seq(
   scalaVersion := "2.12.8",
@@ -45,17 +45,13 @@ val docs = project
     mdocVariables := Map(
       "VERSION" -> version.value
     ),
+    mdocOut := (baseDirectory in ThisBuild).value,
     updateDocs := {
       val log = streams.value.log
-      val outFile = (baseDirectory in ThisBuild).value / "README.md"
-      IO.move(mdocOut.value / "README.md", outFile)
-      log.info(s"Wrote README to $outFile. Committing...")
-      val addStatus = Process(s"git add $outFile").run(log).exitValue()
-      val commitStatus =  Process(Seq("git", "commit", "-m", "Update README")).run(log).exitValue()
-      if (addStatus != 0 || commitStatus != 0) {
-        sys.error(s"Unexpected status codes $addStatus, $commitStatus for git add/commit.")
+      val commitStatus = Process(Seq("git", "commit", "-m", "Update documentation")).run(log).exitValue()
+      if (commitStatus != 0) {
+        sys.error(s"Unexpected status code $commitStatus for git add/commit.")
       }
-      outFile
     },
     updateDocs := updateDocs.dependsOn(mdoc.toTask("")).value
   )
