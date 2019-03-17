@@ -1,7 +1,7 @@
 package com.malliina.push.wns
 
 import com.malliina.http._
-import com.malliina.push.Headers.{OctetStream, TextHtml, _}
+import com.malliina.push.Headers._
 import com.malliina.push.OAuthKeys._
 import com.malliina.push._
 import com.malliina.push.wns.WNSClient._
@@ -83,7 +83,7 @@ class WNSClient(creds: WNSCredentials) extends PushClient[WNSToken, WNSMessage, 
         valid => Success(valid)
       )
     } else {
-      Failure(new ResponseException(response))
+      Failure(new com.malliina.push.ResponseException(response))
     }
   }
 }
