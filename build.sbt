@@ -50,9 +50,10 @@ val docs = project
       val outFile = (baseDirectory in ThisBuild).value / "README.md"
       IO.move(mdocOut.value / "README.md", outFile)
       log.info(s"Wrote README to $outFile. Committing...")
+      val addStatus = Process(s"git add $outFile").run(log).exitValue()
       val commitStatus = Process("""git commit -m "Update README"""").run(log).exitValue()
-      if (commitStatus != 0) {
-        sys.error(s"Unexpected status code $commitStatus for git commit.")
+      if (addStatus != 0 || commitStatus != 0) {
+        sys.error(s"Unexpected status codes $addStatus, $commitStatus for git add/commit.")
       }
       outFile
     },
