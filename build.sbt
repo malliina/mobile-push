@@ -17,7 +17,7 @@ val mobileSettings = commonSettings ++ Seq(
     "com.notnoop.apns" % "apns" % "1.0.0.Beta6",
     "org.scala-lang.modules" %% "scala-xml" % "1.1.1",
     "org.mortbay.jetty.alpn" % "alpn-boot" % "8.1.12.v20180117" % "runtime",
-    "org.scalatest" %% "scalatest" % "3.0.6" % Test
+    "org.scalatest" %% "scalatest" % "3.0.7" % Test
   ),
   fork in Test := true,
   javaOptions ++= {
