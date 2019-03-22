@@ -46,9 +46,12 @@ val docs = project
     mdocOut := (baseDirectory in ThisBuild).value,
     updateDocs := {
       val log = streams.value.log
-      val commitStatus = Process(Seq("git", "commit", "-m", "Update documentation")).run(log).exitValue()
-      if (commitStatus != 0) {
-        sys.error(s"Unexpected status code $commitStatus for git commit.")
+      val outFile = mdocOut.value
+      IO.relativize((baseDirectory in ThisBuild).value, outFile)
+        .getOrElse(sys.error(s"Strange directory: $outFile"))
+      val addStatus = Process(s"git add $outFile").run(log).exitValue()
+      if (addStatus != 0) {
+        sys.error(s"Unexpected status code $addStatus for git commit.")
       }
     },
     updateDocs := updateDocs.dependsOn(mdoc.toTask("")).value
