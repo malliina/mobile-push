@@ -59,11 +59,12 @@ val result: Future[Either[APNSError, APNSIdentifier]] = client.push(deviceToken,
 ### Apple Push Notification service, legacy binary protocol
 
 ```scala
-val gcmApiKey: String = ???
-val deviceRegistrationId: GCMToken = GCMToken("registration_id_here")
-val client = FCMLegacyClient(gcmApiKey)
-val message = GCMMessage(Map("key" -> "value"))
-val response: Future[MappedGCMResponse] = client.push(deviceRegistrationId, message)
+val certKeyStore: KeyStore = ???
+val certPass: String = ???
+val deviceHexID: APNSToken = APNSToken.build("my_hex_device_token_here").get
+val client = new APNSClient(certKeyStore, certPass, isSandbox = true)
+val message = APNSMessage.simple("Hey, sexy!")
+val pushedNotification: Future[ApnsNotification] = client.push(deviceHexID, message)
 ```
 
 ### Firebase Cloud Messaging, legacy HTTP API

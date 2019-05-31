@@ -29,48 +29,111 @@ the scope of this library; let's assume you already have all this.
 
 ### Apple Push Notification service, using token authentication
 
-```scala mdoc:code:../src/test/scala/tests/APNS2.scala:apns-token
-42
+``` scala mdoc:invisible
+import java.nio.file.Paths
+import java.security.KeyStore
+
+import com.malliina.http.HttpResponse
+import com.malliina.push.adm.{ADMClient, ADMToken}
+import com.malliina.push.android.AndroidMessage
+import com.malliina.push.apns._
+import com.malliina.push.fcm.FCMLegacyClient
+import com.malliina.push.gcm.{GCMClient, GCMMessage, GCMToken, MappedGCMResponse}
+import com.malliina.push.mpns.{MPNSClient, MPNSToken, ToastMessage}
+import com.malliina.push.wns._
+import com.notnoop.apns.ApnsNotification
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.DurationInt
+import scala.concurrent.{ExecutionContext, Future}
+```
+
+```scala mdoc:compile-only
+val conf = APNSTokenConf(
+  Paths.get("path/to/downloaded-priv-key.p8"),
+  KeyId("key_id_here"),
+  TeamId("team_id_here")
+)
+val client = APNSTokenClient(conf, isSandbox = true)
+val topic = APNSTopic("org.company.MyApp")
+val deviceToken: APNSToken = APNSToken.build("my_hex_device_token_here").get
+val message = APNSMessage.simple("Hey, sexy token!")
+val request = APNSRequest.withTopic(topic, message)
+val result: Future[Either[APNSError, APNSIdentifier]] = client.push(deviceToken, request)
 ```
 
 ### Apple Push Notification service, using certificate authentication
 
-```scala mdoc:code:../src/test/scala/tests/APNS2.scala:apns-cert
-42
+```scala mdoc:compile-only
+val certKeyStore: KeyStore = ???
+val certPass: String = ???
+val topic = APNSTopic("org.company.MyApp")
+val deviceToken: APNSToken = APNSToken.build("my_hex_device_token_here").get
+val message = APNSMessage.simple("Hey, sexy!")
+val request = APNSRequest.withTopic(topic, message)
+val client = APNSHttpClient(certKeyStore, certPass, isSandbox = true)
+val result: Future[Either[APNSError, APNSIdentifier]] = client.push(deviceToken, request)
 ```
 
 ### Apple Push Notification service, legacy binary protocol
 
-```scala mdoc:code:../src/test/scala/tests/CodeSamples.scala:fcm
-42
+```scala mdoc:compile-only
+val certKeyStore: KeyStore = ???
+val certPass: String = ???
+val deviceHexID: APNSToken = APNSToken.build("my_hex_device_token_here").get
+val client = new APNSClient(certKeyStore, certPass, isSandbox = true)
+val message = APNSMessage.simple("Hey, sexy!")
+val pushedNotification: Future[ApnsNotification] = client.push(deviceHexID, message)
 ```
 
 ### Firebase Cloud Messaging, legacy HTTP API
 
-```scala mdoc:code:../src/test/scala/tests/CodeSamples.scala:fcm
-42
+```scala mdoc:compile-only
+val gcmApiKey: String = ???
+val deviceRegistrationId: GCMToken = GCMToken("registration_id_here")
+val client = FCMLegacyClient(gcmApiKey)
+val message = GCMMessage(Map("key" -> "value"))
+val response: Future[MappedGCMResponse] = client.push(deviceRegistrationId, message)
 ```
 
 ### Google Cloud Messaging
 
-```scala mdoc:code:../src/test/scala/tests/CodeSamples.scala:gcm
-42
+```scala mdoc:compile-only
+val gcmApiKey: String = ???
+val deviceRegistrationId: GCMToken = GCMToken("registration_id_here")
+val client = GCMClient(gcmApiKey)
+val message = GCMMessage(Map("key" -> "value"))
+val response: Future[MappedGCMResponse] = client.push(deviceRegistrationId, message)
 ```
 
 ### Amazon Device Messaging
 
-```scala mdoc:code:../src/test/scala/tests/CodeSamples.scala:adm
-42
+```scala mdoc:compile-only
+val clientId: String = ???
+val clientSecret: String = ???
+val deviceID: ADMToken = ADMToken("adm_token_here")
+val client = ADMClient(clientId, clientSecret)
+val message = AndroidMessage(Map("key" -> "value"), expiresAfter = 20.seconds)
+val response: Future[HttpResponse] = client.push(deviceID, message)
 ```
 
 ### Windows Push Notification Services
 
-```scala mdoc:code:../src/test/scala/tests/CodeSamples.scala:wns
-42
+```scala mdoc:compile-only
+val packageSid: String = ???
+val clientSecret: String = ???
+val credentials = WNSCredentials(packageSid, clientSecret)
+val client = new WNSClient(credentials)
+val payload = ToastElement.text("Hello, world!")
+val message = WNSMessage(payload)
+val token = WNSToken.build("https://db5.notify.windows.com/?token=AwYAAABq7aWo").get
+val response: Future[WNSResponse] = client.push(token, message)
 ```
 
 ### Microsoft Push Notification Service
 
-```scala mdoc:code:../src/test/scala/tests/CodeSamples.scala:mpns
-42
+```scala mdoc:compile-only
+val deviceURL: MPNSToken = MPNSToken.build("my_device_url_here").get
+val client = new MPNSClient
+val message = ToastMessage("text1", "text2", deepLink = "/App/Xaml/DeepLinkPage.xaml?param=value", silent = true)
+val response: Future[HttpResponse] = client.push(deviceURL, message)
 ```

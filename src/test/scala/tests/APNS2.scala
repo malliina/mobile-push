@@ -1,14 +1,10 @@
 package tests
 
-import java.nio.file.Paths
-import java.security.KeyStore
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
 import com.malliina.push.TLSUtils
 import com.malliina.push.apns._
-
-import scala.concurrent.Future
 
 class APNS2 extends BaseSuite {
   ignore("a successful notifications returns an apns-id") {
@@ -57,38 +53,10 @@ class APNS2 extends BaseSuite {
     }
   }
 
-  ignore("token sample code README") {
-    //#apns-token
-    val conf = APNSTokenConf(
-      Paths.get("path/to/downloaded-priv-key.p8"),
-      KeyId("key_id_here"),
-      TeamId("team_id_here")
-    )
-    val client = APNSTokenClient(conf, isSandbox = true)
-    val topic = APNSTopic("org.company.MyApp")
-    val deviceToken: APNSToken = APNSToken.build("my_hex_device_token_here").get
-    val message = APNSMessage.simple("Hey, sexy token!")
-    val request = APNSRequest.withTopic(topic, message)
-    val result: Future[Either[APNSError, APNSIdentifier]] = client.push(deviceToken, request)
-    //#apns-token
-  }
-
-  ignore("cert sample code for README") {
-    //#apns-cert
-    val certKeyStore: KeyStore = ???
-    val certPass: String = ???
-    val topic = APNSTopic("org.company.MyApp")
-    val deviceToken: APNSToken = APNSToken.build("my_hex_device_token_here").get
-    val message = APNSMessage.simple("Hey, sexy!")
-    val request = APNSRequest.withTopic(topic, message)
-    val client = APNSHttpClient(certKeyStore, certPass, isSandbox = true)
-    val result: Future[Either[APNSError, APNSIdentifier]] = client.push(deviceToken, request)
-    //#apns-cert
-  }
-
   def certContext(creds: APNSCred) = {
     val pass = creds.pass
-    TLSUtils.keyStoreFromFile(creds.file, pass, "PKCS12")
+    TLSUtils
+      .keyStoreFromFile(creds.file, pass, "PKCS12")
       .map(ks => TLSUtils.buildSSLContext(ks, pass))
       .get
   }
