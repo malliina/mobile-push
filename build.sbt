@@ -5,7 +5,8 @@ val updateDocs = taskKey[Unit]("Updates README.md")
 val commonSettings = Seq(
   scalaVersion := "2.13.0",
   organization := "com.malliina",
-  crossScalaVersions := scalaVersion.value :: "2.12.8" :: Nil
+  crossScalaVersions := scalaVersion.value :: "2.12.8" :: Nil,
+  releaseCrossBuild := true
 )
 
 val mobileSettings = commonSettings ++ Seq(
