@@ -58,4 +58,4 @@ val docs = project
     updateDocs := updateDocs.dependsOn(mdoc.toTask("")).value
   )
 
-beforeCommitRelease in mobileProject := (updateDocs in docs).value
+beforePublish in mobileProject := (updateDocs in docs).value
