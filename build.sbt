@@ -34,9 +34,6 @@ val mobileSettings = commonSettings ++ Seq(
 val mobileProject = Project("mobile-push", file("."))
   .enablePlugins(MavenCentralPlugin)
   .settings(mobileSettings: _*)
-  .settings(
-    releaseProcess := tagReleaseProcess.value
-  )
 
 val docs = project
   .in(file("mdoc"))
@@ -61,4 +58,4 @@ val docs = project
     updateDocs := updateDocs.dependsOn(mdoc.toTask("")).value
   )
 
-beforePublish in mobileProject := (updateDocs in docs).value
+beforeCommitRelease in mobileProject := (updateDocs in docs).value

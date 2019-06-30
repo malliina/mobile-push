@@ -8,7 +8,7 @@ resolvers ++= Seq(
 )
 
 Seq(
-  "com.malliina" %% "sbt-utils-maven" % "0.12.11",
+  "com.malliina" %% "sbt-utils-maven" % "0.13.0",
   "org.scalameta" % "sbt-mdoc" % "1.3.1"
 ) map addSbtPlugin
 
