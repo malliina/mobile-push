@@ -3,21 +3,21 @@ import scala.sys.process.Process
 val updateDocs = taskKey[Unit]("Updates README.md")
 
 val commonSettings = Seq(
-  scalaVersion := "2.12.8",
-  organization := "com.malliina"
+  scalaVersion := "2.13.0",
+  organization := "com.malliina",
+  crossScalaVersions := scalaVersion.value :: "2.12.8" :: Nil
 )
 
 val mobileSettings = commonSettings ++ Seq(
   gitUserName := "malliina",
   developerName := "Michael Skogberg",
-  resolvers += "Sonatype releases" at "https://oss.sonatype.org/content/repositories/releases/",
   libraryDependencies ++= Seq(
-    "com.malliina" %% "okclient" % "1.9.0",
-    "com.nimbusds" % "nimbus-jose-jwt" % "7.0.1",
+    "com.malliina" %% "okclient" % "1.11.0",
+    "com.nimbusds" % "nimbus-jose-jwt" % "7.3",
     "com.notnoop.apns" % "apns" % "1.0.0.Beta6",
-    "org.scala-lang.modules" %% "scala-xml" % "1.1.1",
+    "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
     "org.mortbay.jetty.alpn" % "alpn-boot" % "8.1.12.v20180117" % "runtime",
-    "org.scalatest" %% "scalatest" % "3.0.7" % Test
+    "org.scalatest" %% "scalatest" % "3.0.8" % Test
   ),
   fork in Test := true,
   javaOptions ++= {
@@ -33,6 +33,9 @@ val mobileSettings = commonSettings ++ Seq(
 val mobileProject = Project("mobile-push", file("."))
   .enablePlugins(MavenCentralPlugin)
   .settings(mobileSettings: _*)
+  .settings(
+    releaseProcess := tagReleaseProcess.value
+  )
 
 val docs = project
   .in(file("mdoc"))
