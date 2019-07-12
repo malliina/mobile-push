@@ -61,6 +61,14 @@ val request = APNSRequest.withTopic(topic, message)
 val result: Future[Either[APNSError, APNSIdentifier]] = client.push(deviceToken, request)
 ```
 
+The above sample sends a simple message without any customizations. Explore the properties of
+`APNSMessage` for more advanced messages. Here's a message with a text body and separate title:
+
+```scala mdoc:compile-only
+val payload = APSPayload.full(AlertPayload("The Body", title = Option("Attention")))
+val message = APNSMessage(payload)
+```
+
 ### Apple Push Notification service, using certificate authentication
 
 ```scala mdoc:compile-only

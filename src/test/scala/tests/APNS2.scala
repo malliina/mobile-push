@@ -18,11 +18,24 @@ class APNS2 extends BaseSuite {
     }
   }
 
-  ignore("token-authenticated notification") {
+  ignore("token-authenticated simple notification") {
     APNSHttpConf.loadOpt.foreach { creds =>
       APNSTokenConf.default.toOption.foreach { conf =>
         val client = APNSTokenClient(conf, isSandbox = false)
         val message = APNSMessage.simple("this is a token test")
+        val request = APNSRequest.withTopic(creds.topic, message)
+        val result = await(client.push(creds.token, request))
+        assert(result.isRight)
+      }
+    }
+  }
+
+  ignore("token-authenticated advanced notification") {
+    APNSHttpConf.loadOpt.foreach { creds =>
+      APNSTokenConf.default.toOption.foreach { conf =>
+        val client = APNSTokenClient(conf, isSandbox = false)
+        val payload = APSPayload.full(AlertPayload("The Body", title = Option("Attention")))
+        val message = APNSMessage(payload)
         val request = APNSRequest.withTopic(creds.topic, message)
         val result = await(client.push(creds.token, request))
         assert(result.isRight)

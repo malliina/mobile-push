@@ -52,7 +52,7 @@ object APNSHttpClient {
   * @see https://groups.google.com/forum/embed/#!topic/simple-build-tool/TpImNLs1akQ
   * @see https://github.com/square/okhttp/wiki/Building
   */
-class APNSHttpClient(client: OkClient, isSandbox: Boolean = false)
+class APNSHttpClient(val client: OkClient, isSandbox: Boolean = false)
   extends PushClient[APNSToken, APNSRequest, Either[APNSError, APNSIdentifier]] {
 
   val host: FullUrl = if (isSandbox) DevHost else ProdHost

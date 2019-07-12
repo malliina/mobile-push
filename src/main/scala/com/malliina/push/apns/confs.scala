@@ -7,11 +7,11 @@ import com.malliina.values.ErrorMessage
 
 /** Apple Team ID.
   */
-case class TeamId(team: String)
+case class TeamId(team: String) extends AnyVal
 
 /** Apple Developer Key ID.
   */
-case class KeyId(id: String)
+case class KeyId(id: String) extends AnyVal
 
 /**
   * @param privateKey downloadable from Apple's developer website

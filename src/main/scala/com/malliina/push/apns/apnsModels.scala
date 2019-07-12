@@ -6,7 +6,7 @@ import play.api.libs.json.Json
 
 import scala.util.Try
 
-case class APNSTopic(topic: String)
+case class APNSTopic(topic: String) extends AnyVal
 
 object APNSTopic extends SimpleCompanion[String, APNSTopic] {
   override def write(t: APNSTopic): String = t.topic
@@ -34,7 +34,7 @@ case object APNSImmediately extends APNSPriority(10)
 
 case object APNSConsiderate extends APNSPriority(5)
 
-case class APNSIdentifier(id: String) {
+case class APNSIdentifier(id: String) extends AnyVal {
   override def toString = id
 }
 

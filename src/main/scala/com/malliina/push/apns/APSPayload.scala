@@ -29,6 +29,20 @@ object APSPayload {
     }
   )
 
+  def full(payload: AlertPayload,
+           badge: Option[Int] = None,
+           sound: Option[String] = None): APSPayload =
+    apply(Option(Right(payload)), badge, sound)
+
+  def simple(text: String,
+             badge: Option[Int] = None,
+             sound: Option[String] = None): APSPayload =
+    apply(Option(Left(text)), badge, sound)
+
+  def background(badge: Option[Int] = None,
+                 sound: Option[String] = None): APSPayload =
+    apply(None, badge, sound)
+
   def eitherAsJson[L, R](l: Format[L], r: Format[R]): Format[Either[L, R]] = Format(
     Reads[Either[L, R]](json => json.validate[L](l).map(Left.apply).orElse(json.validate[R](r).map(Right.apply))),
     Writes[Either[L, R]](e => e.fold(left => toJson(left)(l), right => toJson(right)(r)))

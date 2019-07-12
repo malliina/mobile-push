@@ -35,7 +35,8 @@ object APNSTokenClient {
   * @see https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html
   */
 class APNSTokenClient(conf: APNSTokenConf, isSandbox: Boolean)
-  extends APNSHttpClient(OkClient.default, isSandbox) {
+    extends APNSHttpClient(OkClient.default, isSandbox)
+    with AutoCloseable {
 
   val keySpec = new PKCS8EncodedKeySpec(Base64.getDecoder.decode(readKey(conf.privateKey)))
   val keyFactory = KeyFactory.getInstance("EC")
@@ -73,5 +74,11 @@ class APNSTokenClient(conf: APNSTokenConf, isSandbox: Boolean)
   }
 
   // drops 'begin private key...', 'end private key...' boiler
-  private def readKey(file: Path) = Source.fromFile(file.toFile).getLines().toList.drop(1).init.mkString
+  private def readKey(file: Path) = {
+    val src = Source.fromFile(file.toFile)
+    try src.getLines().toList.drop(1).init.mkString
+    finally src.close()
+  }
+
+  override def close(): Unit = client.close()
 }
