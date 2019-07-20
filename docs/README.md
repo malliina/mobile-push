@@ -67,6 +67,8 @@ The above sample sends a simple message without any customizations. Explore the 
 ```scala mdoc:compile-only
 val payload = APSPayload.full(AlertPayload("The Body", title = Option("Attention")))
 val message = APNSMessage(payload)
+val request = APNSRequest.withTopic(topic, message)
+val result: Future[Either[APNSError, APNSIdentifier]] = client.push(deviceToken, request)
 ```
 
 ### Apple Push Notification service, using certificate authentication

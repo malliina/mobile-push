@@ -53,7 +53,7 @@ object APNSMeta {
   def withTopic(topic: APNSTopic) = APNSMeta(topic, 0, APNSImmediately, None)
 }
 
-case class APNSToken private(token: String) extends Token
+case class APNSToken private(token: String) extends AnyVal with Token
 
 object APNSToken extends TokenCompanion[APNSToken] {
   override def isValid(token: String): Boolean =

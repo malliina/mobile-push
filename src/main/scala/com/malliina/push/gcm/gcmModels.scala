@@ -6,7 +6,7 @@ import play.api.libs.json.Json
 
 import scala.concurrent.duration.Duration
 
-case class GCMToken(token: String) extends Token
+case class GCMToken(token: String) extends AnyVal with Token
 
 object GCMToken extends TokenCompanion[GCMToken] {
   type FCMToken = GCMToken
