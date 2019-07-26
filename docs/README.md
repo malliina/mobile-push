@@ -65,6 +65,9 @@ The above sample sends a simple message without any customizations. Explore the 
 `APNSMessage` for more advanced messages. Here's a message with a text body and separate title:
 
 ```scala mdoc:compile-only
+val client: APNSTokenClient = ???
+val topic = APNSTopic("org.company.MyApp")
+val deviceToken = APNSToken.build("my_hex_device_token_here").get
 val payload = APSPayload.full(AlertPayload("The Body", title = Option("Attention")))
 val message = APNSMessage(payload)
 val request = APNSRequest.withTopic(topic, message)
