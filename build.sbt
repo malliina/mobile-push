@@ -10,8 +10,8 @@ val mobilePush = Project("mobile-push", file("."))
   .enablePlugins(MavenCentralPlugin)
   .settings(commonSettings: _*)
   .settings(
-    scalaVersion := "2.13.0",
-    crossScalaVersions := scalaVersion.value :: "2.12.8" :: Nil,
+    scalaVersion := "2.12.8",
+    crossScalaVersions := "2.13.0" :: "2.12.8" :: Nil,
     releaseCrossBuild := true,
     gitUserName := "malliina",
     developerName := "Michael Skogberg",
@@ -36,14 +36,12 @@ val mobilePush = Project("mobile-push", file("."))
 
 val docs = project
   .in(file("mdoc"))
-  .dependsOn(mobilePush)
-  .enablePlugins(MdocPlugin)
-  .settings(commonSettings: _*)
   .settings(
+    organization := "com.malliina",
     scalaVersion := "2.12.8",
-    mdocVariables := Map(
-      "VERSION" -> version.value
-    ),
+    crossScalaVersions -= "2.13.0",
+    skip.in(publish) := true,
+    mdocVariables := Map("VERSION" -> version.value),
     mdocOut := (baseDirectory in ThisBuild).value,
     updateDocs := {
       val log = streams.value.log
@@ -57,5 +55,7 @@ val docs = project
     },
     updateDocs := updateDocs.dependsOn(mdoc.toTask("")).value
   )
+  .dependsOn(mobilePush)
+  .enablePlugins(MdocPlugin)
 
 beforeCommitRelease in mobilePush := (updateDocs in docs).value
