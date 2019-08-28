@@ -110,6 +110,9 @@ val response: Future[MappedGCMResponse] = client.push(deviceRegistrationId, mess
 
 ### Google Cloud Messaging
 
+Note: It looks like Google has removed GCM server APIs, therefore this method may no longer work.
+Instead, use Firebase Cloud Messaging as in the previous code sample.
+
 ```scala mdoc:compile-only
 val gcmApiKey: String = ???
 val deviceRegistrationId: GCMToken = GCMToken("registration_id_here")
