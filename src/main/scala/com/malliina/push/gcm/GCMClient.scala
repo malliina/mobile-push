@@ -52,6 +52,6 @@ class GoogleClient(val apiKey: String, postEndpoint: FullUrl)
 
   private def send(message: GCMLetter): Future[HttpResponse] = {
     val body = Json.toJson(message)
-    AsyncHttp.withClient(_.postJson(GcmEndpoint, body, Map(Authorization -> s"key=$apiKey")))
+    AsyncHttp.withClient(_.postJson(postEndpoint, body, Map(Authorization -> s"key=$apiKey")))
   }
 }
