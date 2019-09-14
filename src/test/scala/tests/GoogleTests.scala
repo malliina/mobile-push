@@ -32,11 +32,13 @@ class GoogleTests extends BaseSuite {
 
   ignore("FCM") {
     val tokens = Seq(
-      GCMToken("euPV3FwOfAw:APA91bFGBF4aucsQYmZF4OdGp6WDUXfAbxzi2m7UQ2nustPqyA6ASgvXXjUwZ2x8z-s-3fZo6xtVyrWoGRInaL2dXp1pHQYMt2aQ1CnP4EAX3Z8WiojWNJnBORuuTbOiXFJ1A7549AT-")
+      // Emulator
+      GCMToken("ctCUlTdaxxI:APA91bH-aBVc0qoUwLCRNV0VJ27Nng6CYhy7jiILHaEqQMGUQWxLocsWawWSIUq0gw6xlXttuLsddwbnP5Tjjw7-DfJNuV1UmDJgmQHajh8BHnSWFCFhkXWhV4y0D7tB7CL2tQhzVTIV")
     )
-    val gcmApiKey: String = "AIzaSyBTtiOW0u5J11LzRMSqQlGrQYl4l-CgG-I"
+    // Check https://console.firebase.google.com/u/0/project/project-id-here/settings/cloudmessaging/?pli=1
+    val gcmApiKey: String = "changeme"
     val client = FCMLegacyClient(gcmApiKey)
-    val message = GCMMessage(Map("title" -> "hey you", "message" -> "late åäö", "key" -> "value", "a" -> "b"))
+    val message = GCMMessage(Map("title" -> "hey you there", "message" -> "late åäö", "key" -> "value", "a" -> "b"))
     val response: Future[Seq[MappedGCMResponse]] = client.pushAll(tokens, message)
     val rs = await(response)
     println(rs)

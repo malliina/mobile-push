@@ -20,18 +20,11 @@ val mobilePush = Project("mobile-push", file("."))
       "com.nimbusds" % "nimbus-jose-jwt" % "7.3",
       "com.notnoop.apns" % "apns" % "1.0.0.Beta6",
       "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
-      "org.mortbay.jetty.alpn" % "alpn-boot" % "8.1.12.v20180117" % "runtime",
+      "org.eclipse.jetty" % "jetty-alpn-java-server" % "9.4.20.v20190813",
+      "org.eclipse.jetty" % "jetty-alpn-java-client" % "9.4.20.v20190813",
       "org.scalatest" %% "scalatest" % "3.0.8" % Test
     ),
-    fork in Test := true,
-    javaOptions ++= {
-      val attList = (managedClasspath in Runtime).value
-      for {
-        file <- attList.map(_.data)
-        path = file.getAbsolutePath
-        if path.contains("alpn-boot")
-      } yield s"-Xbootclasspath/p:$path"
-    }
+    fork in Test := true
   )
 
 val docs = project
