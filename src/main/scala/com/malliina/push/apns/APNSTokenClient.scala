@@ -74,7 +74,7 @@ class APNSTokenClient(conf: APNSTokenConf, isSandbox: Boolean)
   }
 
   // drops 'begin private key...', 'end private key...' boiler
-  private def readKey(file: Path) = {
+  private def readKey(file: Path): String = {
     val src = Source.fromFile(file.toFile)
     try src.getLines().toList.drop(1).init.mkString
     finally src.close()

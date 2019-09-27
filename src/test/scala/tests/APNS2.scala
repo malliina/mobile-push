@@ -6,6 +6,8 @@ import java.time.temporal.ChronoUnit
 import com.malliina.push.TLSUtils
 import com.malliina.push.apns._
 
+/** To test, obtain a token from a real app, then run a test case manually.
+  */
 class APNS2 extends BaseSuite {
   ignore("a successful notifications returns an apns-id") {
     APNSHttpConf.loadOpt.foreach { creds =>

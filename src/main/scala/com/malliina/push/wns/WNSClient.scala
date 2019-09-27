@@ -53,11 +53,8 @@ class WNSClient(creds: WNSCredentials) extends PushClient[WNSToken, WNSMessage, 
       }
     }
 
-  def pushSingle(client: OkClient,
-                 token: WNSToken,
-                 body: String,
-                 headers: Map[String, String]): Future[WNSResponse] = {
-    val requestBody = RequestBody.create(XmlMediaType, body)
+  def pushSingle(client: OkClient, token: WNSToken, body: String, headers: Map[String, String]): Future[WNSResponse] = {
+    val requestBody = RequestBody.create(body, XmlMediaType)
     client.post(FullUrl.build(token.token).toOption.get, requestBody, headers).map(WNSResponse.fromResponse)
   }
 
@@ -78,10 +75,12 @@ class WNSClient(creds: WNSCredentials) extends PushClient[WNSToken, WNSMessage, 
 
   def parseResponse[T: Reads](response: HttpResponse): Try[T] = {
     if (response.code == 200) {
-      response.parse[T].fold(
-        invalid => Failure(new JsonException(response.asString, invalid)),
-        valid => Success(valid)
-      )
+      response
+        .parse[T]
+        .fold(
+          invalid => Failure(new JsonException(response.asString, invalid)),
+          valid => Success(valid)
+        )
     } else {
       Failure(new com.malliina.push.ResponseException(response))
     }

@@ -20,6 +20,7 @@ object APNSHttpClient {
 
   val ApnsId = "apns-id"
   val ApnsExpiration = "apns-expiration"
+  val ApnsPushType = "apns-push-type"
   val ApnsPriority = "apns-priority"
   val ApnsTopic = "apns-topic"
   val ContentLength = "content-length"
@@ -32,10 +33,7 @@ object APNSHttpClient {
   def apply(keyStore: KeyStore, keyStorePass: String, isSandbox: Boolean): APNSHttpClient =
     apply(TLSUtils.buildSSLContext(keyStore, keyStorePass).getSocketFactory, isSandbox)
 
-  def fromCert(cert: Path,
-               keyStorePass: String,
-               keyStoreType: String,
-               isSandbox: Boolean): Try[APNSHttpClient] =
+  def fromCert(cert: Path, keyStorePass: String, keyStoreType: String, isSandbox: Boolean): Try[APNSHttpClient] =
     TLSUtils
       .loadContext(cert, keyStorePass, keyStoreType)
       .map(ctx => apply(ctx.getSocketFactory, isSandbox))
@@ -48,6 +46,9 @@ object APNSHttpClient {
 }
 
 /** APNs client, using the HTTP/2 notification API.
+  *
+  * Uses OkHttp with Jetty's "alpn-boot" in the bootclasspath for HTTP/2 support;
+  * please check the build definition of this project for details.
   *
   * @see https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html
   * @see https://groups.google.com/forum/embed/#!topic/simple-build-tool/TpImNLs1akQ
@@ -62,12 +63,10 @@ class APNSHttpClient(val client: OkClient, isSandbox: Boolean = false)
   def pushOne(id: APNSToken, message: APNSRequest): Future[APNSHttpResult] =
     push(id, message).map(r => fold(r, id))
 
-  override def push(id: APNSToken,
-                    message: APNSRequest): Future[Either[APNSError, APNSIdentifier]] =
+  override def push(id: APNSToken, message: APNSRequest): Future[Either[APNSError, APNSIdentifier]] =
     send(id, message).map(parseResponse)
 
-  override def pushAll(ids: Seq[APNSToken],
-                       message: APNSRequest): Future[Seq[Either[APNSError, APNSIdentifier]]] =
+  override def pushAll(ids: Seq[APNSToken], message: APNSRequest): Future[Seq[Either[APNSError, APNSIdentifier]]] =
     Future.traverse(ids)(push(_, message))
 
   def send(id: APNSToken, message: APNSRequest): Future[OkHttpResponse] = {
@@ -88,6 +87,7 @@ class APNSHttpClient(val client: OkClient, isSandbox: Boolean = false)
     val request1 = request
       .header(ApnsExpiration, "" + meta.apnsExpiration)
       .header(ApnsPriority, "" + meta.apnsPriority.priority)
+      .header(ApnsPushType, meta.apnsPushType.name)
       .header(ApnsTopic, meta.apnsTopic.topic)
     val withDefaults = meta.apnsId.map(id => request1.header(ApnsId, id.id)) getOrElse request1
     installHeaders(withDefaults)

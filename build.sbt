@@ -10,8 +10,8 @@ val mobilePush = Project("mobile-push", file("."))
   .enablePlugins(MavenCentralPlugin)
   .settings(commonSettings: _*)
   .settings(
-    scalaVersion := "2.12.8",
-    crossScalaVersions := "2.13.0" :: "2.12.8" :: Nil,
+    scalaVersion := "2.12.10",
+    crossScalaVersions := "2.13.1" :: "2.12.10" :: Nil,
     releaseCrossBuild := true,
     gitUserName := "malliina",
     developerName := "Michael Skogberg",
@@ -31,8 +31,8 @@ val docs = project
   .in(file("mdoc"))
   .settings(
     organization := "com.malliina",
-    scalaVersion := "2.12.8",
-    crossScalaVersions -= "2.13.0",
+    scalaVersion := "2.12.10",
+    crossScalaVersions -= "2.13.1",
     skip.in(publish) := true,
     mdocVariables := Map("VERSION" -> version.value),
     mdocOut := (baseDirectory in ThisBuild).value,

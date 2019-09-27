@@ -12,16 +12,6 @@ class APNSTests extends BaseSuite {
   //  val rawDeviceID = "9f3c2f830256954ada78bf56894fa7586307f0eedb7763117c84e0c1eee8347a"
   val rawDeviceID = "e0d82212038b938c51dde9f49577ff1f70442fcfe93ec1ff26a2948e36821934"
 
-  //  ignore("certificate is valid") {
-  //    val creds = APNSCreds.load
-  //    KeyStores.validateKeyStore(creds.file, creds.pass, "PKCS12")
-  //  }
-  //
-  //  ignore("universal HTTP2 certificate is valid") {
-  //    val creds = APNSHttpConf.load
-  //    KeyStores.validateKeyStore(creds.file, creds.pass, "PKCS12")
-  //  }
-
   test("token validation") {
     val tokenOpt = APNSToken.build(rawDeviceID)
     assert(tokenOpt.isDefined)
@@ -34,12 +24,11 @@ class APNSTests extends BaseSuite {
     val creds = APNSHttpConf.load
     val ks = TLSUtils.keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
     val client = new APNSClient(ks, creds.pass, isSandbox = true)
-    val payload = AlertPayload(
-      "this is a body",
-      title = Some("hey"),
-      actionLocKey = Some("POMP"),
-      locKey = Some("MSG_FORMAT"),
-      locArgs = Some(Seq("Emilia", "Jaana")))
+    val payload = AlertPayload("this is a body",
+                               title = Some("hey"),
+                               actionLocKey = Some("POMP"),
+                               locKey = Some("MSG_FORMAT"),
+                               locArgs = Some(Seq("Emilia", "Jaana")))
     val message = APNSMessage(APSPayload(Some(Right(payload)), sound = Some("default")))
     val fut = client.push(creds.token, message)
     await(fut)
@@ -61,6 +50,16 @@ class APNSTests extends BaseSuite {
     val message = APNSMessage.background(badge = 16)
     await(client.push(creds.token, message))
   }
+
+  //  ignore("certificate is valid") {
+  //    val creds = APNSCreds.load
+  //    KeyStores.validateKeyStore(creds.file, creds.pass, "PKCS12")
+  //  }
+  //
+  //  ignore("universal HTTP2 certificate is valid") {
+  //    val creds = APNSHttpConf.load
+  //    KeyStores.validateKeyStore(creds.file, creds.pass, "PKCS12")
+  //  }
 }
 
 case class APNSCred(file: Path, pass: String, topic: APNSTopic, token: APNSToken)

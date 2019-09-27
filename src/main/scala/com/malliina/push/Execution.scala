@@ -1,10 +1,15 @@
 package com.malliina.push
 
-import java.util.concurrent.Executors
+import java.util.concurrent.{Executors, TimeUnit}
 
 import scala.concurrent.ExecutionContext
 
 object Execution {
-  implicit val cached: ExecutionContext =
-    ExecutionContext.fromExecutorService(Executors.newCachedThreadPool())
+  private val service = Executors.newCachedThreadPool()
+  implicit val cached: ExecutionContext = ExecutionContext.fromExecutorService(service)
+
+  def close(): Unit = {
+    service.awaitTermination(1, TimeUnit.SECONDS)
+    service.shutdown()
+  }
 }

@@ -1,5 +1,6 @@
+[![Build Status](https://github.com/malliina/mobile-push/workflows/Build%20and%20Test/badge.svg)](https://github.com/malliina/mobile-push/actions)
 [![Build Status](https://travis-ci.org/malliina/mobile-push.svg?branch=master)](https://travis-ci.org/malliina/mobile-push)
-[![Maven Central](https://img.shields.io/maven-central/v/com.malliina/mobile-push_2.12.svg)](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.malliina%22%20AND%20a%3A%22mobile-push_2.12%22)
+[![Maven Central](https://img.shields.io/maven-central/v/com.malliina/mobile-push_2.13.svg)](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.malliina%22%20AND%20a%3A%22mobile-push_2.13%22)
 
 # mobile-push
 
