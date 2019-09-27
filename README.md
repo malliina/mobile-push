@@ -1,6 +1,5 @@
-[![Build Status](https://github.com/malliina/mobile-push/workflows/Build%20and%20Test/badge.svg)](https://github.com/malliina/mobile-push/actions)
 [![Build Status](https://travis-ci.org/malliina/mobile-push.svg?branch=master)](https://travis-ci.org/malliina/mobile-push)
-[![Maven Central](https://img.shields.io/maven-central/v/com.malliina/mobile-push_2.13.svg)](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.malliina%22%20AND%20a%3A%22mobile-push_2.13%22)
+[![Maven Central](https://img.shields.io/maven-central/v/com.malliina/mobile-push_2.12.svg)](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.malliina%22%20AND%20a%3A%22mobile-push_2.12%22)
 
 # mobile-push
 
@@ -17,7 +16,7 @@ Send push notifications to mobile devices. Supports:
 ## Installation
 
 ```scala
-libraryDependencies += "com.malliina" %% "mobile-push" % "1.19.0"
+libraryDependencies += "com.malliina" %% "mobile-push" % "1.20.0"
 ```
 
 ## Usage
@@ -92,6 +91,9 @@ val response: Future[MappedGCMResponse] = client.push(deviceRegistrationId, mess
 ```
 
 ### Google Cloud Messaging
+
+Note: It looks like Google has removed GCM server APIs, therefore this method may no longer work.
+Instead, use Firebase Cloud Messaging as in the previous code sample.
 
 ```scala
 val gcmApiKey: String = ???
