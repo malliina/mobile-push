@@ -22,9 +22,12 @@ val mobilePush = Project("mobile-push", file("."))
       "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
       "org.eclipse.jetty" % "jetty-alpn-java-server" % "9.4.20.v20190813",
       "org.eclipse.jetty" % "jetty-alpn-java-client" % "9.4.20.v20190813",
+      "org.eclipse.jetty" % "jetty-alpn-openjdk8-server" % "9.4.20.v20190813",
+      "org.eclipse.jetty" % "jetty-alpn-openjdk8-client" % "9.4.20.v20190813",
       "org.scalatest" %% "scalatest" % "3.0.8" % Test
     ),
-    fork in Test := true
+    fork in Test := true,
+    javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
   )
 
 val docs = project
