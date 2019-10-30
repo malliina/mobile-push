@@ -15,6 +15,7 @@ val mobilePush = Project("mobile-push", file("."))
     releaseCrossBuild := true,
     gitUserName := "malliina",
     developerName := "Michael Skogberg",
+    resolvers += "GitHub malliina Apache Maven Packages" at "https://maven.pkg.github.com/malliina/util-base",
     libraryDependencies ++= Seq(
       "com.malliina" %% "okclient" % "1.11.0",
       "com.nimbusds" % "nimbus-jose-jwt" % "7.3",

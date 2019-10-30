@@ -12,16 +12,17 @@ object TLSUtils {
   def loadContext(file: Path, keyStorePass: String, storeType: String = "JKS"): Try[SSLContext] =
     keyStoreFromFile(file, keyStorePass, storeType).map(ks => buildSSLContext(ks, keyStorePass))
 
-  def keyStoreFromFile(file: Path, keyStorePass: String, storeType: String = "JKS"): Try[KeyStore] = Try {
-    val ks = KeyStore.getInstance(storeType)
-    val keyStream = new FileInputStream(file.toFile)
-    try {
-      ks.load(keyStream, keyStorePass.toCharArray)
-      ks
-    } finally {
-      keyStream.close()
+  def keyStoreFromFile(file: Path, keyStorePass: String, storeType: String = "JKS"): Try[KeyStore] =
+    Try {
+      val ks = KeyStore.getInstance(storeType)
+      val keyStream = new FileInputStream(file.toFile)
+      try {
+        ks.load(keyStream, keyStorePass.toCharArray)
+        ks
+      } finally {
+        keyStream.close()
+      }
     }
-  }
 
   def buildSSLContext(keyStore: KeyStore, keyStorePass: String): SSLContext = {
     val kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm)
