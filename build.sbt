@@ -17,8 +17,8 @@ val mobilePush = Project("mobile-push", file("."))
     developerName := "Michael Skogberg",
     resolvers += "GitHub malliina Apache Maven Packages" at "https://maven.pkg.github.com/malliina/util-base",
     libraryDependencies ++= Seq(
-      "com.malliina" %% "okclient" % "1.11.0",
-      "com.nimbusds" % "nimbus-jose-jwt" % "7.3",
+      "com.malliina" %% "okclient" % "1.13.0",
+      "com.nimbusds" % "nimbus-jose-jwt" % "8.3",
       "com.notnoop.apns" % "apns" % "1.0.0.Beta6",
       "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
       "org.eclipse.jetty" % "jetty-alpn-java-server" % "9.4.20.v20190813",

@@ -14,7 +14,7 @@ class WNSJson extends FunSuite {
   }
 
   test("write") {
-    val str = Json.stringify(Json.toJson(Dismiss))
+    val str = Json.stringify(Json.toJson(Dismiss: CommandId))
     assert(str === """"dismiss"""")
   }
 }

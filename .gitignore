@@ -7,3 +7,4 @@ target/
 .hydra
 hydra.sbt
 .bloop
+out

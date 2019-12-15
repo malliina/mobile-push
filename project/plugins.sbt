@@ -9,10 +9,10 @@ resolvers ++= Seq(
 )
 
 Seq(
-  "com.malliina" %% "sbt-utils-maven" % "0.14.2",
+  "com.malliina" %% "sbt-utils-maven" % "0.15.1",
   "org.scalameta" % "sbt-mdoc" % "1.3.1",
   "ch.epfl.scala" % "sbt-bloop" % "1.3.4",
-  "org.scalameta" % "sbt-scalafmt" % "2.2.0"
+  "org.scalameta" % "sbt-scalafmt" % "2.3.0"
 ) map addSbtPlugin
 
 def ivyResolver(name: String, urlStr: String) =
