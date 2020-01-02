@@ -2,8 +2,7 @@ package com.malliina.push
 
 import play.api.libs.json._
 
-abstract class SimpleCompanion[In, T](implicit r: Format[In])
-  extends ValidatingCompanion[In, T] {
+abstract class SimpleCompanion[In: Format, T] extends ValidatingCompanion[In, T] {
   def apply(in: In): T
 
   def build(input: In): Option[T] =

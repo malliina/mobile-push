@@ -4,6 +4,5 @@ import scala.xml.Elem
 
 trait WindowsMessage {
   def xml: Elem
-
   def headers: Map[String, String]
 }

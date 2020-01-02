@@ -9,6 +9,5 @@ import scala.concurrent.Future
   */
 trait PushClient[S, T, U] {
   def push(id: S, message: T): Future[U]
-
   def pushAll(ids: Seq[S], message: T): Future[Seq[U]]
 }
