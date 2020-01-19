@@ -1,7 +1,5 @@
 import scala.sys.process.Process
 
-Global / useGpg := true
-
 val updateDocs = taskKey[Unit]("Updates README.md")
 
 val commonSettings = Seq(

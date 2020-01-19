@@ -30,7 +30,7 @@ the scope of this library; let's assume you already have all this.
 
 ### Apple Push Notification service, using token authentication
 
-``` scala mdoc:invisible
+```scala mdoc:invisible
 import java.nio.file.Paths
 import java.security.KeyStore
 
