@@ -56,3 +56,5 @@ val docs = project
   .enablePlugins(MdocPlugin)
 
 beforeCommitRelease in mobilePush := (updateDocs in docs).value
+
+Global / onChangedBuildSource := ReloadOnSourceChanges
