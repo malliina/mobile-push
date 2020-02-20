@@ -52,11 +52,13 @@ object APNSIdentifier extends SimpleCompanion[String, APNSIdentifier] {
   override def write(t: APNSIdentifier): String = t.id
 }
 
-case class APNSMeta(apnsTopic: APNSTopic,
-                    apnsExpiration: Long,
-                    apnsPriority: APNSPriority,
-                    apnsPushType: APNSPushType,
-                    apnsId: Option[APNSIdentifier])
+case class APNSMeta(
+  apnsTopic: APNSTopic,
+  apnsExpiration: Long,
+  apnsPriority: APNSPriority,
+  apnsPushType: APNSPushType,
+  apnsId: Option[APNSIdentifier]
+)
 
 object APNSMeta {
   implicit val json = Json.format[APNSMeta]

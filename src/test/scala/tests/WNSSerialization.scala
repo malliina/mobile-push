@@ -31,26 +31,45 @@ class WNSSerialization extends FunSuite {
   test("example") {
     // https://msdn.microsoft.com/en-us/windows/uwp/controls-and-patterns/tiles-and-notifications-adaptive-interactive-toasts
     val toast = ToastElement(
-      ToastVisual(Seq(ToastBinding(ToastTemplate.ToastGeneric,
-        Seq(WnsText("Spicy Heaven"), WnsText("When do you plan to come in tomorrow?")),
-        Seq(Image("A.png", Option(Placement.AppLogoOverride))),
-        Nil, None, None, None, None, None, None))),
+      ToastVisual(
+        Seq(
+          ToastBinding(
+            ToastTemplate.ToastGeneric,
+            Seq(WnsText("Spicy Heaven"), WnsText("When do you plan to come in tomorrow?")),
+            Seq(Image("A.png", Option(Placement.AppLogoOverride))),
+            Nil,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None
+          )
+        )
+      ),
       Actions(
         Seq(
-          Input("time", InputType.Selection, Seq(
-            Selection("1", "Breakfast"),
-            Selection("2", "Lunch"),
-            Selection("3", "Dinner")
-          ), Option("2"))
+          Input(
+            "time",
+            InputType.Selection,
+            Seq(
+              Selection("1", "Breakfast"),
+              Selection("2", "Lunch"),
+              Selection("3", "Dinner")
+            ),
+            Option("2")
+          )
         ),
         Seq(
           ActionElement("Reserve", "reserve", ActivationType.Background),
           ActionElement("Call Restaurant", "call", ActivationType.Background)
-        )),
+        )
+      ),
       Option("developer-defined-string"),
       None,
       None,
-      None)
+      None
+    )
     //println(format(toast.xml))
   }
 

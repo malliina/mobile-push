@@ -44,7 +44,7 @@ object Commands {
 
 case class Command(arguments: Option[String], id: Option[CommandId]) extends Xmlable {
   override def xml: Elem =
-      <command/>.withAttributes(
+    <command/>.withAttributes(
       "arguments" -> arguments,
       "id" -> id
     )
@@ -54,11 +54,13 @@ object Command {
   implicit val json = Json.format[Command]
 }
 
-case class ActionElement(content: String,
-                         arguments: String,
-                         activationType: ActivationType,
-                         imageUri: Option[String] = None,
-                         hintInputId: Option[String] = None) extends Xmlable {
+case class ActionElement(
+  content: String,
+  arguments: String,
+  activationType: ActivationType,
+  imageUri: Option[String] = None,
+  hintInputId: Option[String] = None
+) extends Xmlable {
   override def xml: Elem = <action/>.withAttributes(
     "content" -> Option(content),
     "arguments" -> Option(arguments),
@@ -83,12 +85,14 @@ object Selection {
   implicit val json = Json.format[Selection]
 }
 
-case class Input(id: String,
-                 inputType: InputType,
-                 selection: Seq[Selection],
-                 defaultInput: Option[String] = None,
-                 title: Option[String] = None,
-                 placeHolderContent: Option[String] = None) extends Xmlable {
+case class Input(
+  id: String,
+  inputType: InputType,
+  selection: Seq[Selection],
+  defaultInput: Option[String] = None,
+  title: Option[String] = None,
+  placeHolderContent: Option[String] = None
+) extends Xmlable {
   override def xml: Elem =
     <input>
       {selection.map(_.xml)}
@@ -105,13 +109,15 @@ object Input {
   implicit val json = Json.format[Input]
 }
 
-case class ToastVisual(bindings: Seq[ToastBinding],
-                       lang: Option[String] = None,
-                       baseUri: Option[URL] = None,
-                       branding: Option[Branding] = None,
-                       addImageQuery: Option[Boolean] = None,
-                       contentId: Option[String] = None,
-                       displayName: Option[String] = None) extends Visual[ToastTemplate]
+case class ToastVisual(
+  bindings: Seq[ToastBinding],
+  lang: Option[String] = None,
+  baseUri: Option[URL] = None,
+  branding: Option[Branding] = None,
+  addImageQuery: Option[Boolean] = None,
+  contentId: Option[String] = None,
+  displayName: Option[String] = None
+) extends Visual[ToastTemplate]
 
 object ToastVisual {
   implicit val url = Binding.urlFormat
@@ -120,13 +126,15 @@ object ToastVisual {
   def text(text: String) = ToastVisual(Seq(ToastBinding.text(text)))
 }
 
-case class TileVisual(bindings: Seq[TileBinding],
-                       lang: Option[String] = None,
-                       baseUri: Option[URL] = None,
-                       branding: Option[Branding] = None,
-                       addImageQuery: Option[Boolean] = None,
-                       contentId: Option[String] = None,
-                       displayName: Option[String] = None) extends Visual[TileTemplate]
+case class TileVisual(
+  bindings: Seq[TileBinding],
+  lang: Option[String] = None,
+  baseUri: Option[URL] = None,
+  branding: Option[Branding] = None,
+  addImageQuery: Option[Boolean] = None,
+  contentId: Option[String] = None,
+  displayName: Option[String] = None
+) extends Visual[TileTemplate]
 
 object TileVisual {
   implicit val url = Binding.urlFormat
@@ -161,14 +169,16 @@ trait Visual[T <: Template] extends Xmlable {
     )
 }
 
-case class Image(src: String,
-                 placement: Option[Placement] = None,
-                 alt: Option[String] = None,
-                 addImageQuery: Option[Boolean] = None,
-                 hintCrop: Option[HintCrop] = None,
-                 hintRemoveMargin: Option[Boolean] = None,
-                 hintAlign: Option[HintAlign] = None,
-                 hintOverlay: Option[Int] = None) extends Xmlable {
+case class Image(
+  src: String,
+  placement: Option[Placement] = None,
+  alt: Option[String] = None,
+  addImageQuery: Option[Boolean] = None,
+  hintCrop: Option[HintCrop] = None,
+  hintRemoveMargin: Option[Boolean] = None,
+  hintAlign: Option[HintAlign] = None,
+  hintOverlay: Option[Int] = None
+) extends Xmlable {
   override def xml: Elem = <image/>.withAttributes(
     "src" -> Option(src),
     "placement" -> placement,
@@ -185,13 +195,15 @@ object Image {
   implicit val json = Json.format[Image]
 }
 
-case class WnsText(text: String,
-                   lang: Option[String] = None,
-                   hintStyle: Option[TextStyle] = None,
-                   hintWrap: Option[Boolean] = None,
-                   hintMaxLines: Option[Int] = None,
-                   hintMinLines: Option[Int] = None,
-                   hintAlign: Option[HintAlign] = None) extends Xmlable {
+case class WnsText(
+  text: String,
+  lang: Option[String] = None,
+  hintStyle: Option[TextStyle] = None,
+  hintWrap: Option[Boolean] = None,
+  hintMaxLines: Option[Int] = None,
+  hintMinLines: Option[Int] = None,
+  hintAlign: Option[HintAlign] = None
+) extends Xmlable {
   def xml: Elem =
     <text>
       {text}
@@ -209,9 +221,8 @@ object WnsText {
   implicit val json = Json.format[WnsText]
 }
 
-case class Audio(src: Option[String] = None,
-                 silent: Boolean = false,
-                 loop: Boolean = false) extends Xmlable {
+case class Audio(src: Option[String] = None, silent: Boolean = false, loop: Boolean = false)
+  extends Xmlable {
 
   def xml: Elem = <audio/>.withAttributes(
     "src" -> src,
@@ -228,10 +239,12 @@ object Audio {
   def once(source: String) = Audio(src = Option(source))
 }
 
-case class SubGroup(hintWeight: Option[Int],
-                    hintTextStacking: Option[TextStacking],
-                    texts: Seq[WnsText],
-                    images: Seq[Image]) extends Xmlable {
+case class SubGroup(
+  hintWeight: Option[Int],
+  hintTextStacking: Option[TextStacking],
+  texts: Seq[WnsText],
+  images: Seq[Image]
+) extends Xmlable {
   override def xml: Elem =
     <subgroup>
       {texts.map(_.xml)}

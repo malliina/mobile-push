@@ -4,10 +4,12 @@ import com.malliina.push.wns.WNSClient.{CachePolicy, Tag, Ttl, WnsType}
 
 import scala.concurrent.duration.Duration
 
-case class WNSMessage(notification: WNSNotification,
-                      cache: Option[Boolean] = None,
-                      ttl: Option[Duration] = None,
-                      tag: Option[String] = None) {
+case class WNSMessage(
+  notification: WNSNotification,
+  cache: Option[Boolean] = None,
+  ttl: Option[Duration] = None,
+  tag: Option[String] = None
+) {
 
   def payload: String = notification.payload
 
@@ -16,7 +18,7 @@ case class WNSMessage(notification: WNSNotification,
       Map(WnsType -> notification.notificationType.name)
 
   private def cacheHeaders =
-    mappify(CachePolicy, cache.map(c => if(c) "cache" else "no-cache"))
+    mappify(CachePolicy, cache.map(c => if (c) "cache" else "no-cache"))
 
   private def ttlHeaders =
     mappify(Ttl, ttl.map(_.toSeconds.toString))

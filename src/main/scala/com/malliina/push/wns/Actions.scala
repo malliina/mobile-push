@@ -4,8 +4,7 @@ import play.api.libs.json.Json
 
 import scala.xml.Elem
 
-case class Actions(inputs: Seq[Input] = Nil,
-                   actions: Seq[ActionElement] = Nil) extends Xmlable {
+case class Actions(inputs: Seq[Input] = Nil, actions: Seq[ActionElement] = Nil) extends Xmlable {
   val isEmpty = actions.isEmpty
 
   override def xml: Elem =

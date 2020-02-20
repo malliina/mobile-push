@@ -17,10 +17,18 @@ trait WindowsClient[T <: Token, M <: WindowsMessage] extends PushClient[T, M, Ht
   protected def send(url: T, xml: Elem, headers: Map[String, String]): Future[HttpResponse] =
     sendSingle(url, WindowsClient.serialize(xml), headers)
 
-  protected def sendMulti(urls: Seq[T], body: String, headers: Map[String, String]): Future[Seq[HttpResponse]] =
+  protected def sendMulti(
+    urls: Seq[T],
+    body: String,
+    headers: Map[String, String]
+  ): Future[Seq[HttpResponse]] =
     Future.sequence(urls.map(url => sendSingle(url, body, headers)))
 
-  protected def sendSingle(url: T, body: String, headers: Map[String, String]): Future[HttpResponse] =
+  protected def sendSingle(
+    url: T,
+    body: String,
+    headers: Map[String, String]
+  ): Future[HttpResponse] =
     AsyncHttp.usingAsync(OkClient.default) { client =>
       client.post(
         FullUrl.build(url.token).toOption.get,
@@ -31,6 +39,7 @@ trait WindowsClient[T <: Token, M <: WindowsMessage] extends PushClient[T, M, Ht
 }
 
 object WindowsClient {
+
   /** Serializes `elem` to a string, adding an xml declaration to the top. Encodes the payload
     * automatically as described in
     * http://msdn.microsoft.com/en-us/library/windowsphone/develop/hh202945(v=vs.105).aspx.

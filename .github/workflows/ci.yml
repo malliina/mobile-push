@@ -28,3 +28,5 @@ jobs:
           sudo dpkg -i sbt-${SBT_VERSION}.deb
       - name: Run tests
         run: sbt test
+      - name: Check formatting
+        run: sbt scalafmtCheck
