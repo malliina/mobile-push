@@ -4,19 +4,22 @@ import play.api.libs.json.Json._
 import play.api.libs.json._
 
 /**
-  * @param alert Some(Left(...)) for a simple alert text, Some(Right(...)) for more verbose alert details, None for background notifications
-  * @param badge badge number
-  * @param sound rock.mp3
-  */
-case class APSPayload(alert: Option[Either[String, AlertPayload]],
-                      badge: Option[Int] = None,
-                      sound: Option[String] = None)
+ * @param alert Some(Left(...)) for a simple alert text, Some(Right(...)) for more verbose alert details, None for background notifications
+ * @param badge badge number
+ * @param sound rock.mp3
+ */
+case class APSPayload(
+                       alert: Option[Either[String, AlertPayload]],
+                       badge: Option[Int] = None,
+                       sound: Option[String] = None,
+                       category: Option[String] = None)
 
 object APSPayload {
   val Alert = "alert"
   val Badge = "badge"
   val ContentAvailable = "content-available"
   val Sound = "sound"
+  val Category = "category"
 
   implicit val alertFormat = eitherAsJson[String, AlertPayload](
     Format[String](Reads.StringReads, Writes.StringWrites),
@@ -25,23 +28,29 @@ object APSPayload {
     Json.reads[APSPayload],
     Writes[APSPayload] { p =>
       val alertJson = p.alert.fold(obj(ContentAvailable -> 1))(e => obj(Alert -> e.fold(s => toJson(s), a => toJson(a))))
-      alertJson ++ objectify(Badge, p.badge) ++ objectify(Sound, p.sound)
+      alertJson ++ objectify(Badge, p.badge) ++ objectify(Sound, p.sound) ++ objectify(Category, p.category)
     }
   )
 
-  def full(payload: AlertPayload,
-           badge: Option[Int] = None,
-           sound: Option[String] = None): APSPayload =
-    apply(Option(Right(payload)), badge, sound)
+  def full(
+            payload: AlertPayload,
+            badge: Option[Int] = None,
+            sound: Option[String] = None,
+            category: Option[String] = None): APSPayload =
+    apply(Option(Right(payload)), badge, sound, category)
 
-  def simple(text: String,
-             badge: Option[Int] = None,
-             sound: Option[String] = None): APSPayload =
-    apply(Option(Left(text)), badge, sound)
+  def simple(
+              text: String,
+              badge: Option[Int] = None,
+              sound: Option[String] = None,
+              category: Option[String] = None): APSPayload =
+    apply(Option(Left(text)), badge, sound, category)
 
-  def background(badge: Option[Int] = None,
-                 sound: Option[String] = None): APSPayload =
-    apply(None, badge, sound)
+  def background(
+                  badge: Option[Int] = None,
+                  sound: Option[String] = None,
+                  category: Option[String] = None): APSPayload =
+    apply(None, badge, sound, category)
 
   def eitherAsJson[L, R](l: Format[L], r: Format[R]): Format[Either[L, R]] = Format(
     Reads[Either[L, R]](json => json.validate[L](l).map(Left.apply).orElse(json.validate[R](r).map(Right.apply))),
