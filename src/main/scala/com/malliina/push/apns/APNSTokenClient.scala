@@ -35,8 +35,8 @@ object APNSTokenClient {
   * @see https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html
   */
 class APNSTokenClient(conf: APNSTokenConf, isSandbox: Boolean)
-    extends APNSHttpClient(OkClient.default, isSandbox)
-    with AutoCloseable {
+  extends APNSHttpClient(OkClient.default, isSandbox)
+  with AutoCloseable {
 
   val keySpec = new PKCS8EncodedKeySpec(Base64.getDecoder.decode(readKey(conf.privateKey)))
   val keyFactory = KeyFactory.getInstance("EC")

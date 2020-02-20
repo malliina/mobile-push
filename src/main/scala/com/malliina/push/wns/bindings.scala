@@ -7,34 +7,38 @@ import play.api.libs.json.{JsError, _}
 import scala.util.Try
 import scala.xml.Elem
 
-case class TileBinding(template: TileTemplate,
-                       texts: Seq[WnsText],
-                       images: Seq[Image] = Nil,
-                       groups: Seq[Group] = Nil,
-                       lang: Option[String] = None,
-                       baseUri: Option[URL] = None,
-                       branding: Option[Branding] = None,
-                       addImageQuery: Option[Boolean] = None,
-                       contentId: Option[String] = None,
-                       displayName: Option[String] = None,
-                       hintOverlay: Option[Int] = None) extends Binding[TileTemplate]
+case class TileBinding(
+  template: TileTemplate,
+  texts: Seq[WnsText],
+  images: Seq[Image] = Nil,
+  groups: Seq[Group] = Nil,
+  lang: Option[String] = None,
+  baseUri: Option[URL] = None,
+  branding: Option[Branding] = None,
+  addImageQuery: Option[Boolean] = None,
+  contentId: Option[String] = None,
+  displayName: Option[String] = None,
+  hintOverlay: Option[Int] = None
+) extends Binding[TileTemplate]
 
 object TileBinding {
   implicit val url = Binding.urlFormat
   implicit val json = Json.format[TileBinding]
 }
 
-case class ToastBinding(template: ToastTemplate,
-                        texts: Seq[WnsText],
-                        images: Seq[Image] = Nil,
-                        groups: Seq[Group] = Nil,
-                        lang: Option[String] = None,
-                        baseUri: Option[URL] = None,
-                        branding: Option[Branding] = None,
-                        addImageQuery: Option[Boolean] = None,
-                        contentId: Option[String] = None,
-                        displayName: Option[String] = None,
-                        hintOverlay: Option[Int] = None) extends Binding[ToastTemplate]
+case class ToastBinding(
+  template: ToastTemplate,
+  texts: Seq[WnsText],
+  images: Seq[Image] = Nil,
+  groups: Seq[Group] = Nil,
+  lang: Option[String] = None,
+  baseUri: Option[URL] = None,
+  branding: Option[Branding] = None,
+  addImageQuery: Option[Boolean] = None,
+  contentId: Option[String] = None,
+  displayName: Option[String] = None,
+  hintOverlay: Option[Int] = None
+) extends Binding[ToastTemplate]
 
 object ToastBinding {
   implicit val url = Binding.urlFormat

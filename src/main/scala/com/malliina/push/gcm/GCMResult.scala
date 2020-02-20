@@ -2,9 +2,11 @@ package com.malliina.push.gcm
 
 import play.api.libs.json._
 
-case class GCMResult(message_id: Option[String],
-                     registration_id: Option[String],
-                     error: Option[GCMResult.GCMResultError])
+case class GCMResult(
+  message_id: Option[String],
+  registration_id: Option[String],
+  error: Option[GCMResult.GCMResultError]
+)
 
 object GCMResult {
 

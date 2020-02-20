@@ -53,9 +53,16 @@ class WNSClient(creds: WNSCredentials) extends PushClient[WNSToken, WNSMessage, 
       }
     }
 
-  def pushSingle(client: OkClient, token: WNSToken, body: String, headers: Map[String, String]): Future[WNSResponse] = {
+  def pushSingle(
+    client: OkClient,
+    token: WNSToken,
+    body: String,
+    headers: Map[String, String]
+  ): Future[WNSResponse] = {
     val requestBody = RequestBody.create(body, XmlMediaType)
-    client.post(FullUrl.build(token.token).toOption.get, requestBody, headers).map(WNSResponse.fromResponse)
+    client
+      .post(FullUrl.build(token.token).toOption.get, requestBody, headers)
+      .map(WNSResponse.fromResponse)
   }
 
   def fetchAccessToken(client: OkClient): Future[WNSAccessToken] = {

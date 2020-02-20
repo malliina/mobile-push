@@ -41,7 +41,11 @@ class ADMClient(val clientID: String, val clientSecret: String)
         ContentType -> JsonType
       )
       AsyncHttp.withClient { client =>
-        client.postJson(FullUrl.https("api.amazon.com", s"/messaging/registrations/${id.token}/messages"), body, headers)
+        client.postJson(
+          FullUrl.https("api.amazon.com", s"/messaging/registrations/${id.token}/messages"),
+          body,
+          headers
+        )
       }
     }
   }
@@ -56,10 +60,13 @@ class ADMClient(val clientID: String, val clientSecret: String)
 
   def accessToken(clientID: String, clientSecret: String): Future[AccessToken] =
     tokenRequest(clientID, clientSecret).flatMap { response =>
-      response.parse[AccessToken].fold(
-        errors => Future.failed[AccessToken](new PushException(s"Invalid JSON in ADM response: $errors")),
-        valid => Future.successful(valid)
-      )
+      response
+        .parse[AccessToken]
+        .fold(
+          errors =>
+            Future.failed[AccessToken](new PushException(s"Invalid JSON in ADM response: $errors")),
+          valid => Future.successful(valid)
+        )
     }
 
   private def tokenRequest(clientID: String, clientSecret: String): Future[HttpResponse] = {

@@ -3,16 +3,17 @@ package com.malliina.push.mpns
 import scala.xml.{Elem, NodeSeq}
 
 /** Do not automatically format this file.
- */
+  */
 object MPNSPayloads {
-  def toast(message: ToastMessage): Elem = toast(message.text1, message.text2, message.deepLink, message.silent)
+  def toast(message: ToastMessage): Elem =
+    toast(message.text1, message.text2, message.deepLink, message.silent)
 
   /**
-   * @param text1 title
-   * @param text2 message
-   * @param deepLink The page to go to in app. For example: /page1.xaml?value1=1234&amp;value2=9876
-   * @return
-   */
+    * @param text1 title
+    * @param text2 message
+    * @param deepLink The page to go to in app. For example: /page1.xaml?value1=1234&amp;value2=9876
+    * @return
+    */
   def toast(text1: String, text2: String, deepLink: String, silent: Boolean): Elem = {
     val silenceElement = if (silent) <wp:Sound Silent="true"/> else NodeSeq.Empty
     // payloads must be on same line of xml, do not let formatting mess it up

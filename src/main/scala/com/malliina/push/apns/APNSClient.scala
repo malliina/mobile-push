@@ -12,9 +12,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @deprecated("Use APNSHttpClient instead", "1.15.0")
 class APNSClient(keyStore: KeyStore, keyStorePass: String, isSandbox: Boolean = false)(
-    implicit ec: ExecutionContext)
-    extends PushClient[APNSToken, APNSMessage, ApnsNotification]
-    with AutoCloseable {
+  implicit ec: ExecutionContext
+) extends PushClient[APNSToken, APNSMessage, ApnsNotification]
+  with AutoCloseable {
 
   private val builder = APNS.newService().withCert(keyStore, keyStorePass)
   val service: ApnsService =

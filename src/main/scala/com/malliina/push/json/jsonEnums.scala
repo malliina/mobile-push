@@ -14,9 +14,13 @@ trait JsonEnum[T] {
     def allNames = all.map(resolveName).mkString(", ")
 
     override def reads(json: JsValue): JsResult[T] =
-      json.validate[String].flatMap(n =>
-        withName(n).map(tu => JsSuccess(tu))
-          .getOrElse(JsError(s"Unknown name: $n. Must be one of: $allNames.")))
+      json
+        .validate[String]
+        .flatMap(n =>
+          withName(n)
+            .map(tu => JsSuccess(tu))
+            .getOrElse(JsError(s"Unknown name: $n. Must be one of: $allNames."))
+        )
 
     override def writes(o: T): JsValue = Json.toJson(resolveName(o))
   }

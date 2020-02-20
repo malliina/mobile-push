@@ -14,19 +14,21 @@ class JsonTests extends FunSuite {
   }
 
   test("APNS serialization") {
-    val msg = APNSMessage(APSPayload(
-      alert = Some(Right(AlertPayload("nice body", launchImage = Some("pic.jpg")))),
-      badge = Some(5),
-      sound = Some("rock.mp3")),
-      Map("extra" -> toJson("value"), "number" -> JsNumber(5), "kings" -> toJson(Seq("hey", "you"))))
+    val msg = APNSMessage(
+      APSPayload(
+        alert = Some(Right(AlertPayload("nice body", launchImage = Some("pic.jpg")))),
+        badge = Some(5),
+        sound = Some("rock.mp3")
+      ),
+      Map("extra" -> toJson("value"), "number" -> JsNumber(5), "kings" -> toJson(Seq("hey", "you")))
+    )
     val str = prettyPrint(toJson(msg))
     assert(str contains "launch-image")
 
-    val msg2 = APNSMessage(APSPayload(
-      alert = None,
-      badge = Some(5),
-      sound = Some("rock.mp3")),
-      Map("extra" -> toJson("value"), "number" -> JsNumber(5), "kings" -> toJson(Seq("hey", "you"))))
+    val msg2 = APNSMessage(
+      APSPayload(alert = None, badge = Some(5), sound = Some("rock.mp3")),
+      Map("extra" -> toJson("value"), "number" -> JsNumber(5), "kings" -> toJson(Seq("hey", "you")))
+    )
     val str2 = prettyPrint(toJson(msg2))
     assert(str2 contains APSPayload.ContentAvailable)
   }
@@ -35,7 +37,8 @@ class JsonTests extends FunSuite {
     val payload = APSPayload(
       alert = Some(Right(AlertPayload("nice body", launchImage = Some("pic.jpg")))),
       badge = Some(5),
-      sound = Some("rock.mp3"))
+      sound = Some("rock.mp3")
+    )
     val p1 = toJson(payload)
     assert(!(stringify(p1) contains APSPayload.ContentAvailable))
     val payload2 = APSPayload(None, Some(42), None)
@@ -59,13 +62,20 @@ class JsonTests extends FunSuite {
         |  ]
         |}""".stripMargin
     val parsed = (Json parse exampleResponse).as[GCMResponse]
-    val expected = GCMResponse(216, 3, 3, 1, Seq(
-      GCMResult(Some("1:0408"), None, None),
-      GCMResult(None, None, Some(GCMResult.Unavailable)),
-      GCMResult(None, None, Some(GCMResult.InvalidRegistration)),
-      GCMResult(Some("1:1516"), None, None),
-      GCMResult(Some("1:2342"), Some("32"), None),
-      GCMResult(None, None, Some(GCMResult.NotRegistered))))
+    val expected = GCMResponse(
+      216,
+      3,
+      3,
+      1,
+      Seq(
+        GCMResult(Some("1:0408"), None, None),
+        GCMResult(None, None, Some(GCMResult.Unavailable)),
+        GCMResult(None, None, Some(GCMResult.InvalidRegistration)),
+        GCMResult(Some("1:1516"), None, None),
+        GCMResult(Some("1:2342"), Some("32"), None),
+        GCMResult(None, None, Some(GCMResult.NotRegistered))
+      )
+    )
     assert(parsed.multicast_id === 216)
     assert(parsed === expected)
 

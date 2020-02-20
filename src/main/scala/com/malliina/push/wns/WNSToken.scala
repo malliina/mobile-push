@@ -5,7 +5,7 @@ import java.util.regex.Pattern
 import com.malliina.push.mpns.MPNSToken
 import com.malliina.push.{Token, TokenCompanion}
 
-case class WNSToken private(token: String) extends AnyVal with Token
+case class WNSToken private (token: String) extends AnyVal with Token
 
 object WNSToken extends TokenCompanion[WNSToken] {
   val wnsRegex = Pattern compile """https://[^/]+\.notify\.windows\.com/.*"""
