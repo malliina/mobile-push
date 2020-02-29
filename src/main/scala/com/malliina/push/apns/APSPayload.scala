@@ -12,15 +12,17 @@ case class APSPayload(
   alert: Option[Either[String, AlertPayload]],
   badge: Option[Int] = None,
   sound: Option[String] = None,
-  category: Option[String] = None
+  category: Option[String] = None,
+  threadId: Option[String] = None
 )
 
 object APSPayload {
   val Alert = "alert"
   val Badge = "badge"
+  val Category = "category"
   val ContentAvailable = "content-available"
   val Sound = "sound"
-  val Category = "category"
+  val ThreadId = "thread-id"
 
   implicit val alertFormat = eitherAsJson[String, AlertPayload](
     Format[String](Reads.StringReads, Writes.StringWrites),
@@ -32,10 +34,8 @@ object APSPayload {
       val alertJson = p.alert.fold(obj(ContentAvailable -> 1))(e =>
         obj(Alert -> e.fold(s => toJson(s), a => toJson(a)))
       )
-      alertJson ++ objectify(Badge, p.badge) ++ objectify(Sound, p.sound) ++ objectify(
-        Category,
-        p.category
-      )
+      alertJson ++ objectify(Badge, p.badge) ++ objectify(Sound, p.sound) ++
+        objectify(Category, p.category) ++ objectify(ThreadId, p.threadId)
     }
   )
 
