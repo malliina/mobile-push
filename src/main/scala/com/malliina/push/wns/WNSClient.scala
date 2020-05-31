@@ -29,15 +29,11 @@ class WNSClient(creds: WNSCredentials) extends PushClient[WNSToken, WNSMessage, 
   case class PushMeta(client: OkClient, payload: String, headers: Map[String, String])
 
   def push(token: WNSToken, message: WNSMessage): Future[WNSResponse] =
-    withUrls(message) { meta =>
-      pushSingle(meta.client, token, meta.payload, meta.headers)
-    }
+    withUrls(message) { meta => pushSingle(meta.client, token, meta.payload, meta.headers) }
 
   override def pushAll(urls: Seq[WNSToken], message: WNSMessage): Future[Seq[WNSResponse]] =
     withUrls(message) { meta =>
-      Future.traverse(urls) { url =>
-        pushSingle(meta.client, url, meta.payload, meta.headers)
-      }
+      Future.traverse(urls) { url => pushSingle(meta.client, url, meta.payload, meta.headers) }
     }
 
   private def withUrls[T](message: WNSMessage)(code: PushMeta => Future[T]): Future[T] =

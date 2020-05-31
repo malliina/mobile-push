@@ -46,9 +46,7 @@ class GoogleClient(val apiKey: String, postEndpoint: FullUrl)
     ids: Seq[GCMToken],
     message: GCMMessage
   ): Future[MappedGCMResponse] =
-    sendLimited(ids, message).map { r =>
-      MappedGCMResponse(ids, parseOrFail(r))
-    }
+    sendLimited(ids, message).map { r => MappedGCMResponse(ids, parseOrFail(r)) }
 
   private def sendLimited(ids: Seq[GCMToken], message: GCMMessage): Future[HttpResponse] =
     send(message.toLetter(ids))
