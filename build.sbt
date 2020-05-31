@@ -2,30 +2,32 @@ import scala.sys.process.Process
 
 val updateDocs = taskKey[Unit]("Updates README.md")
 
-val commonSettings = Seq(
-  organization := "com.malliina"
+inThisBuild(
+  Seq(
+    organization := "com.malliina"
+  )
 )
 
 val mobilePush = Project("mobile-push", file("."))
   .enablePlugins(MavenCentralPlugin)
-  .settings(commonSettings: _*)
   .settings(
-    scalaVersion := "2.12.10",
-    crossScalaVersions := "2.13.1" :: "2.12.10" :: Nil,
+    scalaVersion := "2.12.11",
+    crossScalaVersions := "2.13.2" :: "2.12.11" :: Nil,
     releaseCrossBuild := true,
     gitUserName := "malliina",
     developerName := "Michael Skogberg",
     libraryDependencies ++= Seq(
-      "com.malliina" %% "okclient" % "1.13.0",
-      "com.nimbusds" % "nimbus-jose-jwt" % "8.3",
+      "com.malliina" %% "okclient" % "1.17.0",
+      "com.nimbusds" % "nimbus-jose-jwt" % "8.17.1",
       "com.notnoop.apns" % "apns" % "1.0.0.Beta6",
-      "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
+      "org.scala-lang.modules" %% "scala-xml" % "1.3.0",
       "org.eclipse.jetty" % "jetty-alpn-java-server" % "9.4.20.v20190813",
       "org.eclipse.jetty" % "jetty-alpn-java-client" % "9.4.20.v20190813",
       "org.eclipse.jetty" % "jetty-alpn-openjdk8-server" % "9.4.20.v20190813",
       "org.eclipse.jetty" % "jetty-alpn-openjdk8-client" % "9.4.20.v20190813",
-      "org.scalatest" %% "scalatest" % "3.0.8" % Test
+      "org.scalameta" %% "munit" % "0.7.7" % Test
     ),
+    testFrameworks += new TestFramework("munit.Framework"),
     fork in Test := true,
     javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
   )
@@ -33,9 +35,8 @@ val mobilePush = Project("mobile-push", file("."))
 val docs = project
   .in(file("mdoc"))
   .settings(
-    organization := "com.malliina",
-    scalaVersion := "2.12.10",
-    crossScalaVersions -= "2.13.1",
+    scalaVersion := "2.12.11",
+    crossScalaVersions -= "2.13.2",
     skip.in(publish) := true,
     mdocVariables := Map("VERSION" -> version.value),
     mdocOut := (baseDirectory in ThisBuild).value,

@@ -2,10 +2,9 @@ package tests
 
 import com.malliina.push.wns.CommandId
 import com.malliina.push.wns.CommandId.Dismiss
-import org.scalatest.FunSuite
 import play.api.libs.json.Json
 
-class WNSJson extends FunSuite {
+class WNSJson extends munit.FunSuite {
 
   test("read") {
     val in = """"dismiss""""
@@ -15,6 +14,6 @@ class WNSJson extends FunSuite {
 
   test("write") {
     val str = Json.stringify(Json.toJson(Dismiss: CommandId))
-    assert(str === """"dismiss"""")
+    assert(str == """"dismiss"""")
   }
 }

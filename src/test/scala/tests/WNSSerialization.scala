@@ -1,11 +1,10 @@
 package tests
 
 import com.malliina.push.wns.{Selection, _}
-import org.scalatest.FunSuite
 
 import scala.xml.{Node, PrettyPrinter}
 
-class WNSSerialization extends FunSuite {
+class WNSSerialization extends munit.FunSuite {
   val printer = new PrettyPrinter(200, 2)
 
   test("audio") {

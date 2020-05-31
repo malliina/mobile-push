@@ -20,7 +20,7 @@ class GoogleTests extends BaseSuite {
     assert(tokenOpt.isDefined)
   }
 
-  ignore("send message, if enabled") {
+  test("send message, if enabled".ignore) {
     val gcmApiKey: String = "AIzaSyCCDniLRhlHAfnXIJnsVn-You2QQKLfrM8"
     //    val gcmApiKey: String = "AIzaSyBLwdU7XGCdEPlwkGXW7V2eMRRFieNGYmA"
     val pushIDs = Seq(token)
@@ -30,11 +30,11 @@ class GoogleTests extends BaseSuite {
       GCMMessage(Map("title" -> "hey you", "message" -> "late åäö", "key" -> "value", "a" -> "b"))
     val response: Future[Seq[MappedGCMResponse]] = client.pushAll(pushIDs, message)
     val rs = await(response)
-    assert(rs.forall(r => r.response.failure === 0))
+    assert(rs.forall(r => r.response.failure == 0))
     rs.foreach(println)
   }
 
-  ignore("FCM") {
+  test("FCM".ignore) {
     val tokens = Seq(
       // Emulator
       GCMToken(
@@ -50,7 +50,7 @@ class GoogleTests extends BaseSuite {
     val response: Future[Seq[MappedGCMResponse]] = client.pushAll(tokens, message)
     val rs = await(response)
     println(rs)
-    assert(rs.forall(r => r.response.failure === 0))
+    assert(rs.forall(r => r.response.failure == 0))
     rs.foreach(println)
   }
 }

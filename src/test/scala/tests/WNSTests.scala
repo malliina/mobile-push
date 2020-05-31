@@ -19,11 +19,11 @@ class WNSTests extends BaseSuite {
     assert(!WNSToken.isValid(invalidInput))
   }
 
-  ignore("can read credentials") {
+  test("can read credentials".ignore) {
     assert(maybeCreds.isDefined)
   }
 
-  ignore("can fetch token") {
+  test("can fetch token".ignore) {
     val token = maybeCreds map { creds =>
       val client = new WNSClient(creds)
       await(client.fetchAccessToken(OkClient.default))
@@ -31,7 +31,7 @@ class WNSTests extends BaseSuite {
     assert(token.forall(_.access_token.nonEmpty))
   }
 
-  ignore("send") {
+  test("send".ignore) {
     val token = WNSToken
       .build(
         "https://db5.notify.windows.com/?token=AwYAAABq7aWoYUJUr%2fM%2bRcWZacCYWN3cutxpadhmsejNg7aOJQselRS9AEE3ubPwZlLBcjYmYNzHFezNQoPyrViQRtPlvpxMXNREJHPVCmBDMG7wZWhRb1sxDCatCYsiafv0a6I%3d"

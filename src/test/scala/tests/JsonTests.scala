@@ -3,14 +3,13 @@ package tests
 import com.malliina.push.apns.{APNSMessage, APSPayload, AlertPayload}
 import com.malliina.push.gcm.MappedGCMResponse.TokenReplacement
 import com.malliina.push.gcm.{GCMResponse, GCMResult, GCMToken, MappedGCMResponse}
-import org.scalatest.FunSuite
 import play.api.libs.json.Json._
 import play.api.libs.json._
 
-class JsonTests extends FunSuite {
+class JsonTests extends munit.FunSuite {
   test("can json this") {
     val obj = Json.toJson(Map("a" -> "b")).as[JsObject]
-    assert((obj \ "a").as[String] === "b")
+    assert((obj \ "a").as[String] == "b")
   }
 
   test("APNS serialization") {
@@ -76,12 +75,12 @@ class JsonTests extends FunSuite {
         GCMResult(None, None, Some(GCMResult.NotRegistered))
       )
     )
-    assert(parsed.multicast_id === 216)
-    assert(parsed === expected)
+    assert(parsed.multicast_id == 216)
+    assert(parsed == expected)
 
     val mapped = MappedGCMResponse(Seq(1, 2, 3, 4, 5, 6).map(n => GCMToken(n.toString)), parsed)
-    assert(mapped.replacements === Seq(TokenReplacement(GCMToken("5"), GCMToken("32"))))
-    assert(mapped.uninstalled === Seq(GCMToken("6")))
+    assert(mapped.replacements == Seq(TokenReplacement(GCMToken("5"), GCMToken("32"))))
+    assert(mapped.uninstalled == Seq(GCMToken("6")))
   }
 }
 

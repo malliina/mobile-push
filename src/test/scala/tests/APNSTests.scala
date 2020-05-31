@@ -20,7 +20,7 @@ class APNSTests extends BaseSuite {
     assert(invalidToken.isEmpty)
   }
 
-  ignore("send notification with body, if enabled") {
+  test("send notification with body, if enabled".ignore) {
     val creds = APNSHttpConf.load
     val ks = TLSUtils.keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
     val client = new APNSClient(ks, creds.pass, isSandbox = true)
@@ -36,7 +36,7 @@ class APNSTests extends BaseSuite {
     await(fut)
   }
 
-  ignore("send pimp notification") {
+  test("send pimp notification".ignore) {
     val creds = APNSHttpConf.load
     val ks = TLSUtils.keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
     val client = new APNSClient(ks, creds.pass, isSandbox = true)
@@ -45,7 +45,7 @@ class APNSTests extends BaseSuite {
     await(fut)
   }
 
-  ignore("send background notification, if enabled") {
+  test("send background notification, if enabled".ignore) {
     val creds = APNSHttpConf.load
     val ks = TLSUtils.keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
     val client = new APNSClient(ks, creds.pass, isSandbox = true)
