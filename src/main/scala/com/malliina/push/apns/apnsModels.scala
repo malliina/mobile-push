@@ -7,7 +7,9 @@ import play.api.libs.json.Json
 
 import scala.util.Try
 
-case class APNSTopic(topic: String) extends AnyVal
+case class APNSTopic(topic: String) extends AnyVal {
+  override def toString: String = topic
+}
 
 object APNSTopic extends SimpleCompanion[String, APNSTopic] {
   override def write(t: APNSTopic): String = t.topic
@@ -34,7 +36,9 @@ object APNSPriority extends ValidatingCompanion[Int, APNSPriority] {
 case object APNSImmediately extends APNSPriority(10)
 case object APNSConsiderate extends APNSPriority(5)
 
-abstract sealed class APNSPushType(val name: String)
+abstract sealed class APNSPushType(val name: String) {
+  override def toString: String = name
+}
 
 object APNSPushType extends StringEnumCompanion[APNSPushType] {
   override def all: Seq[APNSPushType] = Seq(Alert, Background)

@@ -7,7 +7,7 @@ import scala.io.{BufferedSource, Source}
 object PushUtils extends PushUtils
 
 trait PushUtils {
-  def userHome = Paths get sys.props("user.home")
+  def userHome = Paths.get(sys.props("user.home"))
 
   def props(path: Path) = {
     val src = Source.fromFile(path.toUri)

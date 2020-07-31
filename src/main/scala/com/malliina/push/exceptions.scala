@@ -12,5 +12,5 @@ class JsonException(val input: String, val error: JsError)
 
 class ResponseException(val response: HttpResponse)
   extends PushException(s"Invalid response code: ${response.code}") {
-  def code = response.code
+  def code: Int = response.code
 }
