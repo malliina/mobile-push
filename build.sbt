@@ -11,8 +11,8 @@ inThisBuild(
 val mobilePush = Project("mobile-push", file("."))
   .enablePlugins(MavenCentralPlugin)
   .settings(
-    scalaVersion := "2.12.11",
-    crossScalaVersions := "2.13.2" :: "2.12.11" :: Nil,
+    scalaVersion := "2.12.12",
+    crossScalaVersions := "2.13.3" :: "2.12.12" :: Nil,
     releaseCrossBuild := true,
     gitUserName := "malliina",
     developerName := "Michael Skogberg",
@@ -25,7 +25,7 @@ val mobilePush = Project("mobile-push", file("."))
       "org.eclipse.jetty" % "jetty-alpn-java-client" % "9.4.20.v20190813",
       "org.eclipse.jetty" % "jetty-alpn-openjdk8-server" % "9.4.20.v20190813",
       "org.eclipse.jetty" % "jetty-alpn-openjdk8-client" % "9.4.20.v20190813",
-      "org.scalameta" %% "munit" % "0.7.7" % Test
+      "org.scalameta" %% "munit" % "0.7.12" % Test
     ),
     testFrameworks += new TestFramework("munit.Framework"),
     fork in Test := true,
@@ -35,8 +35,8 @@ val mobilePush = Project("mobile-push", file("."))
 val docs = project
   .in(file("mdoc"))
   .settings(
-    scalaVersion := "2.12.11",
-    crossScalaVersions -= "2.13.2",
+    scalaVersion := "2.12.12",
+    crossScalaVersions -= "2.13.3",
     skip.in(publish) := true,
     mdocVariables := Map("VERSION" -> version.value),
     mdocOut := (baseDirectory in ThisBuild).value,
