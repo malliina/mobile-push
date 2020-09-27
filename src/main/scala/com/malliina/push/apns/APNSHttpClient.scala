@@ -15,7 +15,7 @@ import scala.concurrent.Future
 import scala.util.Try
 
 object APNSHttpClient {
-  val DevHost = FullUrl.https("api.development.push.apple.com", "")
+  val DevHost = FullUrl.https("api.sandbox.push.apple.com", "")
   val ProdHost = FullUrl.https("api.push.apple.com", "")
 
   val ApnsId = "apns-id"
