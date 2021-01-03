@@ -1,6 +1,5 @@
 package com.malliina.push.apns
 
-import java.nio.file.Path
 import java.security.KeyFactory
 import java.security.interfaces.ECPrivateKey
 import java.security.spec.PKCS8EncodedKeySpec
@@ -15,7 +14,7 @@ import com.nimbusds.jose.{JWSAlgorithm, JWSHeader}
 import com.nimbusds.jwt.{JWTClaimsSet, SignedJWT}
 import okhttp3.Request
 
-import scala.io.Source
+import scala.io.BufferedSource
 
 object APNSTokenClient {
   def default = apply(APNSTokenConf.default.right.get, isSandbox = false)
@@ -74,8 +73,7 @@ class APNSTokenClient(conf: APNSTokenConf, isSandbox: Boolean)
   }
 
   // drops 'begin private key...', 'end private key...' boiler
-  private def readKey(file: Path): String = {
-    val src = Source.fromFile(file.toFile)
+  private def readKey(src: BufferedSource): String = {
     try src.getLines().toList.drop(1).init.mkString
     finally src.close()
   }

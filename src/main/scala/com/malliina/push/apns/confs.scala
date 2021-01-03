@@ -2,8 +2,10 @@ package com.malliina.push.apns
 
 import java.nio.file.{Path, Paths}
 
-import com.malliina.push.{ConfHelper, PushUtils}
+import com.malliina.push.{ConfHelper, PushUtils, durationFormat}
 import com.malliina.values.ErrorMessage
+
+import scala.io.{BufferedSource, Source}
 
 /** Apple Team ID.
   */
@@ -20,7 +22,7 @@ case class KeyId(id: String) extends AnyVal {
 /**
   * @param privateKey downloadable from Apple's developer website
   */
-case class APNSTokenConf(privateKey: Path, keyId: KeyId, teamId: TeamId)
+case class APNSTokenConf(privateKey: BufferedSource, keyId: KeyId, teamId: TeamId)
 
 object APNSTokenConf extends ConfHelper[APNSTokenConf] {
   val DefaultFile: Path = PushUtils.userHome.resolve("keys/apns/jwt.conf")
@@ -32,6 +34,26 @@ object APNSTokenConf extends ConfHelper[APNSTokenConf] {
       file <- read("private_key")
       teamId <- read("team_id")
       keyId <- read("key_id")
-    } yield APNSTokenConf(Paths get file, KeyId(keyId), TeamId(teamId))
+    } yield APNSTokenConf(Source.fromFile(file), KeyId(keyId), TeamId(teamId))
   }
+
+  def apply(
+    privateKey: Path,
+    keyId: KeyId,
+    teamId: TeamId
+  ): APNSTokenConf = new APNSTokenConf(
+    Source.fromFile(privateKey.toFile),
+    keyId,
+    teamId
+  )
+
+  def apply(
+    privateKey: BufferedSource,
+    keyId: KeyId,
+    teamId: TeamId
+  ): APNSTokenConf = new APNSTokenConf(
+    privateKey,
+    keyId,
+    teamId
+  )
 }

@@ -34,6 +34,7 @@ the scope of this library; let's assume you already have all this.
 ```scala
 val conf = APNSTokenConf(
   Paths.get("path/to/downloaded-priv-key.p8"),
+  // or Source.fromResource("downloaded-priv-key.p8"),
   KeyId("key_id_here"),
   TeamId("team_id_here")
 )
