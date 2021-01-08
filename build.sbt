@@ -1,21 +1,13 @@
 import scala.sys.process.Process
+import ReleaseTransformations._
 
 val updateDocs = taskKey[Unit]("Updates README.md")
 
-inThisBuild(
-  Seq(
-    organization := "com.malliina"
-  )
-)
-
 val mobilePush = Project("mobile-push", file("."))
-  .enablePlugins(MavenCentralPlugin)
   .settings(
+    organization := "com.github.halfmatthalfcat",
     scalaVersion := "2.12.12",
     crossScalaVersions := "2.13.3" :: "2.12.12" :: Nil,
-    releaseCrossBuild := true,
-    gitUserName := "malliina",
-    developerName := "Michael Skogberg",
     libraryDependencies ++= Seq(
       "com.malliina" %% "okclient" % "1.17.0",
       "com.nimbusds" % "nimbus-jose-jwt" % "8.17.1",
@@ -29,7 +21,44 @@ val mobilePush = Project("mobile-push", file("."))
     ),
     testFrameworks += new TestFramework("munit.Framework"),
     fork in Test := true,
-    javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
+    javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
+    releaseCrossBuild := true,
+    releaseProcess := Seq[ReleaseStep](
+      checkSnapshotDependencies,
+      inquireVersions,
+      runClean,
+      runTest,
+      setReleaseVersion,
+      commitReleaseVersion,
+      tagRelease,
+      releaseStepCommandAndRemaining("+publishSigned"),
+      releaseStepCommand("sonatypeBundleRelease"),
+      setNextVersion,
+      commitNextVersion,
+      pushChanges
+    ),
+    pomExtra :=
+      <url>https://www.github.com/halfmatthalfcat/mobile-push</url>
+        <licenses>
+          <license>
+            <name>MIT</name>
+            <distribution>repo</distribution>
+          </license>
+        </licenses>
+        <scm>
+          <url>git@github.com:halfmatthalfcat/mobile-push.git</url>
+          <connection>scm:git:git@github.com:halfmatthalfcat/mobile-push.git</connection>
+        </scm>
+        <developers>
+          <developer>
+            <id>halfmatthalfcat</id>
+            <name>Matt Oliver</name>
+            <url>https://www.github.com/halfmatthalfcat</url>
+          </developer>
+        </developers>,
+    publishMavenStyle := true,
+    publishTo := sonatypePublishToBundle.value,
+    resolvers ++= Seq(DefaultMavenRepository)
   )
 
 val docs = project
