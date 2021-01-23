@@ -37,9 +37,8 @@ class APNSTokenClient(conf: APNSTokenConf, isSandbox: Boolean)
   extends APNSHttpClient(OkClient.default, isSandbox)
   with AutoCloseable {
 
-  val keySpec = new PKCS8EncodedKeySpec(Base64.getDecoder.decode(readKey(conf.privateKey)))
   val keyFactory = KeyFactory.getInstance("EC")
-  val key = keyFactory.generatePrivate(keySpec).asInstanceOf[ECPrivateKey]
+  val key = keyFactory.generatePrivate(conf.privateKey).asInstanceOf[ECPrivateKey]
   val signer = new ECDSASigner(key)
   val jwtHeader = new JWSHeader.Builder(JWSAlgorithm.ES256).keyID(conf.keyId.id).build()
 
@@ -70,12 +69,6 @@ class APNSTokenClient(conf: APNSTokenConf, isSandbox: Boolean)
   private def headerValue(signed: SignedJWT) = {
     val serialized = signed.serialize()
     s"bearer $serialized"
-  }
-
-  // drops 'begin private key...', 'end private key...' boiler
-  private def readKey(src: BufferedSource): String = {
-    try src.getLines().toList.drop(1).init.mkString
-    finally src.close()
   }
 
   override def close(): Unit = client.close()
