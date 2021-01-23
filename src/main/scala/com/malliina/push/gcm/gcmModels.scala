@@ -69,7 +69,16 @@ case class GCMMessage(
   dryRun: Option[Boolean] = None
 ) {
   def toLetter(ids: Seq[GCMToken]) =
-    GCMLetter(ids, data, notification, expiresAfter, collapseKey, delayWhileIdle, restrictedPackageName, dryRun)
+    GCMLetter(
+      ids,
+      data,
+      notification,
+      expiresAfter,
+      collapseKey,
+      delayWhileIdle,
+      restrictedPackageName,
+      dryRun
+    )
 }
 
 object GCMMessage {
