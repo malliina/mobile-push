@@ -8,3 +8,4 @@ target/
 hydra.sbt
 .bloop
 out
+.bsp
