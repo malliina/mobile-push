@@ -38,8 +38,6 @@ val mobilePush = Project("mobile-push", file("."))
 val docs = project
   .in(file("mdoc"))
   .settings(
-    scalaVersion := "2.12.13",
-    crossScalaVersions -= "2.13.5",
     skip.in(publish) := true,
     mdocVariables := Map("VERSION" -> version.value),
     mdocOut := (baseDirectory in ThisBuild).value,
