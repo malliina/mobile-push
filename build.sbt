@@ -4,28 +4,31 @@ val updateDocs = taskKey[Unit]("Updates README.md")
 
 inThisBuild(
   Seq(
-    organization := "com.malliina"
+    organization := "com.malliina",
+    scalaVersion := "2.13.5"
   )
+)
+
+val jettyModules = Seq(
+  "java-server",
+  "java-client",
+  "openjdk8-server",
+  "openjdk8-client"
 )
 
 val mobilePush = Project("mobile-push", file("."))
   .enablePlugins(MavenCentralPlugin)
   .settings(
-    scalaVersion := "2.12.12",
-    crossScalaVersions := "2.13.3" :: "2.12.12" :: Nil,
-    releaseCrossBuild := true,
     gitUserName := "malliina",
     developerName := "Michael Skogberg",
-    libraryDependencies ++= Seq(
-      "com.malliina" %% "okclient" % "1.17.0",
-      "com.nimbusds" % "nimbus-jose-jwt" % "8.17.1",
+    libraryDependencies ++= jettyModules.map { m =>
+      "org.eclipse.jetty" % s"jetty-alpn-$m" % "9.4.20.v20190813",
+    } ++ Seq(
+      "com.malliina" %% "okclient" % "1.18.1",
+      "com.nimbusds" % "nimbus-jose-jwt" % "9.7",
       "com.notnoop.apns" % "apns" % "1.0.0.Beta6",
       "org.scala-lang.modules" %% "scala-xml" % "1.3.0",
-      "org.eclipse.jetty" % "jetty-alpn-java-server" % "9.4.20.v20190813",
-      "org.eclipse.jetty" % "jetty-alpn-java-client" % "9.4.20.v20190813",
-      "org.eclipse.jetty" % "jetty-alpn-openjdk8-server" % "9.4.20.v20190813",
-      "org.eclipse.jetty" % "jetty-alpn-openjdk8-client" % "9.4.20.v20190813",
-      "org.scalameta" %% "munit" % "0.7.12" % Test
+      "org.scalameta" %% "munit" % "0.7.23" % Test
     ),
     testFrameworks += new TestFramework("munit.Framework"),
     fork in Test := true,
@@ -35,8 +38,8 @@ val mobilePush = Project("mobile-push", file("."))
 val docs = project
   .in(file("mdoc"))
   .settings(
-    scalaVersion := "2.12.12",
-    crossScalaVersions -= "2.13.3",
+    scalaVersion := "2.12.13",
+    crossScalaVersions -= "2.13.5",
     skip.in(publish) := true,
     mdocVariables := Map("VERSION" -> version.value),
     mdocOut := (baseDirectory in ThisBuild).value,
@@ -56,5 +59,3 @@ val docs = project
   .enablePlugins(MdocPlugin)
 
 beforeCommitRelease in mobilePush := (updateDocs in docs).value
-
-Global / onChangedBuildSource := ReloadOnSourceChanges
