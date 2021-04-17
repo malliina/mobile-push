@@ -17,7 +17,7 @@ Send push notifications to mobile devices. Supports:
 ## Installation
 
 ```scala
-libraryDependencies += "com.malliina" %% "mobile-push" % "1.26.2-SNAPSHOT"
+libraryDependencies += "com.malliina" %% "mobile-push" % "2.0.0"
 ```
 
 ## Usage
