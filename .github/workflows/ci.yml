@@ -29,4 +29,4 @@ jobs:
       - name: Run tests
         run: sbt test
       - name: Check formatting
-        run: sbt scalafmtCheck
+        run: sbt "project root" scalafmtCheck
