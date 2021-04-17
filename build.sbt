@@ -75,7 +75,13 @@ val root = project
   .in(file("solution"))
   .aggregate(mobilePush, io, docs)
   .settings(
-    publish / skip := true
+    publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo"))),
+    publish / skip := true,
+    publishArtifact := false,
+    packagedArtifacts := Map.empty,
+    publish := {},
+    publishLocal := {},
+    releaseProcess := (mobilePush / tagReleaseProcess).value
   )
 
 mobilePush / beforeCommitRelease := (docs / updateDocs).value
