@@ -2,16 +2,15 @@ package com.malliina.push.apns
 
 import java.nio.file.Path
 import java.security.KeyStore
-
-import com.malliina.http.{FullUrl, OkClient, OkHttpResponse}
-import com.malliina.push.Execution.cached
+import com.malliina.http.{FullUrl, HttpClient, OkClient, OkHttpResponse}
 import com.malliina.push.apns.APNSHttpClient._
-import com.malliina.push.{PushClient, TLSUtils}
+import com.malliina.push.{PushClientF, TLSUtils}
+
 import javax.net.ssl.SSLSocketFactory
 import okhttp3.{MediaType, _}
 import play.api.libs.json.Json
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
 object APNSHttpClient {
@@ -50,37 +49,12 @@ object APNSHttpClient {
     )
 }
 
-/** APNs client, using the HTTP/2 notification API.
-  *
-  * Uses OkHttp with Jetty's "alpn-boot" in the bootclasspath for HTTP/2 support;
-  * please check the build definition of this project for details.
-  *
-  * @see https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html
-  * @see https://groups.google.com/forum/embed/#!topic/simple-build-tool/TpImNLs1akQ
-  * @see https://github.com/square/okhttp/wiki/Building
-  */
-class APNSHttpClient(val client: OkClient, isSandbox: Boolean = false)
-  extends PushClient[APNSToken, APNSRequest, Either[APNSError, APNSIdentifier]] {
-
+abstract class APNSHttpClientBase[F[+_]](http: HttpClient[F], isSandbox: Boolean)
+  extends PushClientF[APNSToken, APNSRequest, Either[APNSError, APNSIdentifier], F] {
   val host: FullUrl = if (isSandbox) DevHost else ProdHost
   val jsonMediaType: MediaType = MediaType.parse("application/json")
 
-  def pushOne(id: APNSToken, message: APNSRequest): Future[APNSHttpResult] =
-    push(id, message).map(r => fold(r, id))
-
-  override def push(
-    id: APNSToken,
-    message: APNSRequest
-  ): Future[Either[APNSError, APNSIdentifier]] =
-    send(id, message).map(parseResponse)
-
-  override def pushAll(
-    ids: Seq[APNSToken],
-    message: APNSRequest
-  ): Future[Seq[Either[APNSError, APNSIdentifier]]] =
-    Future.traverse(ids)(push(_, message))
-
-  def send(id: APNSToken, message: APNSRequest): Future[OkHttpResponse] = {
+  def send(id: APNSToken, message: APNSRequest): F[OkHttpResponse] = {
     val meta = message.meta
     val bodyAsString = Json.stringify(Json.toJson(message.message))
     val body = RequestBody.create(bodyAsString, jsonMediaType)
@@ -91,7 +65,7 @@ class APNSHttpClient(val client: OkClient, isSandbox: Boolean = false)
         .post(body)
         .header(ContentLength, "" + contentLength)
     }.build()
-    client.execute(request)
+    http.execute(request)
   }
 
   def withHeaders(meta: APNSMeta)(request: Request.Builder): Request.Builder = {
@@ -118,4 +92,33 @@ class APNSHttpClient(val client: OkClient, isSandbox: Boolean = false)
       Left(maybeReason getOrElse UnknownReason)
     }
   }
+}
+
+/** APNs client, using the HTTP/2 notification API.
+  *
+  * Uses OkHttp with Jetty's "alpn-boot" in the bootclasspath for HTTP/2 support;
+  * please check the build definition of this project for details.
+  *
+  * @see https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html
+  * @see https://groups.google.com/forum/embed/#!topic/simple-build-tool/TpImNLs1akQ
+  * @see https://github.com/square/okhttp/wiki/Building
+  */
+class APNSHttpClient(val client: OkClient, isSandbox: Boolean = false)
+  extends APNSHttpClientBase[Future](client, isSandbox) {
+  implicit val ec: ExecutionContext = client.exec
+
+  def pushOne(id: APNSToken, message: APNSRequest): Future[APNSHttpResult] =
+    push(id, message).map(r => fold(r, id))
+
+  override def push(
+    id: APNSToken,
+    message: APNSRequest
+  ): Future[Either[APNSError, APNSIdentifier]] =
+    send(id, message).map(parseResponse)
+
+  override def pushAll(
+    ids: Seq[APNSToken],
+    message: APNSRequest
+  ): Future[Seq[Either[APNSError, APNSIdentifier]]] =
+    Future.traverse(ids)(push(_, message))
 }

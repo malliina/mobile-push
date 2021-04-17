@@ -20,12 +20,12 @@ class GoogleTests extends BaseSuite {
     assert(tokenOpt.isDefined)
   }
 
-  test("send message, if enabled".ignore) {
+  http.test("send message, if enabled".ignore) { httpClient =>
     val gcmApiKey: String = "AIzaSyCCDniLRhlHAfnXIJnsVn-You2QQKLfrM8"
     //    val gcmApiKey: String = "AIzaSyBLwdU7XGCdEPlwkGXW7V2eMRRFieNGYmA"
     val pushIDs = Seq(token)
 
-    val client = GCMClient(gcmApiKey)
+    val client = GCMClient(gcmApiKey, httpClient, munitExecutionContext)
     val message =
       GCMMessage(Map("title" -> "hey you", "message" -> "late åäö", "key" -> "value", "a" -> "b"))
     val response: Future[Seq[MappedGCMResponse]] = client.pushAll(pushIDs, message)
@@ -34,7 +34,7 @@ class GoogleTests extends BaseSuite {
     rs.foreach(println)
   }
 
-  test("FCM".ignore) {
+  http.test("FCM".ignore) { httpClient =>
     val tokens = Seq(
       // Emulator
       GCMToken(
@@ -43,7 +43,7 @@ class GoogleTests extends BaseSuite {
     )
     // Check https://console.firebase.google.com/u/0/project/project-id-here/settings/cloudmessaging/?pli=1
     val gcmApiKey: String = "changeme"
-    val client = FCMLegacyClient(gcmApiKey)
+    val client = FCMLegacyClient(gcmApiKey, httpClient, munitExecutionContext)
     val message = GCMMessage(
       Map("title" -> "hey you there", "message" -> "late åäö", "key" -> "value", "a" -> "b")
     )

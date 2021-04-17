@@ -33,5 +33,4 @@ object MappedGCMResponse {
   implicit val json = Json.reads[MappedGCMResponse]
 
   case class TokenReplacement(oldToken: GCMToken, newToken: GCMToken)
-
 }

@@ -6,7 +6,7 @@ import scala.concurrent.ExecutionContext
 
 object Execution {
   private val service = Executors.newCachedThreadPool()
-  implicit val cached: ExecutionContext = ExecutionContext.fromExecutorService(service)
+  //implicit val cached: ExecutionContext = ExecutionContext.fromExecutorService(service)
 
   def close(): Unit = {
     service.awaitTermination(1, TimeUnit.SECONDS)

@@ -1,14 +1,15 @@
 package com.malliina.push
 
-import java.io.StringWriter
-
-import com.malliina.http.{FullUrl, HttpResponse, OkClient}
+import com.malliina.http.{FullUrl, HttpClient, HttpResponse}
 import okhttp3.RequestBody
 
-import scala.concurrent.Future
+import java.io.StringWriter
+import scala.concurrent.{ExecutionContext, Future}
 import scala.xml.{Elem, XML}
 
-trait WindowsClient[T <: Token, M <: WindowsMessage] extends PushClient[T, M, HttpResponse] {
+abstract class WindowsClient[T <: Token, M <: WindowsMessage](http: HttpClient[Future])(
+  implicit ec: ExecutionContext
+) extends PushClient[T, M, HttpResponse] {
   override def pushAll(urls: Seq[T], message: M): Future[Seq[HttpResponse]] = {
     val bodyAsString = WindowsClient.serialize(message.xml)
     sendMulti(urls, bodyAsString, message.headers)
@@ -29,13 +30,11 @@ trait WindowsClient[T <: Token, M <: WindowsMessage] extends PushClient[T, M, Ht
     body: String,
     headers: Map[String, String]
   ): Future[HttpResponse] =
-    AsyncHttp.usingAsync(OkClient.default) { client =>
-      client.post(
-        FullUrl.build(url.token).toOption.get,
-        RequestBody.create(Headers.XmlMediaTypeUtf8, body),
-        headers
-      )
-    }
+    http.post(
+      FullUrl.build(url.token).toOption.get,
+      RequestBody.create(Headers.XmlMediaTypeUtf8, body),
+      headers
+    )
 }
 
 object WindowsClient {

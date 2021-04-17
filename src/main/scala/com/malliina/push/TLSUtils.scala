@@ -3,9 +3,7 @@ package com.malliina.push
 import java.io.FileInputStream
 import java.nio.file.Path
 import java.security.KeyStore
-
 import javax.net.ssl.{KeyManagerFactory, SSLContext}
-
 import scala.util.Try
 
 object TLSUtils {

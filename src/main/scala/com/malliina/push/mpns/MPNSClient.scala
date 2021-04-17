@@ -1,11 +1,12 @@
 package com.malliina.push.mpns
 
-import com.malliina.http.HttpResponse
+import com.malliina.http.{HttpClient, HttpResponse}
 import com.malliina.push.{Headers, WindowsClient, WindowsMessage}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class MPNSClient extends WindowsClient[MPNSToken, WindowsMessage] {
+class MPNSClient(http: HttpClient[Future], ec: ExecutionContext)
+  extends WindowsClient[MPNSToken, WindowsMessage](http)(ec) {
 
   /** Might throw [[NullPointerException]] if `url` is bogus, but how do you solidly validate a URL in Java? I don't
     * know.

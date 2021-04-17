@@ -24,16 +24,16 @@ class MPNSTests extends BaseSuite {
     assert(!MPNSClient.isTokenValid(invalidToken))
   }
 
-  test("can send toast".ignore) {
-    val client = new MPNSClient
+  http.test("can send toast".ignore) { httpClient =>
+    val client = new MPNSClient(httpClient, munitExecutionContext)
     val message = ToastMessage("hey", "you all åäö", "/MainPage.xaml", silent = false)
     val f = client.pushAll(devices, message)
     val rs = await(f)
     assert(rs.forall(r => r.code == 200))
   }
 
-  test("can send tile".ignore) {
-    val client = new MPNSClient
+  http.test("can send tile".ignore) { httpClient =>
+    val client = new MPNSClient(httpClient, munitExecutionContext)
     val message = TileData(
       "img.jpg",
       1,

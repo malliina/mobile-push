@@ -34,7 +34,7 @@ the scope of this library; let's assume you already have all this.
 import java.nio.file.Paths
 import java.security.KeyStore
 
-import com.malliina.http.HttpResponse
+import com.malliina.http.{HttpResponse, OkClient}
 import com.malliina.push.adm.{ADMClient, ADMToken}
 import com.malliina.push.android.AndroidMessage
 import com.malliina.push.apns._
@@ -43,7 +43,7 @@ import com.malliina.push.gcm.{GCMClient, GCMMessage, GCMToken, MappedGCMResponse
 import com.malliina.push.mpns.{MPNSClient, MPNSToken, ToastMessage}
 import com.malliina.push.wns._
 import com.notnoop.apns.ApnsNotification
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
 ```
@@ -104,7 +104,7 @@ val pushedNotification: Future[ApnsNotification] = client.push(deviceHexID, mess
 ```scala mdoc:compile-only
 val gcmApiKey: String = ???
 val deviceRegistrationId: GCMToken = GCMToken("registration_id_here")
-val client = FCMLegacyClient(gcmApiKey)
+val client = FCMLegacyClient(gcmApiKey, OkClient.default, executionContext)
 val message = GCMMessage(Map("key" -> "value"))
 val response: Future[MappedGCMResponse] = client.push(deviceRegistrationId, message)
 ```
@@ -117,7 +117,7 @@ Instead, use Firebase Cloud Messaging as in the previous code sample.
 ```scala mdoc:compile-only
 val gcmApiKey: String = ???
 val deviceRegistrationId: GCMToken = GCMToken("registration_id_here")
-val client = GCMClient(gcmApiKey)
+val client = GCMClient(gcmApiKey, OkClient.default, executionContext)
 val message = GCMMessage(Map("key" -> "value"))
 val response: Future[MappedGCMResponse] = client.push(deviceRegistrationId, message)
 ```
@@ -128,7 +128,7 @@ val response: Future[MappedGCMResponse] = client.push(deviceRegistrationId, mess
 val clientId: String = ???
 val clientSecret: String = ???
 val deviceID: ADMToken = ADMToken("adm_token_here")
-val client = ADMClient(clientId, clientSecret)
+val client = ADMClient(clientId, clientSecret, OkClient.default, executionContext)
 val message = AndroidMessage(Map("key" -> "value"), expiresAfter = 20.seconds)
 val response: Future[HttpResponse] = client.push(deviceID, message)
 ```
@@ -139,7 +139,7 @@ val response: Future[HttpResponse] = client.push(deviceID, message)
 val packageSid: String = ???
 val clientSecret: String = ???
 val credentials = WNSCredentials(packageSid, clientSecret)
-val client = new WNSClient(credentials)
+val client = new WNSClient(credentials, OkClient.default)
 val payload = ToastElement.text("Hello, world!")
 val message = WNSMessage(payload)
 val token = WNSToken.build("https://db5.notify.windows.com/?token=AwYAAABq7aWo").get
@@ -150,7 +150,7 @@ val response: Future[WNSResponse] = client.push(token, message)
 
 ```scala mdoc:compile-only
 val deviceURL: MPNSToken = MPNSToken.build("my_device_url_here").get
-val client = new MPNSClient
+val client = new MPNSClient(OkClient.default, executionContext)
 val message = ToastMessage("text1", "text2", deepLink = "/App/Xaml/DeepLinkPage.xaml?param=value", silent = true)
 val response: Future[HttpResponse] = client.push(deviceURL, message)
 ```

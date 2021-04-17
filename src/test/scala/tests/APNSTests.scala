@@ -8,9 +8,9 @@ import com.malliina.values.ErrorMessage
 import com.notnoop.apns.internal.Utilities
 
 class APNSTests extends BaseSuite {
-  implicit val ec = Execution.cached
   //  val rawDeviceID = "9f3c2f830256954ada78bf56894fa7586307f0eedb7763117c84e0c1eee8347a"
   val rawDeviceID = "e0d82212038b938c51dde9f49577ff1f70442fcfe93ec1ff26a2948e36821934"
+  implicit val ec = munitExecutionContext
 
   test("token validation") {
     val tokenOpt = APNSToken.build(rawDeviceID)

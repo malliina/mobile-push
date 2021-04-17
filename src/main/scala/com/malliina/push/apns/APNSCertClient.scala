@@ -1,12 +1,11 @@
 package com.malliina.push.apns
 
-import java.security.cert.X509Certificate
-
 import com.malliina.http.OkClient
-import javax.net.ssl.{SSLSocketFactory, X509TrustManager}
 import okhttp3.{OkHttpClient, Protocol}
 
-import scala.collection.JavaConverters.seqAsJavaList
+import java.security.cert.X509Certificate
+import javax.net.ssl.{SSLSocketFactory, X509TrustManager}
+import scala.jdk.CollectionConverters.SeqHasAsJava
 
 object APNSCertClient {
   val tm: X509TrustManager = new X509TrustManager {
@@ -15,12 +14,11 @@ object APNSCertClient {
     override def getAcceptedIssuers: Array[X509Certificate] = Array.empty[X509Certificate]
   }
 
-  def httpClient(ssf: SSLSocketFactory): OkHttpClient = {
+  def httpClient(ssf: SSLSocketFactory): OkHttpClient =
     new OkHttpClient.Builder()
       .sslSocketFactory(ssf, tm)
-      .protocols(seqAsJavaList(List(Protocol.HTTP_2, Protocol.HTTP_1_1)))
+      .protocols(List(Protocol.HTTP_2, Protocol.HTTP_1_1).asJava)
       .build()
-  }
 }
 
 class APNSCertClient(socketFactory: SSLSocketFactory, isSandbox: Boolean = false)

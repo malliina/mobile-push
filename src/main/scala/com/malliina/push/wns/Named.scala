@@ -1,6 +1,6 @@
 package com.malliina.push.wns
 
-trait Named {
+trait Named extends Any {
   def name: String
   override def toString: String = name
 }

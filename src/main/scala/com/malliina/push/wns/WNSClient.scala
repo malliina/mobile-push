@@ -8,7 +8,7 @@ import com.malliina.push.wns.WNSClient._
 import okhttp3.RequestBody
 import play.api.libs.json.Reads
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
 
 object WNSClient {
@@ -22,12 +22,12 @@ object WNSClient {
   val Tag = "X-WNS-Tag"
   val Ttl = "X-WNS-TTL"
   val WnsType = "X-WNS-Type"
+
+  case class PushMeta(client: HttpClient[Future], payload: String, headers: Map[String, String])
 }
 
-class WNSClient(creds: WNSCredentials) extends PushClient[WNSToken, WNSMessage, WNSResponse] {
-
-  case class PushMeta(client: OkClient, payload: String, headers: Map[String, String])
-
+class WNSClient(creds: WNSCredentials, http: HttpClient[Future])(implicit ec: ExecutionContext)
+  extends PushClient[WNSToken, WNSMessage, WNSResponse] {
   def push(token: WNSToken, message: WNSMessage): Future[WNSResponse] =
     withUrls(message) { meta => pushSingle(meta.client, token, meta.payload, meta.headers) }
 
@@ -37,20 +37,18 @@ class WNSClient(creds: WNSCredentials) extends PushClient[WNSToken, WNSMessage, 
     }
 
   private def withUrls[T](message: WNSMessage)(code: PushMeta => Future[T]): Future[T] =
-    AsyncHttp.usingAsync(OkClient.default) { client =>
-      fetchAccessToken(client) flatMap { accessToken =>
-        val contentType = if (message.notification.isRaw) OctetStream else TextHtml
-        val allHeaders = message.headers ++ Map(
-          Authorization -> s"Bearer ${accessToken.access_token}",
-          ContentType -> contentType,
-          RequestStatus -> "true"
-        )
-        code(PushMeta(client, message.payload, allHeaders))
-      }
+    fetchAccessToken(http).flatMap { accessToken =>
+      val contentType = if (message.notification.isRaw) OctetStream else TextHtml
+      val allHeaders = message.headers ++ Map(
+        Authorization -> s"Bearer ${accessToken.access_token}",
+        ContentType -> contentType,
+        RequestStatus -> "true"
+      )
+      code(PushMeta(http, message.payload, allHeaders))
     }
 
   def pushSingle(
-    client: OkClient,
+    client: HttpClient[Future],
     token: WNSToken,
     body: String,
     headers: Map[String, String]
@@ -61,7 +59,7 @@ class WNSClient(creds: WNSCredentials) extends PushClient[WNSToken, WNSMessage, 
       .map(WNSResponse.fromResponse)
   }
 
-  def fetchAccessToken(client: OkClient): Future[WNSAccessToken] = {
+  def fetchAccessToken(client: HttpClient[Future]): Future[WNSAccessToken] = {
     val parameters = Map(
       GrantType -> ClientCredentials,
       ClientId -> creds.packageSID,

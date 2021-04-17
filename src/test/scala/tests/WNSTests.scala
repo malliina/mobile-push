@@ -23,15 +23,15 @@ class WNSTests extends BaseSuite {
     assert(maybeCreds.isDefined)
   }
 
-  test("can fetch token".ignore) {
+  http.test("can fetch token".ignore) { httpClient =>
     val token = maybeCreds map { creds =>
-      val client = new WNSClient(creds)
+      val client = new WNSClient(creds, httpClient)(munitExecutionContext)
       await(client.fetchAccessToken(OkClient.default))
     }
     assert(token.forall(_.access_token.nonEmpty))
   }
 
-  test("send".ignore) {
+  http.test("send".ignore) { httpClient =>
     val token = WNSToken
       .build(
         "https://db5.notify.windows.com/?token=AwYAAABq7aWoYUJUr%2fM%2bRcWZacCYWN3cutxpadhmsejNg7aOJQselRS9AEE3ubPwZlLBcjYmYNzHFezNQoPyrViQRtPlvpxMXNREJHPVCmBDMG7wZWhRb1sxDCatCYsiafv0a6I%3d"
@@ -40,7 +40,7 @@ class WNSTests extends BaseSuite {
     val payload = ToastElement.text("Hello, world!")
     val message = WNSMessage(payload)
     maybeCreds foreach { creds =>
-      val client = new WNSClient(creds)
+      val client = new WNSClient(creds, httpClient)(munitExecutionContext)
       val response = await(client.push(token, message))
       assert(response.isSuccess)
     }

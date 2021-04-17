@@ -1,7 +1,6 @@
 package com.malliina.push
 
 import java.nio.file.{Path, Paths}
-
 import scala.io.{BufferedSource, Source}
 
 object PushUtils extends PushUtils

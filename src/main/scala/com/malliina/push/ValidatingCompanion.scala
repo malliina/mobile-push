@@ -16,6 +16,5 @@ abstract class ValidatingCompanion[In, T](implicit r: Format[In]) {
   implicit val json = Format[T](reader, writer)
 
   def build(input: In): Option[T]
-
   def write(t: T): In
 }

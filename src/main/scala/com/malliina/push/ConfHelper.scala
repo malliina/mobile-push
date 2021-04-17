@@ -1,8 +1,8 @@
 package com.malliina.push
 
-import java.nio.file.Path
-
 import com.malliina.values.ErrorMessage
+
+import java.nio.file.Path
 
 trait ConfHelper[T] {
   def load(file: Path): T = fromFile(file).fold(msg => throw new Exception(msg.message), identity)
