@@ -3,7 +3,7 @@ package mdoc
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
-import scala.collection.JavaConverters.asScalaBufferConverter
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 /** Borrows the syntax from https://github.com/playframework/play-doc.
   *
@@ -43,5 +43,6 @@ class CodeModifier extends PreModifier {
     }
   }
 
-  def indents(lines: Seq[String]) = lines.filter(_.trim.nonEmpty).map(_.takeWhile(_ == ' ').length).min
+  def indents(lines: Seq[String]) =
+    lines.filter(_.trim.nonEmpty).map(_.takeWhile(_ == ' ').length).min
 }
