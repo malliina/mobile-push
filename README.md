@@ -17,7 +17,7 @@ Send push notifications to mobile devices. Supports:
 ## Installation
 
 ```scala
-libraryDependencies += "com.malliina" %% "mobile-push" % "2.0.4"
+libraryDependencies += "com.malliina" %% "mobile-push" % "2.1.0"
 ```
 
 ## Usage
@@ -37,7 +37,7 @@ val conf = APNSTokenConf(
   KeyId("key_id_here"),
   TeamId("team_id_here")
 )
-val client = APNSTokenClient(conf, isSandbox = true)
+val client = APNSTokenClient(conf, OkClient.default, isSandbox = true)
 val topic = APNSTopic("org.company.MyApp")
 val deviceToken: APNSToken = APNSToken.build("my_hex_device_token_here").get
 val message = APNSMessage.simple("Hey, sexy token!")
@@ -49,7 +49,8 @@ The above sample sends a simple message without any customizations. Explore the 
 `APNSMessage` for more advanced messages. Here's a message with a text body and separate title:
 
 ```scala
-val client: APNSTokenClient = ???
+val conf: APNSTokenConf = ???
+val client = APNSTokenClient(conf, OkClient.default, isSandbox = true)
 val topic = APNSTopic("org.company.MyApp")
 val deviceToken = APNSToken.build("my_hex_device_token_here").get
 val payload = APSPayload.full(AlertPayload("The Body", title = Option("Attention")))
