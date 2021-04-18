@@ -26,7 +26,7 @@ class WNSTests extends BaseSuite {
   http.test("can fetch token".ignore) { httpClient =>
     val token = maybeCreds map { creds =>
       val client = new WNSClient(creds, httpClient)(munitExecutionContext)
-      await(client.fetchAccessToken(OkClient.default))
+      await(client.fetchAccessToken(httpClient))
     }
     assert(token.forall(_.access_token.nonEmpty))
   }
