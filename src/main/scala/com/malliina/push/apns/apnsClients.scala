@@ -49,8 +49,11 @@ object APNSHttpClient {
     )
 }
 
-abstract class APNSHttpClientBase[F[+_]](http: HttpClient[F], isSandbox: Boolean)
-  extends PushClientF[APNSToken, APNSRequest, Either[APNSError, APNSIdentifier], F] {
+abstract class APNSHttpClientBase[F[+_]](
+  http: HttpClient[F],
+  prep: RequestPreparer,
+  isSandbox: Boolean
+) extends PushClientF[APNSToken, APNSRequest, Either[APNSError, APNSIdentifier], F] {
   val host: FullUrl = if (isSandbox) DevHost else ProdHost
   val jsonMediaType: MediaType = MediaType.parse("application/json")
 
@@ -74,8 +77,8 @@ abstract class APNSHttpClientBase[F[+_]](http: HttpClient[F], isSandbox: Boolean
       .header(ApnsPriority, "" + meta.apnsPriority.priority)
       .header(ApnsPushType, meta.apnsPushType.name)
       .header(ApnsTopic, meta.apnsTopic.topic)
-    val withDefaults = meta.apnsId.map(id => request1.header(ApnsId, id.id)) getOrElse request1
-    installHeaders(withDefaults)
+    val withDefaults = meta.apnsId.map(id => request1.header(ApnsId, id.id)).getOrElse(request1)
+    prep.prepare(installHeaders(withDefaults))
   }
 
   def installHeaders(request: Request.Builder): Request.Builder = request
@@ -103,8 +106,8 @@ abstract class APNSHttpClientBase[F[+_]](http: HttpClient[F], isSandbox: Boolean
   * @see https://groups.google.com/forum/embed/#!topic/simple-build-tool/TpImNLs1akQ
   * @see https://github.com/square/okhttp/wiki/Building
   */
-class APNSHttpClient(val client: OkClient, isSandbox: Boolean = false)
-  extends APNSHttpClientBase[Future](client, isSandbox) {
+class APNSHttpClient(val client: OkClient, prep: RequestPreparer, isSandbox: Boolean = false)
+  extends APNSHttpClientBase[Future](client, prep, isSandbox) {
   implicit val ec: ExecutionContext = client.exec
 
   def pushOne(id: APNSToken, message: APNSRequest): Future[APNSHttpResult] =

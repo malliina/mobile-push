@@ -22,7 +22,11 @@ object APNSCertClient {
 }
 
 class APNSCertClient(socketFactory: SSLSocketFactory, isSandbox: Boolean = false)
-  extends APNSHttpClient(OkClient.ssl(socketFactory, APNSCertClient.tm), isSandbox)
+  extends APNSHttpClient(
+    OkClient.ssl(socketFactory, APNSCertClient.tm),
+    RequestPreparer.noop,
+    isSandbox
+  )
   with AutoCloseable {
   override def close(): Unit = client.close()
 }

@@ -20,10 +20,10 @@ class APNS2 extends BaseSuite {
     }
   }
 
-  test("token-authenticated simple notification".ignore) {
+  http.test("token-authenticated simple notification".ignore) { httpClient =>
     APNSHttpConf.loadOpt.foreach { creds =>
       APNSTokenConf.default.toOption.foreach { conf =>
-        val client = APNSTokenClient(conf, isSandbox = false)
+        val client = APNSTokenClient(conf, httpClient, isSandbox = false)
         val message = APNSMessage.simple("this is a token test")
         val request = APNSRequest.withTopic(creds.topic, message)
         val result = await(client.push(creds.token, request))
@@ -32,10 +32,10 @@ class APNS2 extends BaseSuite {
     }
   }
 
-  test("token-authenticated advanced notification".ignore) {
+  http.test("token-authenticated advanced notification".ignore) { httpClient =>
     APNSHttpConf.loadOpt.foreach { creds =>
       APNSTokenConf.default.toOption.foreach { conf =>
-        val client = APNSTokenClient(conf, isSandbox = false)
+        val client = APNSTokenClient(conf, httpClient, isSandbox = false)
         val payload = APSPayload.full(AlertPayload("The Body", title = Option("Attention")))
         val message = APNSMessage(payload)
         val request = APNSRequest.withTopic(creds.topic, message)
@@ -46,7 +46,8 @@ class APNS2 extends BaseSuite {
   }
 
   test("provider token refresh".ignore) {
-    val client = APNSTokenClient.default
+    val conf = APNSTokenConf.default.right.get
+    val client = new APNSTokenPreparer(conf)
     val now = Instant.now()
     val first = client.validToken(now)
     val second = client.validToken(now)

@@ -4,8 +4,8 @@ import cats.Monad
 import cats.implicits._
 import com.malliina.http.HttpClient
 
-class APNSHttpClientF[F[+_]: Monad](http: HttpClient[F], isSandbox: Boolean)
-  extends APNSHttpClientBase[F](http, isSandbox) {
+class APNSHttpClientF[F[+_]: Monad](http: HttpClient[F], prep: RequestPreparer, isSandbox: Boolean)
+  extends APNSHttpClientBase[F](http, prep, isSandbox) {
   override def push(id: APNSToken, message: APNSRequest): F[Either[APNSError, APNSIdentifier]] =
     send(id, message).map(parseResponse)
 
