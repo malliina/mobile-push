@@ -31,7 +31,7 @@ val mobilePush = Project("mobile-push", file("."))
   .settings(mavenCentralSettings: _*)
   .settings(
     libraryDependencies ++= jettyModules.map { m =>
-      "org.eclipse.jetty" % s"jetty-alpn-$m" % "11.0.2"
+      "org.eclipse.jetty" % s"jetty-alpn-$m" % "9.4.40.v20210413"
     } ++ Seq(
       "com.malliina" %% "okclient" % okClientVersion,
       "com.nimbusds" % "nimbus-jose-jwt" % "9.7",
