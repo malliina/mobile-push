@@ -1,8 +1,8 @@
 package com.malliina.push.wns
 
 import com.malliina.push.NamedCompanion
-import play.api.libs.json._
-
+import io.circe._
+import io.circe.generic.semiauto._
 import scala.util.Try
 
 sealed abstract class HintCrop(val name: String) extends Named
@@ -107,19 +107,16 @@ object BadgeValue {
     Attention
   )
 
-  val reader = Reads[BadgeValue] { json =>
-    def num = json.validate[Int].map(Number)
-    def str = json.validate[String].flatMap(fromName)
-    num orElse str
-  }
-  val writer = Writes[BadgeValue](v => Json.toJson(v.name))
-  implicit val json = Format[BadgeValue](reader, writer)
+  implicit val json: Codec[BadgeValue] = Codec.from(
+    Decoder.decodeString.emap(fromName) or Decoder.decodeInt.map(i => Number(i)),
+    Encoder.encodeString.contramap(b => b.name)
+  )
 
-  def fromName(n: String): JsResult[BadgeValue] = {
+  def fromName(n: String): Either[String, BadgeValue] = {
     val maybeValue = Try(n.toInt).map(i => Number(i)).toOption orElse named.find(_.name == n)
     maybeValue
-      .map(b => JsSuccess(b))
-      .getOrElse(JsError(s"Unknown badge value: $n"))
+      .map(b => Right(b))
+      .getOrElse(Left(s"Unknown badge value: $n"))
   }
 
   case class Number(num: Int) extends BadgeValue(num.toString)

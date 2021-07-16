@@ -1,6 +1,7 @@
 package com.malliina.push.wns
 
-import play.api.libs.json.Json
+import io.circe._
+import io.circe.generic.semiauto._
 
 import scala.xml.Elem
 
@@ -15,5 +16,5 @@ case class Actions(inputs: Seq[Input] = Nil, actions: Seq[ActionElement] = Nil) 
 }
 
 object Actions {
-  implicit val json = Json.format[Actions]
+  implicit val json: Codec[Actions] = deriveCodec[Actions]
 }

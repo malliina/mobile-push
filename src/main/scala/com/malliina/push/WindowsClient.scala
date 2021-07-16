@@ -7,8 +7,8 @@ import java.io.StringWriter
 import scala.concurrent.{ExecutionContext, Future}
 import scala.xml.{Elem, XML}
 
-abstract class WindowsClient[T <: Token, M <: WindowsMessage](http: HttpClient[Future])(
-  implicit ec: ExecutionContext
+abstract class WindowsClient[T <: Token, M <: WindowsMessage](http: HttpClient[Future])(implicit
+  ec: ExecutionContext
 ) extends PushClient[T, M, HttpResponse] {
   override def pushAll(urls: Seq[T], message: M): Future[Seq[HttpResponse]] = {
     val bodyAsString = WindowsClient.serialize(message.xml)
@@ -32,7 +32,7 @@ abstract class WindowsClient[T <: Token, M <: WindowsMessage](http: HttpClient[F
   ): Future[HttpResponse] =
     http.post(
       FullUrl.build(url.token).toOption.get,
-      RequestBody.create(Headers.XmlMediaTypeUtf8, body),
+      RequestBody.create(body, Headers.XmlMediaTypeUtf8),
       headers
     )
 }

@@ -46,7 +46,7 @@ class APNS2 extends BaseSuite {
   }
 
   test("provider token refresh".ignore) {
-    val conf = APNSTokenConf.default.right.get
+    val conf = APNSTokenConf.default.toOption.get
     val client = new APNSTokenPreparer(conf)
     val now = Instant.now()
     val first = client.validToken(now)

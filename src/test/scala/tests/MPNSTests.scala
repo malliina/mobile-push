@@ -13,10 +13,10 @@ class MPNSTests extends BaseSuite {
 
   test("token validation") {
     val tokenOpt = MPNSToken.build(rawToken)
-    assert(tokenOpt.isDefined)
+    assert(tokenOpt.isRight)
 
     val failure = MPNSToken.build(invalidToken)
-    assert(failure.isEmpty)
+    assert(failure.isLeft)
   }
 
   test("validate token") {

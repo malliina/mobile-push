@@ -2,7 +2,8 @@ package com.malliina.push.gcm
 
 import com.malliina.json.PrimitiveFormats
 import com.malliina.push.{Token, TokenCompanion}
-import play.api.libs.json.Json
+import io.circe._
+import io.circe.generic.semiauto._
 
 import scala.concurrent.duration.Duration
 
@@ -21,7 +22,7 @@ case class GCMResponse(
 )
 
 object GCMResponse {
-  implicit val json = Json.reads[GCMResponse]
+  implicit val json: Codec[GCMResponse] = deriveCodec[GCMResponse]
 }
 
 case class GCMNotification(
@@ -40,7 +41,7 @@ case class GCMNotification(
 )
 
 object GCMNotification {
-  implicit val json = Json.format[GCMNotification]
+  implicit val json: Codec[GCMNotification] = deriveCodec[GCMNotification]
 }
 
 case class GCMLetter(
@@ -55,8 +56,8 @@ case class GCMLetter(
 )
 
 object GCMLetter {
-  implicit val durationFormat = PrimitiveFormats.durationFormat
-  implicit val format = Json.format[GCMLetter]
+  implicit val durationJson: Codec[Duration] = PrimitiveFormats.durationCodec
+  implicit val json: Codec[GCMLetter] = deriveCodec[GCMLetter]
 }
 
 case class GCMMessage(
@@ -82,8 +83,8 @@ case class GCMMessage(
 }
 
 object GCMMessage {
-  implicit val durationFormat = PrimitiveFormats.durationFormat
-  implicit val json = Json.format[GCMMessage]
+  implicit val durationFormat: Codec[Duration] = PrimitiveFormats.durationCodec
+  implicit val json: Codec[GCMMessage] = deriveCodec[GCMMessage]
 
   type FCMMessage = GCMMessage
 }

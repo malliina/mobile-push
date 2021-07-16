@@ -4,7 +4,9 @@ import com.malliina.http.{FullUrl, HttpClient, HttpResponse}
 import com.malliina.push.Headers._
 import com.malliina.push.gcm.GCMClient._
 import com.malliina.push.{JsonException, PushClient, PushClientF, ResponseException}
-import play.api.libs.json.Json
+import io.circe._
+import io.circe.generic.semiauto._
+import io.circe.syntax.EncoderOps
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -25,7 +27,7 @@ object GCMClient {
     if (response.code == 200) {
       response
         .parse[GCMResponse]
-        .fold(err => throw new JsonException(response.asString, err), identity)
+        .fold(err => throw new JsonException(response.asString, "JSON error."), identity)
     } else {
       throw new ResponseException(response)
     }
@@ -43,10 +45,8 @@ abstract class GoogleClientBase[F[+_]](
   protected def sendLimited(ids: Seq[GCMToken], message: GCMMessage): F[HttpResponse] =
     send(message.toLetter(ids))
 
-  protected def send(message: GCMLetter): F[HttpResponse] = {
-    val body = Json.toJson(message)
-    http.postJson(postEndpoint, body, Map(Authorization -> s"key=$apiKey"))
-  }
+  protected def send(message: GCMLetter): F[HttpResponse] =
+    http.postJson(postEndpoint, message.asJson, Map(Authorization -> s"key=$apiKey"))
 }
 
 class GoogleClient(

@@ -1,16 +1,25 @@
 package com.malliina.push.gcm
 
-import play.api.libs.json._
+import com.malliina.push.json.OpenEnum
+import io.circe.Codec
+import io.circe.generic.semiauto._
 
-case class GCMResult(
-  message_id: Option[String],
-  registration_id: Option[String],
-  error: Option[GCMResult.GCMResultError]
-)
+sealed abstract class GCMResultError(val name: String)
 
-object GCMResult {
-
-  sealed abstract class GCMResultError(val name: String)
+object GCMResultError extends OpenEnum[GCMResultError] {
+  override val all: Seq[GCMResultError] = Seq(
+    MissingRegistration,
+    InvalidRegistration,
+    MismatchSenderId,
+    NotRegistered,
+    MessageTooBig,
+    InvalidDataKey,
+    InvalidTtl,
+    Unavailable,
+    InternalServerError,
+    InvalidPackageName,
+    DeviceMessageRateExceeded
+  )
 
   case object MissingRegistration extends GCMResultError("MissingRegistration")
   case object InvalidRegistration extends GCMResultError("InvalidRegistration")
@@ -26,28 +35,17 @@ object GCMResult {
 
   case class UnknownError(n: String) extends GCMResultError(n)
 
-  val knownErrors = Seq(
-    MissingRegistration,
-    InvalidRegistration,
-    MismatchSenderId,
-    NotRegistered,
-    MessageTooBig,
-    InvalidDataKey,
-    InvalidTtl,
-    Unavailable,
-    InternalServerError,
-    InvalidPackageName,
-    DeviceMessageRateExceeded
-  )
+  override def resolveName(item: GCMResultError): String = item.name
 
-  implicit val errorJson: Format[GCMResultError] = new Format[GCMResultError] {
-    override def writes(o: GCMResultError): JsValue = Json.toJson(o.name)
+  override def default(name: String): GCMResultError = UnknownError(name)
+}
 
-    override def reads(json: JsValue): JsResult[GCMResultError] = {
-      json
-        .validate[String]
-        .map(name => knownErrors.find(_.name == name) getOrElse UnknownError(name))
-    }
-  }
-  implicit val json = Json.format[GCMResult]
+case class GCMResult(
+  message_id: Option[String],
+  registration_id: Option[String],
+  error: Option[GCMResultError]
+)
+
+object GCMResult {
+  implicit val json: Codec[GCMResult] = deriveCodec[GCMResult]
 }

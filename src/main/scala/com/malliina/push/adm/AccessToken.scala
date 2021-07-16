@@ -1,7 +1,8 @@
 package com.malliina.push.adm
 
 import com.malliina.json.PrimitiveFormats
-import play.api.libs.json.Json
+import io.circe.Codec
+import io.circe.generic.semiauto.deriveCodec
 
 import scala.concurrent.duration.Duration
 
@@ -13,6 +14,6 @@ case class AccessToken(
 )
 
 object AccessToken {
-  implicit val durationFormat = PrimitiveFormats.durationFormat
-  implicit val json = Json.format[AccessToken]
+  implicit val dc: Codec[Duration] = PrimitiveFormats.durationCodec
+  implicit val json: Codec[AccessToken] = deriveCodec[AccessToken]
 }

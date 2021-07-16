@@ -6,8 +6,8 @@ import com.malliina.push.OAuthKeys._
 import com.malliina.push.adm.ADMClient._
 import com.malliina.push.android.AndroidMessage
 import com.malliina.push.{PushClient, PushException}
-import play.api.libs.json.Json
-
+import io.circe._
+import io.circe.syntax.EncoderOps
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.DurationInt
 
@@ -29,15 +29,15 @@ object ADMClient {
     new ADMClient(clientID, clientSecret, http)(ec)
 }
 
-class ADMClient(val clientID: String, val clientSecret: String, http: HttpClient[Future])(
-  implicit ec: ExecutionContext
+class ADMClient(val clientID: String, val clientSecret: String, http: HttpClient[Future])(implicit
+  ec: ExecutionContext
 ) extends PushClient[ADMToken, AndroidMessage, HttpResponse] {
 
   def send(id: ADMToken, data: Map[String, String]): Future[HttpResponse] =
     push(id, AndroidMessage(data, expiresAfter = 60.seconds))
 
   def push(id: ADMToken, message: AndroidMessage): Future[HttpResponse] = {
-    val body = Json.toJson(message)
+    val body = message.asJson
     token(clientID, clientSecret).flatMap { t =>
       val headers = Map(
         Authorization -> s"Bearer $t",

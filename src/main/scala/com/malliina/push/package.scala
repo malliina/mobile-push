@@ -1,10 +1,10 @@
 package com.malliina
 
 import com.malliina.json.PrimitiveFormats
-import play.api.libs.json.Format
+import io.circe.Codec
 
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration.{Duration, FiniteDuration}
 
 package object push {
-  implicit val durationFormat: Format[Duration] = PrimitiveFormats.durationFormat
+  implicit val durationCodec: Codec[Duration] = PrimitiveFormats.durationCodec
 }

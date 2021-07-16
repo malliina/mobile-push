@@ -4,7 +4,8 @@ import java.nio.file.{Path, Paths}
 import java.security.spec.PKCS8EncodedKeySpec
 import java.util.Base64
 
-import com.malliina.push.{ConfHelper, PushUtils, durationFormat}
+import com.malliina.push.{ConfHelper, PushUtils}
+import com.malliina.json.PrimitiveFormats.durationCodec
 import com.malliina.values.ErrorMessage
 
 import scala.io.{BufferedSource, Source}
@@ -21,8 +22,7 @@ case class KeyId(id: String) extends AnyVal {
   override def toString: String = id
 }
 
-/**
-  * @param privateKey downloadable from Apple's developer website
+/** @param privateKey downloadable from Apple's developer website
   */
 case class APNSTokenConf(privateKey: PKCS8EncodedKeySpec, keyId: KeyId, teamId: TeamId)
 

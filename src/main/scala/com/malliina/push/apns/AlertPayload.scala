@@ -1,7 +1,7 @@
 package com.malliina.push.apns
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json.{Format, JsPath}
+import io.circe._
+import io.circe.generic.semiauto._
 
 case class AlertPayload(
   body: String,
@@ -15,14 +15,41 @@ case class AlertPayload(
 )
 
 object AlertPayload {
-  implicit val json: Format[AlertPayload] = (
-    (JsPath \ "body").format[String] and
-      (JsPath \ "title").formatNullable[String] and
-      (JsPath \ "launch-image").formatNullable[String] and
-      (JsPath \ "action-loc-key").formatNullable[String] and
-      (JsPath \ "loc-key").formatNullable[String] and
-      (JsPath \ "loc-args").formatNullable[Seq[String]] and
-      (JsPath \ "title-loc-key").formatNullable[String] and
-      (JsPath \ "title-loc-args").formatNullable[Seq[String]]
-  )(AlertPayload.apply _, unlift(AlertPayload.unapply))
+  case class AlertPayloadJson(
+    body: String,
+    title: Option[String],
+    `launch-image`: Option[String],
+    `action-loc-key`: Option[String],
+    `loc-key`: Option[String],
+    `loc-args`: Option[Seq[String]],
+    `title-loc-key`: Option[String],
+    `title-loc-args`: Option[Seq[String]]
+  ) {
+    def toPayload = AlertPayload(
+      body,
+      title,
+      `launch-image`,
+      `action-loc-key`,
+      `loc-key`,
+      `loc-args`,
+      `title-loc-key`,
+      `title-loc-args`
+    )
+  }
+  def to(json: AlertPayload) = AlertPayloadJson(
+    json.body,
+    json.title,
+    json.launchImage,
+    json.actionLocKey,
+    json.locKey,
+    json.locArgs,
+    json.titleLocKey,
+    json.titleLocArgs
+  )
+  val rawDecoder: Decoder[AlertPayloadJson] = deriveDecoder[AlertPayloadJson]
+  val rawEncoder: Encoder[AlertPayloadJson] = deriveEncoder[AlertPayloadJson]
+  implicit val json: Codec[AlertPayload] = Codec.from(
+    rawDecoder.map(raw => raw.toPayload),
+    rawEncoder.contramap(AlertPayload.to)
+  )
 }

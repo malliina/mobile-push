@@ -8,7 +8,10 @@ import com.malliina.push.{PushClientF, TLSUtils}
 
 import javax.net.ssl.SSLSocketFactory
 import okhttp3.{MediaType, _}
-import play.api.libs.json.Json
+import io.circe._
+import io.circe.generic.semiauto._
+import io.circe.syntax.EncoderOps
+import io.circe.parser.decode
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
@@ -59,7 +62,7 @@ abstract class APNSHttpClientBase[F[+_]](
 
   def send(id: APNSToken, message: APNSRequest): F[OkHttpResponse] = {
     val meta = message.meta
-    val bodyAsString = Json.stringify(Json.toJson(message.message))
+    val bodyAsString = message.message.asJson.toString
     val body = RequestBody.create(bodyAsString, jsonMediaType)
     val contentLength = bodyAsString.getBytes(UTF8).length
     val request = withHeaders(meta) {
@@ -90,8 +93,8 @@ abstract class APNSHttpClientBase[F[+_]](
       val apnsId = Option(response.inner.header(ApnsId)).map(APNSIdentifier.apply)
       apnsId.map(Right.apply).getOrElse(Left(UnknownReason))
     } else {
-      val json = Try(Json.parse(response.asString))
-      val maybeReason = json.toOption.flatMap(js => (js \ APNSError.ReasonKey).asOpt[APNSError])
+      val json = decode[APNSErrorJson](response.asString)
+      val maybeReason = json.map(_.reason)
       Left(maybeReason getOrElse UnknownReason)
     }
   }

@@ -6,7 +6,8 @@ import com.malliina.push.OAuthKeys._
 import com.malliina.push._
 import com.malliina.push.wns.WNSClient._
 import okhttp3.RequestBody
-import play.api.libs.json.Reads
+import io.circe._
+import io.circe.generic.semiauto._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
@@ -74,12 +75,12 @@ class WNSClient(creds: WNSCredentials, http: HttpClient[Future])(implicit ec: Ex
     response.flatMap(r => Future.fromTry(parseResponse[WNSAccessToken](r)))
   }
 
-  def parseResponse[T: Reads](response: HttpResponse): Try[T] = {
+  def parseResponse[T: Decoder](response: HttpResponse): Try[T] = {
     if (response.code == 200) {
       response
         .parse[T]
         .fold(
-          invalid => Failure(new JsonException(response.asString, invalid)),
+          invalid => Failure(new JsonException(response.asString, invalid.toString)),
           valid => Success(valid)
         )
     } else {

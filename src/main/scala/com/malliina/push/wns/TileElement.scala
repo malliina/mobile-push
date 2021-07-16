@@ -1,6 +1,7 @@
 package com.malliina.push.wns
 
-import play.api.libs.json.Json
+import io.circe._
+import io.circe.generic.semiauto._
 
 import scala.xml.Elem
 
@@ -15,5 +16,5 @@ case class TileElement(visual: TileVisual) extends XmlNotification {
 }
 
 object TileElement {
-  implicit val json = Json.format[TileElement]
+  implicit val json: Codec[TileElement] = deriveCodec[TileElement]
 }

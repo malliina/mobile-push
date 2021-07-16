@@ -1,27 +1,29 @@
 package com.malliina.push.apns
 
-import play.api.libs.json.Json._
-import play.api.libs.json._
+import io.circe._
+import io.circe.syntax._
 
-case class APNSMessage(aps: APSPayload, data: Map[String, JsValue] = Map())
+case class APNSMessage(aps: APSPayload, data: Map[String, Json] = Map())
 
 object APNSMessage {
   val Aps = "aps"
-  val reader = Reads[APNSMessage] { json =>
+  val decoder: Decoder[APNSMessage] = Decoder.decodeMap[String, Json].emap { map =>
     for {
-      aps <- (json \ Aps).validate[APSPayload]
-      data <- json.validate[Map[String, JsValue]].map(_ - Aps)
-    } yield APNSMessage(aps, data)
+      apsJson <- map.get(Aps).toRight(s"Missing $Aps")
+      aps <- apsJson.as[APSPayload].left.map(_.toString)
+    } yield APNSMessage(aps, map - Aps)
   }
-  val writer = Writes[APNSMessage](o => obj(Aps -> toJson(o.aps)) ++ toJson(o.data).as[JsObject])
-  implicit val json = Format(reader, writer)
+  val encoder: Encoder[APNSMessage] = new Encoder[APNSMessage] {
+    final def apply(a: APNSMessage): Json =
+      Json.obj(Aps -> a.aps.asJson).deepMerge(a.data.asJson)
+  }
+  implicit val json: Codec[APNSMessage] = Codec.from(decoder, encoder)
 
   def simple(alert: String): APNSMessage = simple(alert, None)
 
   def badged(alert: String, badge: Int): APNSMessage = simple(alert, Option(badge))
 
-  /**
-    * @return A message that updates the app badge in the background: No message is shown and no sound is played.
+  /** @return A message that updates the app badge in the background: No message is shown and no sound is played.
     */
   def background(badge: Int): APNSMessage = APNSMessage(APSPayload(None, Option(badge)))
 

@@ -5,14 +5,16 @@ import java.security.KeyStore
 import com.malliina.push.PushClient
 import com.malliina.push.apns.APNSClient.stringify
 import com.notnoop.apns.{APNS, ApnsNotification, ApnsService}
-import play.api.libs.json.Json
+import io.circe._
+import io.circe.generic.semiauto._
+import io.circe.syntax.EncoderOps
 
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
 @deprecated("Use APNSHttpClient instead", "1.15.0")
-class APNSClient(keyStore: KeyStore, keyStorePass: String, isSandbox: Boolean = false)(
-  implicit ec: ExecutionContext
+class APNSClient(keyStore: KeyStore, keyStorePass: String, isSandbox: Boolean = false)(implicit
+  ec: ExecutionContext
 ) extends PushClient[APNSToken, APNSMessage, ApnsNotification]
   with AutoCloseable {
 
@@ -40,8 +42,8 @@ class APNSClient(keyStore: KeyStore, keyStorePass: String, isSandbox: Boolean = 
     * @see https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/CommunicatingWIthAPS.html
     */
   def inactiveDevices: Future[Seq[InactiveDevice]] = Future {
-    service.getInactiveDevices.asScala.toList.map {
-      case (hexID, asOf) => InactiveDevice(hexID, asOf.getTime)
+    service.getInactiveDevices.asScala.toList.map { case (hexID, asOf) =>
+      InactiveDevice(hexID, asOf.getTime)
     }
   }
 
@@ -49,5 +51,5 @@ class APNSClient(keyStore: KeyStore, keyStorePass: String, isSandbox: Boolean = 
 }
 
 object APNSClient {
-  def stringify(message: APNSMessage): String = Json stringify (Json toJson message)
+  def stringify(message: APNSMessage): String = message.asJson.toString
 }

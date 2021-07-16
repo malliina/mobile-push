@@ -1,10 +1,10 @@
 package com.malliina.push.apns
 
-import play.api.libs.json.Json._
-import play.api.libs.json._
+import io.circe._
+import io.circe.generic.semiauto._
+import io.circe.syntax.EncoderOps
 
-/**
-  * @param alert Some(Left(...)) for a simple alert text, Some(Right(...)) for more verbose alert details, None for background notifications
+/** @param alert Some(Left(...)) for a simple alert text, Some(Right(...)) for more verbose alert details, None for background notifications
   * @param badge badge number
   * @param sound rock.mp3
   */
@@ -24,19 +24,27 @@ object APSPayload {
   val Sound = "sound"
   val ThreadId = "thread-id"
 
-  implicit val alertFormat = eitherAsJson[String, AlertPayload](
-    Format[String](Reads.StringReads, Writes.StringWrites),
-    AlertPayload.json
+  implicit val af: Codec[Either[String, AlertPayload]] = Codec.from(
+    eitherDecoder[String, AlertPayload],
+    eitherEncoder[String, AlertPayload]
   )
-  implicit val format = Format[APSPayload](
-    Json.reads[APSPayload],
-    Writes[APSPayload] { p =>
-      val alertJson = p.alert.fold(obj(ContentAvailable -> 1))(e =>
-        obj(Alert -> e.fold(s => toJson(s), a => toJson(a)))
+  implicit val payloadEncoder: Encoder[APSPayload] = new Encoder[APSPayload] {
+    final def apply(p: APSPayload): Json = {
+      val alertJson = p.alert.fold(Json.obj(ContentAvailable -> Json.fromInt(1))) { e =>
+        Json.obj(Alert -> e.asJson)
+      }
+      alertJson.deepMerge(
+        objectify(Badge, p.badge)
+          .deepMerge(objectify(Sound, p.sound))
+          .deepMerge(objectify(Category, p.category))
+          .deepMerge(objectify(ThreadId, p.threadId))
       )
-      alertJson ++ objectify(Badge, p.badge) ++ objectify(Sound, p.sound) ++
-        objectify(Category, p.category) ++ objectify(ThreadId, p.threadId)
     }
+  }
+
+  implicit val json: Codec[APSPayload] = Codec.from(
+    deriveDecoder[APSPayload],
+    payloadEncoder
   )
 
   def full(
@@ -59,16 +67,17 @@ object APSPayload {
     badge: Option[Int] = None,
     sound: Option[String] = None,
     category: Option[String] = None
-  ): APSPayload =
-    apply(None, badge, sound, category)
+  ): APSPayload = apply(None, badge, sound, category)
 
-  def eitherAsJson[L, R](l: Format[L], r: Format[R]): Format[Either[L, R]] = Format(
-    Reads[Either[L, R]](json =>
-      json.validate[L](l).map(Left.apply).orElse(json.validate[R](r).map(Right.apply))
-    ),
-    Writes[Either[L, R]](e => e.fold(left => toJson(left)(l), right => toJson(right)(r)))
-  )
+  implicit def eitherDecoder[A, B](implicit a: Decoder[A], b: Decoder[B]): Decoder[Either[A, B]] = {
+    val left: Decoder[Either[A, B]] = a.map(Left.apply)
+    val right: Decoder[Either[A, B]] = b.map(Right.apply)
+    left or right
+  }
 
-  private def objectify[T](key: String, opt: Option[T])(implicit w: Writes[T]): JsObject =
-    opt.fold(obj())(v => obj(key -> toJson(v)))
+  implicit def eitherEncoder[A: Encoder, B: Encoder]: Encoder[Either[A, B]] =
+    (o: Either[A, B]) => o.fold(_.asJson, _.asJson)
+
+  private def objectify[T: Encoder](key: String, opt: Option[T]): Json =
+    opt.fold(Json.obj())(v => Json.obj(key -> v.asJson))
 }

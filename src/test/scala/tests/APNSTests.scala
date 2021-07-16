@@ -6,18 +6,19 @@ import com.malliina.push.apns._
 import com.malliina.push.{ConfHelper, Execution, PushUtils, TLSUtils}
 import com.malliina.values.ErrorMessage
 import com.notnoop.apns.internal.Utilities
+import scala.concurrent.ExecutionContext
 
 class APNSTests extends BaseSuite {
   //  val rawDeviceID = "9f3c2f830256954ada78bf56894fa7586307f0eedb7763117c84e0c1eee8347a"
   val rawDeviceID = "e0d82212038b938c51dde9f49577ff1f70442fcfe93ec1ff26a2948e36821934"
-  implicit val ec = munitExecutionContext
+  implicit val ec: ExecutionContext = munitExecutionContext
 
   test("token validation") {
     val tokenOpt = APNSToken.build(rawDeviceID)
-    assert(tokenOpt.isDefined)
+    assert(tokenOpt.isRight)
     intercept[RuntimeException](Utilities.decodeHex("deviceToken"))
     val invalidToken = APNSToken.build("deviceToken")
-    assert(invalidToken.isEmpty)
+    assert(invalidToken.isLeft)
   }
 
   test("send notification with body, if enabled".ignore) {
@@ -84,6 +85,6 @@ class FileAPNSConf(file: Path) extends ConfHelper[APNSCred] {
       pass <- readKey("aps_pass")
       topic <- readKey("topic")
       hexToken <- readKey("token")
-      token <- APNSToken.build(hexToken).toRight(ErrorMessage("Invalid hexToken"))
+      token <- APNSToken.build(hexToken)
     } yield APNSCred(Paths get file, pass, APNSTopic(topic), token)
 }

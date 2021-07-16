@@ -1,9 +1,10 @@
 package com.malliina.push.apns
 
 import com.malliina.push.json.OpenEnum
+import io.circe._
+import io.circe.generic.semiauto._
 
-/**
-  * @see https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/APNsProviderAPI.html Table 6.6
+/** @see https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/APNsProviderAPI.html Table 6.6
   */
 sealed abstract class APNSError(val reason: String, val description: String)
 
@@ -124,3 +125,9 @@ case object MissingProviderToken
   )
 case class OtherReason(r: String) extends APNSError(r, "Generic error.")
 case object UnknownReason extends APNSError("UnknownReason", "An unknown error occurred.")
+
+case class APNSErrorJson(reason: APNSError)
+
+object APNSErrorJson {
+  implicit val json: Codec[APNSErrorJson] = deriveCodec[APNSErrorJson]
+}

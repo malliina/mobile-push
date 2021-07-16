@@ -1,8 +1,10 @@
 package com.malliina.push.gcm
 
-import com.malliina.push.gcm.GCMResult.GCMResultError
+import com.malliina.push.gcm.GCMResultError
 import com.malliina.push.gcm.MappedGCMResponse.TokenReplacement
-import play.api.libs.json.Json
+
+import io.circe._
+import io.circe.generic.semiauto._
 
 case class MappedGCMResponse(ids: Seq[GCMToken], response: GCMResponse) {
   lazy val replacements: Seq[TokenReplacement] = {
@@ -15,7 +17,7 @@ case class MappedGCMResponse(ids: Seq[GCMToken], response: GCMResponse) {
       Nil
     }
   }
-  lazy val uninstalled: Seq[GCMToken] = failedIDs(GCMResult.NotRegistered)
+  lazy val uninstalled: Seq[GCMToken] = failedIDs(GCMResultError.NotRegistered)
 
   def failedIDs(desiredError: GCMResultError) = {
     if (response.failure > 0) {
@@ -30,7 +32,7 @@ case class MappedGCMResponse(ids: Seq[GCMToken], response: GCMResponse) {
 }
 
 object MappedGCMResponse {
-  implicit val json = Json.reads[MappedGCMResponse]
+  implicit val json: Codec[MappedGCMResponse] = deriveCodec[MappedGCMResponse]
 
   case class TokenReplacement(oldToken: GCMToken, newToken: GCMToken)
 }

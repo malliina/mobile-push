@@ -17,7 +17,7 @@ class GoogleTests extends BaseSuite {
 
   test("token validation") {
     val tokenOpt = GCMToken.build(rawToken)
-    assert(tokenOpt.isDefined)
+    assert(tokenOpt.isRight)
   }
 
   http.test("send message, if enabled".ignore) { httpClient =>

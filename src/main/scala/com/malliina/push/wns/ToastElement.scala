@@ -1,6 +1,7 @@
 package com.malliina.push.wns
 
-import play.api.libs.json.Json
+import io.circe._
+import io.circe.generic.semiauto._
 
 import scala.xml.{Elem, NodeSeq}
 
@@ -30,7 +31,7 @@ case class ToastElement(
 }
 
 object ToastElement {
-  implicit val json = Json.format[ToastElement]
+  implicit val json: Codec[ToastElement] = deriveCodec[ToastElement]
 
   def text(text: String) = ToastElement(ToastVisual.text(text))
 }

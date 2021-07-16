@@ -2,7 +2,8 @@ package com.malliina.push.wns
 
 import java.net.URL
 
-import play.api.libs.json.{JsError, _}
+import io.circe._
+import io.circe.generic.semiauto._
 
 import scala.util.Try
 import scala.xml.Elem
@@ -22,8 +23,8 @@ case class TileBinding(
 ) extends Binding[TileTemplate]
 
 object TileBinding {
-  implicit val url = Binding.urlFormat
-  implicit val json = Json.format[TileBinding]
+  implicit val url: Codec[URL] = Binding.urlFormat
+  implicit val json: Codec[TileBinding] = deriveCodec[TileBinding]
 }
 
 case class ToastBinding(
@@ -41,8 +42,8 @@ case class ToastBinding(
 ) extends Binding[ToastTemplate]
 
 object ToastBinding {
-  implicit val url = Binding.urlFormat
-  implicit val json = Json.format[ToastBinding]
+  implicit val url: Codec[URL] = Binding.urlFormat
+  implicit val json: Codec[ToastBinding] = deriveCodec[ToastBinding]
 
   def text(text: String): ToastBinding =
     ToastBinding(ToastTemplate.ToastGeneric, Seq(WnsText(text)))
@@ -50,25 +51,15 @@ object ToastBinding {
 
 trait Binding[T <: Template] extends Xmlable {
   def template: T
-
   def texts: Seq[WnsText]
-
   def images: Seq[Image]
-
   def groups: Seq[Group]
-
   def lang: Option[String]
-
   def baseUri: Option[URL]
-
   def branding: Option[Branding]
-
   def addImageQuery: Option[Boolean]
-
   def contentId: Option[String]
-
   def displayName: Option[String]
-
   def hintOverlay: Option[Int]
 
   override def xml: Elem =
@@ -89,13 +80,12 @@ trait Binding[T <: Template] extends Xmlable {
 }
 
 object Binding {
-  val urlReader = Reads[URL](json => json.validate[String].flatMap(parseUrl))
-  val urlWriter = Writes[URL](url => Json.toJson(url.toString))
-  implicit val urlFormat = Format[URL](urlReader, urlWriter)
-  implicit val (t, i, g) = (WnsText.json, Image.json, Group.json)
+  implicit val urlFormat: Codec[URL] = Codec.from(
+    Decoder.decodeString.emap[URL](s => parseUrl(s)),
+    Encoder.encodeString.contramap[URL](url => url.toString)
+  )
+  //implicit val (t, i, g) = (WnsText.json, Image.json, Group.json)
 
   def parseUrl(url: String) =
-    Try(new URL(url))
-      .map(JsSuccess(_))
-      .getOrElse(JsError(s"Invalid URL: $url"))
+    Try(new URL(url)).toOption.toRight(s"Invalid URL: $url")
 }

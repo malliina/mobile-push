@@ -7,10 +7,12 @@ import javax.net.ssl.{KeyManagerFactory, SSLContext}
 import scala.util.Try
 
 object TLSUtils {
-  def loadContext(file: Path, keyStorePass: String, storeType: String = "JKS"): Try[SSLContext] =
+  val jks = "JKS"
+
+  def loadContext(file: Path, keyStorePass: String, storeType: String = jks): Try[SSLContext] =
     keyStoreFromFile(file, keyStorePass, storeType).map(ks => buildSSLContext(ks, keyStorePass))
 
-  def keyStoreFromFile(file: Path, keyStorePass: String, storeType: String = "JKS"): Try[KeyStore] =
+  def keyStoreFromFile(file: Path, keyStorePass: String, storeType: String = jks): Try[KeyStore] =
     Try {
       val ks = KeyStore.getInstance(storeType)
       val keyStream = new FileInputStream(file.toFile)

@@ -1,6 +1,7 @@
 package com.malliina.push.mpns
 
-import play.api.libs.json.Json
+import io.circe._
+import io.circe.generic.semiauto._
 
 /** The same device may open different push URLs at different points in time, however the old ones still work until the
   * channel is closed, it seems. We only accept one push URL per device however, otherwise the same push notification
@@ -14,5 +15,5 @@ import play.api.libs.json.Json
 case class PushUrl(url: MPNSToken, silent: Boolean, tag: String)
 
 object PushUrl {
-  implicit val json = Json.format[PushUrl]
+  implicit val json: Codec[PushUrl] = deriveCodec[PushUrl]
 }
