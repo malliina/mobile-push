@@ -8,7 +8,8 @@ inThisBuild(
   Seq(
     organization := "com.malliina",
     scalaVersion := "3.0.0",
-    crossScalaVersions := Seq(scalaVersion.value, scala2_13)
+    crossScalaVersions := Seq(scalaVersion.value, scala2_13),
+    releaseCrossBuild := true
   )
 )
 
@@ -27,7 +28,7 @@ val mavenCentralSettings = Seq(
   testFrameworks += new TestFramework("munit.Framework")
 )
 
-val okClientVersion = "2.0.0-SNAPSHOT"
+val okClientVersion = "2.0.2"
 
 val mobilePush = Project("mobile-push", file("."))
   .enablePlugins(MavenCentralPlugin)
