@@ -56,7 +56,7 @@ val conf = APNSTokenConf(
 )
 val client = APNSTokenClient(conf, OkClient.default, isSandbox = true)
 val topic = APNSTopic("org.company.MyApp")
-val deviceToken: APNSToken = APNSToken.build("my_hex_device_token_here").get
+val deviceToken: APNSToken = APNSToken.build("my_hex_device_token_here").toOption.get
 val message = APNSMessage.simple("Hey, sexy token!")
 val request = APNSRequest.withTopic(topic, message)
 val result: Future[Either[APNSError, APNSIdentifier]] = client.push(deviceToken, request)
@@ -69,7 +69,7 @@ The above sample sends a simple message without any customizations. Explore the 
 val conf: APNSTokenConf = ???
 val client = APNSTokenClient(conf, OkClient.default, isSandbox = true)
 val topic = APNSTopic("org.company.MyApp")
-val deviceToken = APNSToken.build("my_hex_device_token_here").get
+val deviceToken = APNSToken.build("my_hex_device_token_here").toOption.get
 val payload = APSPayload.full(AlertPayload("The Body", title = Option("Attention")))
 val message = APNSMessage(payload)
 val request = APNSRequest.withTopic(topic, message)
@@ -82,7 +82,7 @@ val result: Future[Either[APNSError, APNSIdentifier]] = client.push(deviceToken,
 val certKeyStore: KeyStore = ???
 val certPass: String = ???
 val topic = APNSTopic("org.company.MyApp")
-val deviceToken: APNSToken = APNSToken.build("my_hex_device_token_here").get
+val deviceToken: APNSToken = APNSToken.build("my_hex_device_token_here").toOption.get
 val message = APNSMessage.simple("Hey, sexy!")
 val request = APNSRequest.withTopic(topic, message)
 val client = APNSHttpClient(certKeyStore, certPass, isSandbox = true)
@@ -94,7 +94,7 @@ val result: Future[Either[APNSError, APNSIdentifier]] = client.push(deviceToken,
 ```scala mdoc:compile-only
 val certKeyStore: KeyStore = ???
 val certPass: String = ???
-val deviceHexID: APNSToken = APNSToken.build("my_hex_device_token_here").get
+val deviceHexID: APNSToken = APNSToken.build("my_hex_device_token_here").toOption.get
 val client = new APNSClient(certKeyStore, certPass, isSandbox = true)
 val message = APNSMessage.simple("Hey, sexy!")
 val pushedNotification: Future[ApnsNotification] = client.push(deviceHexID, message)
@@ -143,14 +143,14 @@ val credentials = WNSCredentials(packageSid, clientSecret)
 val client = new WNSClient(credentials, OkClient.default)
 val payload = ToastElement.text("Hello, world!")
 val message = WNSMessage(payload)
-val token = WNSToken.build("https://db5.notify.windows.com/?token=AwYAAABq7aWo").get
+val token = WNSToken.build("https://db5.notify.windows.com/?token=AwYAAABq7aWo").toOption.get
 val response: Future[WNSResponse] = client.push(token, message)
 ```
 
 ### Microsoft Push Notification Service
 
 ```scala mdoc:compile-only
-val deviceURL: MPNSToken = MPNSToken.build("my_device_url_here").get
+val deviceURL: MPNSToken = MPNSToken.build("my_device_url_here").toOption.get
 val client = new MPNSClient(OkClient.default, executionContext)
 val message = ToastMessage("text1", "text2", deepLink = "/App/Xaml/DeepLinkPage.xaml?param=value", silent = true)
 val response: Future[HttpResponse] = client.push(deviceURL, message)

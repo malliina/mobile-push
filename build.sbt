@@ -57,7 +57,6 @@ val io = Project("mobile-push-io", file("io"))
 val docs = project
   .in(file("mdoc"))
   .settings(
-    scalaVersion := scala2_13,
     publish / skip := true,
     mdocVariables := Map("VERSION" -> version.value),
     mdocOut := (ThisBuild / baseDirectory).value,
