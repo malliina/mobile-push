@@ -155,3 +155,9 @@ val client = new MPNSClient(OkClient.default, executionContext)
 val message = ToastMessage("text1", "text2", deepLink = "/App/Xaml/DeepLinkPage.xaml?param=value", silent = true)
 val response: Future[HttpResponse] = client.push(deviceURL, message)
 ```
+
+## Releases
+
+To publish a new version to Maven Central:
+
+    sbt release
