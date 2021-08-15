@@ -21,6 +21,6 @@ jobs:
         with:
           java-version: "adopt@1.11"
       - name: Run tests
-        run: sbt test
+        run: sbt "project root" +test
       - name: Check formatting
         run: sbt "project root" scalafmtCheck

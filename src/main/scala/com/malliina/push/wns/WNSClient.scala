@@ -67,15 +67,12 @@ class WNSClient(creds: WNSCredentials, http: HttpClient[Future])(implicit ec: Ex
       ClientSecret -> creds.clientSecret,
       Scope -> NotificationHost
     )
-    val response = client.postForm(
-      FullUrl.https("login.live.com", "/accesstoken.srf"),
-      Map(ContentType -> FormType),
-      parameters
-    )
-    response.flatMap(r => Future.fromTry(parseResponse[WNSAccessToken](r)))
+    val url = FullUrl.https("login.live.com", "/accesstoken.srf")
+    val response = client.postForm(url, Map(ContentType -> FormType), parameters)
+    response.flatMap(r => Future.fromTry(parseResponse[WNSAccessToken](r, url)))
   }
 
-  def parseResponse[T: Decoder](response: HttpResponse): Try[T] = {
+  def parseResponse[T: Decoder](response: HttpResponse, url: FullUrl): Try[T] =
     if (response.code == 200) {
       response
         .parse[T]
@@ -84,7 +81,6 @@ class WNSClient(creds: WNSCredentials, http: HttpClient[Future])(implicit ec: Ex
           valid => Success(valid)
         )
     } else {
-      Failure(new com.malliina.push.ResponseException(response))
+      Failure(new com.malliina.push.ResponseException(response, url))
     }
-  }
 }

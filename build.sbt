@@ -47,7 +47,7 @@ val mobilePush = Project("mobile-push", file("."))
 val io = Project("mobile-push-io", file("io"))
   .enablePlugins(MavenCentralPlugin)
   .settings(mavenCentralSettings: _*)
-  .dependsOn(mobilePush)
+  .dependsOn(mobilePush, mobilePush % "test->test")
   .settings(
     libraryDependencies ++= Seq(
       "com.malliina" %% "okclient-io" % okClientVersion

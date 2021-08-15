@@ -1,4 +1,4 @@
-scalaVersion := "2.12.13"
+scalaVersion := "2.12.14"
 
 Seq(
   "com.malliina" % "sbt-utils-maven" % "1.2.4",

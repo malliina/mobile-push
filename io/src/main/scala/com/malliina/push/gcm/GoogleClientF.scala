@@ -3,15 +3,7 @@ package com.malliina.push.gcm
 import cats.Monad
 import cats.implicits._
 import com.malliina.http.{FullUrl, HttpClient}
-import com.malliina.push.gcm.GCMClient.{GcmEndpoint, MaxRecipientsPerRequest, parseOrFail}
-
-object GCMClientF {
-  def apply[F[+_]: Monad](apiKey: String, http: HttpClient[F]): GoogleClientF[F] =
-    new GoogleClientF[F](apiKey, GcmEndpoint, http)
-
-  def legacy[F[+_]: Monad](apiKey: String, http: HttpClient[F]): GoogleClientF[F] =
-    new GoogleClientF[F](apiKey, GcmEndpoint, http)
-}
+import com.malliina.push.gcm.GCMClient.{MaxRecipientsPerRequest, parseOrFail}
 
 class GoogleClientF[F[+_]: Monad](apiKey: String, postEndpoint: FullUrl, http: HttpClient[F])
   extends GoogleClientBase[F](apiKey, postEndpoint, http) {
@@ -28,5 +20,5 @@ class GoogleClientF[F[+_]: Monad](apiKey: String, postEndpoint: FullUrl, http: H
     ids: Seq[GCMToken],
     message: GCMMessage
   ): F[MappedGCMResponse] =
-    sendLimited(ids, message).map { r => MappedGCMResponse(ids, parseOrFail(r)) }
+    sendLimited(ids, message).map { r => MappedGCMResponse(ids, parseOrFail(r, postEndpoint)) }
 }

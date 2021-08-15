@@ -10,32 +10,25 @@ import io.circe.syntax.EncoderOps
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class GCMClient(apiKey: String, http: HttpClient[Future], ec: ExecutionContext)
-  extends GoogleClient(apiKey, GcmEndpoint, http)(ec)
-
 object GCMClient {
-  val GcmEndpoint = FullUrl.https("gcm-http.googleapis.com", "/gcm/send")
   val RegistrationIds = "registration_ids"
   val Data = "data"
   val TimeToLive = "time_to_live"
   val MaxRecipientsPerRequest = 1000
 
-  def apply(apiKey: String, http: HttpClient[Future], ec: ExecutionContext): GCMClient =
-    new GCMClient(apiKey, http, ec)
-
-  def parseOrFail(response: HttpResponse): GCMResponse =
+  def parseOrFail(response: HttpResponse, url: FullUrl): GCMResponse =
     if (response.code == 200) {
       response
         .parse[GCMResponse]
         .fold(err => throw new JsonException(response.asString, "JSON error."), identity)
     } else {
-      throw new ResponseException(response)
+      throw new ResponseException(response, url)
     }
 }
 
 abstract class GoogleClientBase[F[+_]](
   val apiKey: String,
-  postEndpoint: FullUrl,
+  val postEndpoint: FullUrl,
   http: HttpClient[F]
 ) extends PushClientF[GCMToken, GCMMessage, MappedGCMResponse, F] {
 
@@ -69,5 +62,5 @@ class GoogleClient(
     ids: Seq[GCMToken],
     message: GCMMessage
   ): Future[MappedGCMResponse] =
-    sendLimited(ids, message).map { r => MappedGCMResponse(ids, parseOrFail(r)) }
+    sendLimited(ids, message).map { r => MappedGCMResponse(ids, parseOrFail(r, postEndpoint)) }
 }

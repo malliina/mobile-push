@@ -1,19 +1,17 @@
 package tests
 
+import com.malliina.push.ResponseException
 import com.malliina.push.fcm.FCMLegacyClient
 import com.malliina.push.gcm._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class GoogleTests extends BaseSuite {
+  implicit val ec: ExecutionContext = munitExecutionContext
   val rawToken =
     "APA91bHyeY6NdQar-XXoC47PuWB0eCZErLB-xBNSlhrXQ-u_ElWM7ZFaocsoCeWBx_Or5vmj357BNTdr6atRNwAfFQ4od458OqwfJV3SSPnYa1CIN1j0EVplN8QeEjx3n6-WV6obKN60CDn0-RL3gAsILC_4ec0gAQ"
-  //  val token = GCMToken(rawToken)
   // emulator token
-  val token = GCMToken(
-    "APA91bGrvnDeCTk7neV4yjN5CPtbMF7XuSpsxgA4B4K9knDsBgzPn8PaVuz1o_50ot2-ydNZJ8smTLehT6hehmbXtVi-s4kBJkkavXohgWgrbHo6vVtbPP4"
-  )
-  //  val emuID: Option[GCMToken] = None
+  val token = GCMToken("changeme")
 
   test("token validation") {
     val tokenOpt = GCMToken.build(rawToken)
@@ -21,11 +19,11 @@ class GoogleTests extends BaseSuite {
   }
 
   http.test("send message, if enabled".ignore) { httpClient =>
-    val gcmApiKey: String = "AIzaSyCCDniLRhlHAfnXIJnsVn-You2QQKLfrM8"
-    //    val gcmApiKey: String = "AIzaSyBLwdU7XGCdEPlwkGXW7V2eMRRFieNGYmA"
-    val pushIDs = Seq(token)
+    val boatToken = GCMToken("changeme")
+    val fcmApiKey: String = "changeme"
+    val pushIDs = Seq(boatToken)
 
-    val client = GCMClient(gcmApiKey, httpClient, munitExecutionContext)
+    val client = FCMLegacyClient(fcmApiKey, httpClient, munitExecutionContext)
     val message =
       GCMMessage(Map("title" -> "hey you", "message" -> "late åäö", "key" -> "value", "a" -> "b"))
     val response: Future[Seq[MappedGCMResponse]] = client.pushAll(pushIDs, message)
