@@ -8,8 +8,7 @@ object MPNSPayloads {
   def toast(message: ToastMessage): Elem =
     toast(message.text1, message.text2, message.deepLink, message.silent)
 
-  /**
-    * @param text1 title
+  /** @param text1 title
     * @param text2 message
     * @param deepLink The page to go to in app. For example: /page1.xaml?value1=1234&amp;value2=9876
     * @return

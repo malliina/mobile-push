@@ -15,7 +15,6 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
   *   42
   *   ```
   * }}}
-  *
   */
 class CodeModifier extends PreModifier {
   override val name = "code"

@@ -2,8 +2,7 @@ package com.malliina.push
 
 import scala.concurrent.Future
 
-/**
-  * @tparam S type of token
+/** @tparam S type of token
   * @tparam T type of message
   * @tparam U type of response
   */

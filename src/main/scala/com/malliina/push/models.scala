@@ -30,7 +30,6 @@ trait OAuthKeys {
   val Scope = "scope"
 }
 
-
 object Headers extends Headers
 
 trait Headers {
