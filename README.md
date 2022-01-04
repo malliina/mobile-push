@@ -17,7 +17,7 @@ Send push notifications to mobile devices. Supports:
 ## Installation
 
 ```scala
-libraryDependencies += "com.malliina" %% "mobile-push" % "3.0.0"
+libraryDependencies += "com.malliina" %% "mobile-push" % "3.2.0"
 ```
 
 ## Usage
@@ -89,19 +89,6 @@ val pushedNotification: Future[ApnsNotification] = client.push(deviceHexID, mess
 val gcmApiKey: String = ???
 val deviceRegistrationId: GCMToken = GCMToken("registration_id_here")
 val client = FCMLegacyClient(gcmApiKey, OkClient.default, executionContext)
-val message = GCMMessage(Map("key" -> "value"))
-val response: Future[MappedGCMResponse] = client.push(deviceRegistrationId, message)
-```
-
-### Google Cloud Messaging
-
-Note: It looks like Google has removed GCM server APIs, therefore this method may no longer work.
-Instead, use Firebase Cloud Messaging as in the previous code sample.
-
-```scala
-val gcmApiKey: String = ???
-val deviceRegistrationId: GCMToken = GCMToken("registration_id_here")
-val client = GCMClient(gcmApiKey, OkClient.default, executionContext)
 val message = GCMMessage(Map("key" -> "value"))
 val response: Future[MappedGCMResponse] = client.push(deviceRegistrationId, message)
 ```
