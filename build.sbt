@@ -25,7 +25,7 @@ val mavenCentralSettings = Seq(
 
 val okClientVersion = "3.1.2"
 
-val mobilePush = Project("mobile-push", file("."))
+val mobilePush = Project("mobile-push", file("core"))
   .enablePlugins(MavenCentralPlugin)
   .settings(mavenCentralSettings: _*)
   .settings(
@@ -71,7 +71,7 @@ val docs = project
   .enablePlugins(MdocPlugin)
 
 val root = project
-  .in(file("solution"))
+  .in(file("."))
   .aggregate(mobilePush, io, docs)
   .settings(
     publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo"))),
