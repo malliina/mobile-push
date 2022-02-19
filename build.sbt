@@ -2,20 +2,15 @@ import scala.sys.process.Process
 
 val updateDocs = taskKey[Unit]("Updates README.md")
 
-val scala2_13 = "2.13.7"
+val scala2_13 = "2.13.8"
 
 inThisBuild(
   Seq(
     organization := "com.malliina",
-    scalaVersion := "3.1.0",
+    scalaVersion := "3.1.1",
     crossScalaVersions := Seq(scalaVersion.value, scala2_13),
     releaseCrossBuild := true
   )
-)
-
-val jettyModules = Seq(
-  "java-server",
-  "java-client"
 )
 
 val mavenCentralSettings = Seq(
@@ -28,17 +23,17 @@ val mavenCentralSettings = Seq(
   testFrameworks += new TestFramework("munit.Framework")
 )
 
-val okClientVersion = "3.1.0"
+val okClientVersion = "3.1.2"
 
 val mobilePush = Project("mobile-push", file("."))
   .enablePlugins(MavenCentralPlugin)
   .settings(mavenCentralSettings: _*)
   .settings(
-    libraryDependencies ++= jettyModules.map { m =>
-      "org.eclipse.jetty" % s"jetty-alpn-$m" % "9.4.40.v20210413"
+    libraryDependencies ++= Seq("server", "client").map { m =>
+      "org.eclipse.jetty" % s"jetty-alpn-java-$m" % "9.4.40.v20210413"
     } ++ Seq(
       "com.malliina" %% "okclient" % okClientVersion,
-      "com.nimbusds" % "nimbus-jose-jwt" % "9.15.2",
+      "com.nimbusds" % "nimbus-jose-jwt" % "9.19",
       "com.notnoop.apns" % "apns" % "1.0.0.Beta6",
       "org.scala-lang.modules" %% "scala-xml" % "2.0.1"
     )
