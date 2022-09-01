@@ -43,14 +43,14 @@ abstract sealed class APNSPushType(val name: String) {
 
 object APNSPushType extends StringEnumCompanion[APNSPushType] {
   override def all: Seq[APNSPushType] = Seq(Alert, Background)
-  override def write(t: APNSPushType) = t.name
+  override def write(t: APNSPushType): String = t.name
 }
 
 case object Alert extends APNSPushType("alert")
 case object Background extends APNSPushType("background")
 
 case class APNSIdentifier(id: String) extends AnyVal {
-  override def toString = id
+  override def toString: String = id
 }
 
 object APNSIdentifier extends SimpleCompanion[String, APNSIdentifier] {
@@ -68,7 +68,8 @@ case class APNSMeta(
 object APNSMeta {
   implicit val json: Codec[APNSMeta] = deriveCodec[APNSMeta]
 
-  def withTopic(topic: APNSTopic) = APNSMeta(topic, 0, APNSImmediately, Alert, None)
+  def withTopic(topic: APNSTopic, pushType: APNSPushType = Alert): APNSMeta =
+    APNSMeta(topic, 0, APNSImmediately, pushType, None)
 }
 
 case class APNSToken(token: String) extends AnyVal with Token

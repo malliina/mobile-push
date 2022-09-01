@@ -6,15 +6,15 @@ import scala.io.{BufferedSource, Source}
 object PushUtils extends PushUtils
 
 trait PushUtils {
-  def userHome = Paths.get(sys.props("user.home"))
+  def userHome: Path = Paths.get(sys.props("user.home"))
 
-  def props(path: Path) = {
+  def props(path: Path): Map[String, String] = {
     val src = Source.fromFile(path.toUri)
     try mappify(src)
     finally src.close()
   }
 
-  private def mappify(src: BufferedSource) = src
+  private def mappify(src: BufferedSource): Map[String, String] = src
     .getLines()
     .filter(line => line.contains("=") && !line.startsWith("#") && !line.startsWith("//"))
     .map(line => line.split("=", 2))

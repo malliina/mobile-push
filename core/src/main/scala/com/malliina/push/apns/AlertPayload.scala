@@ -25,7 +25,7 @@ object AlertPayload {
     `title-loc-key`: Option[String],
     `title-loc-args`: Option[Seq[String]]
   ) {
-    def toPayload = AlertPayload(
+    def toPayload: AlertPayload = AlertPayload(
       body,
       title,
       `launch-image`,
@@ -36,7 +36,7 @@ object AlertPayload {
       `title-loc-args`
     )
   }
-  def to(json: AlertPayload) = AlertPayloadJson(
+  def to(json: AlertPayload): AlertPayloadJson = AlertPayloadJson(
     json.body,
     json.title,
     json.launchImage,
