@@ -72,7 +72,9 @@ val docs = project
 
 val root = project
   .in(file("."))
+  .enablePlugins(MavenCentralPlugin)
   .aggregate(mobilePush, io, docs)
+  .settings(mavenCentralSettings: _*)
   .settings(
     publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo"))),
     publish / skip := true,
@@ -80,9 +82,8 @@ val root = project
     packagedArtifacts := Map.empty,
     publish := {},
     publishLocal := {},
-    releaseProcess := (mobilePush / tagReleaseProcess).value
+    releaseProcess := tagReleaseProcess.value,
+    beforeCommitRelease := (docs / updateDocs).value
   )
-
-mobilePush / beforeCommitRelease := (docs / updateDocs).value
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
