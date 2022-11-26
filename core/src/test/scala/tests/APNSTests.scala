@@ -5,7 +5,6 @@ import java.nio.file.{Path, Paths}
 import com.malliina.push.apns._
 import com.malliina.push.{ConfHelper, Execution, PushUtils, TLSUtils}
 import com.malliina.values.ErrorMessage
-import com.notnoop.apns.internal.Utilities
 import scala.concurrent.ExecutionContext
 
 class APNSTests extends BaseSuite {
@@ -16,8 +15,8 @@ class APNSTests extends BaseSuite {
   test("token validation") {
     val tokenOpt = APNSToken.build(rawDeviceID)
     assert(tokenOpt.isRight)
-    intercept[RuntimeException](Utilities.decodeHex("deviceToken"))
-    val invalidToken = APNSToken.build("deviceToken")
+    val invalidDeviceToken = "deviceToken"
+    val invalidToken = APNSToken.build(invalidDeviceToken)
     assert(invalidToken.isLeft)
   }
 
