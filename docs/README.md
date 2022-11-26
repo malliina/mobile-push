@@ -42,7 +42,6 @@ import com.malliina.push.fcm.FCMLegacyClient
 import com.malliina.push.gcm.{GCMClient, GCMMessage, GCMToken, MappedGCMResponse}
 import com.malliina.push.mpns.{MPNSClient, MPNSToken, ToastMessage}
 import com.malliina.push.wns._
-import com.notnoop.apns.ApnsNotification
 import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
