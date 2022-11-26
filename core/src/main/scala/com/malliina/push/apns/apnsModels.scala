@@ -2,7 +2,6 @@ package com.malliina.push.apns
 
 import com.malliina.push.{SimpleCompanion, Token, TokenCompanion}
 import com.malliina.values.{ErrorMessage, StringEnumCompanion, ValidatingCompanion}
-import com.notnoop.apns.internal.Utilities
 import io.circe._
 import io.circe.generic.semiauto._
 
@@ -76,7 +75,11 @@ case class APNSToken(token: String) extends AnyVal with Token
 
 object APNSToken extends TokenCompanion[APNSToken] {
   override def isValid(token: String): Boolean =
-    Try(Utilities.decodeHex(token)).isSuccess
+    Try(decodeHex(token)).isSuccess
+
+  private def decodeHex(str: String): Array[Byte] = {
+    str.sliding(2, 2).toArray.map(h => Integer.parseInt(h, 16).toByte)
+  }
 }
 
 case class InactiveDevice(deviceHexID: String, asOf: Long)
