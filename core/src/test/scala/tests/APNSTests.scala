@@ -20,39 +20,6 @@ class APNSTests extends BaseSuite {
     assert(invalidToken.isLeft)
   }
 
-  test("send notification with body, if enabled".ignore) {
-    val creds = APNSHttpConf.load
-    val ks = TLSUtils.keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
-    val client = new APNSClient(ks, creds.pass, isSandbox = true)
-    val payload = AlertPayload(
-      "this is a body",
-      title = Some("hey"),
-      actionLocKey = Some("POMP"),
-      locKey = Some("MSG_FORMAT"),
-      locArgs = Some(Seq("Emilia", "Jaana"))
-    )
-    val message = APNSMessage(APSPayload(Some(Right(payload)), sound = Some("default")))
-    val fut = client.push(creds.token, message)
-    await(fut)
-  }
-
-  test("send pimp notification".ignore) {
-    val creds = APNSHttpConf.load
-    val ks = TLSUtils.keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
-    val client = new APNSClient(ks, creds.pass, isSandbox = true)
-    val message = APNSMessage.badged("I <3 U!", 3)
-    val fut = client.push(creds.token, message)
-    await(fut)
-  }
-
-  test("send background notification, if enabled".ignore) {
-    val creds = APNSHttpConf.load
-    val ks = TLSUtils.keyStoreFromFile(creds.file, creds.pass, "PKCS12").get
-    val client = new APNSClient(ks, creds.pass, isSandbox = true)
-    val message = APNSMessage.background(badge = 16)
-    await(client.push(creds.token, message))
-  }
-
   //  ignore("certificate is valid") {
   //    val creds = APNSCreds.load
   //    KeyStores.validateKeyStore(creds.file, creds.pass, "PKCS12")
