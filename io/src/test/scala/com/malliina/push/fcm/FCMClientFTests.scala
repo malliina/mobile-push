@@ -1,7 +1,7 @@
 package com.malliina.push.fcm
 
 import cats.effect.unsafe.implicits.global
-import com.malliina.http.io.{HttpClientF, HttpClientIO}
+import com.malliina.http.io.HttpClientIO
 import com.malliina.push.gcm.{GCMMessage, GCMToken}
 import tests.BaseSuite
 

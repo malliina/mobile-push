@@ -23,7 +23,7 @@ val mavenCentralSettings = Seq(
   testFrameworks += new TestFramework("munit.Framework")
 )
 
-val okClientVersion = "3.3.0"
+val okClientVersion = "3.4.0"
 
 val mobilePush = Project("mobile-push", file("core"))
   .enablePlugins(MavenCentralPlugin)
@@ -33,7 +33,7 @@ val mobilePush = Project("mobile-push", file("core"))
       "org.eclipse.jetty" % s"jetty-alpn-java-$m" % "9.4.40.v20210413"
     } ++ Seq(
       "com.malliina" %% "okclient" % okClientVersion,
-      "com.nimbusds" % "nimbus-jose-jwt" % "9.25.6",
+      "com.nimbusds" % "nimbus-jose-jwt" % "9.28",
       "org.scala-lang.modules" %% "scala-xml" % "2.1.0"
     )
   )
@@ -69,7 +69,7 @@ val docs = project
   .dependsOn(mobilePush)
   .enablePlugins(MdocPlugin)
 
-val root = project
+val mobilePushRoot = project
   .in(file("."))
   .enablePlugins(MavenCentralPlugin)
   .aggregate(mobilePush, io, docs)
