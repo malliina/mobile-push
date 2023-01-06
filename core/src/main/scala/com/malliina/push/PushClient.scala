@@ -2,9 +2,12 @@ package com.malliina.push
 
 import scala.concurrent.Future
 
-/** @tparam S type of token
-  * @tparam T type of message
-  * @tparam U type of response
+/** @tparam S
+  *   type of token
+  * @tparam T
+  *   type of message
+  * @tparam U
+  *   type of response
   */
 trait PushClient[S, T, U] extends PushClientF[S, T, U, Future] {
   def push(id: S, message: T): Future[U]

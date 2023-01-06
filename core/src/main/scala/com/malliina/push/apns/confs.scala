@@ -22,7 +22,8 @@ case class KeyId(id: String) extends AnyVal {
   override def toString: String = id
 }
 
-/** @param privateKey downloadable from Apple's developer website
+/** @param privateKey
+  *   downloadable from Apple's developer website
   */
 case class APNSTokenConf(privateKey: PKCS8EncodedKeySpec, keyId: KeyId, teamId: TeamId)
 

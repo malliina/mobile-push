@@ -8,11 +8,13 @@ import scala.concurrent.{ExecutionContext, Future}
 class MPNSClient(http: HttpClient[Future], ec: ExecutionContext)
   extends WindowsClient[MPNSToken, WindowsMessage](http)(ec) {
 
-  /** Might throw [[NullPointerException]] if `url` is bogus, but how do you solidly validate a URL in Java? I don't
-    * know.
+  /** Might throw [[NullPointerException]] if `url` is bogus, but how do you solidly validate a URL
+    * in Java? I don't know.
     *
-    * @param url     device URL
-    * @param message content
+    * @param url
+    *   device URL
+    * @param message
+    *   content
     * @return
     */
   override def push(url: MPNSToken, message: WindowsMessage): Future[HttpResponse] =

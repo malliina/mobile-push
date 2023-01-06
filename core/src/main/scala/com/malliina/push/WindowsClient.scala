@@ -43,8 +43,10 @@ object WindowsClient {
     * automatically as described in
     * http://msdn.microsoft.com/en-us/library/windowsphone/develop/hh202945(v=vs.105).aspx.
     *
-    * @param elem xml
-    * @return xml as a string
+    * @param elem
+    *   xml
+    * @return
+    *   xml as a string
     */
   def serialize(elem: Elem): String = {
     val writer = new StringWriter

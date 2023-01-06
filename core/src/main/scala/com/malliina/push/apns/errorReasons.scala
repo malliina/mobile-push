@@ -4,7 +4,9 @@ import com.malliina.push.json.OpenEnum
 import io.circe._
 import io.circe.generic.semiauto._
 
-/** @see https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/APNsProviderAPI.html Table 6.6
+/** @see
+  *   https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/APNsProviderAPI.html
+  *   Table 6.6
   */
 sealed abstract class APNSError(val reason: String, val description: String)
 

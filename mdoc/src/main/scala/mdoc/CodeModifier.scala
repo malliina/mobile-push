@@ -7,8 +7,8 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 /** Borrows the syntax from https://github.com/playframework/play-doc.
   *
-  * To insert a code block, first wrap the desired code with a comment '//#label-name-here',
-  * then insert the block in your markdown file with
+  * To insert a code block, first wrap the desired code with a comment '//#label-name-here', then
+  * insert the block in your markdown file with
   *
   * {{{
   *   ```scala mdoc:code:code/CodeSamples.scala:example1

@@ -69,7 +69,7 @@ class WNSSerialization extends munit.FunSuite {
       None,
       None
     )
-    //println(format(toast.xml))
+    // println(format(toast.xml))
   }
 
   def format(node: Node) = printer.format(node)

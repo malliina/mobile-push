@@ -84,7 +84,7 @@ object Binding {
     Decoder.decodeString.emap[URL](s => parseUrl(s)),
     Encoder.encodeString.contramap[URL](url => url.toString)
   )
-  //implicit val (t, i, g) = (WnsText.json, Image.json, Group.json)
+  // implicit val (t, i, g) = (WnsText.json, Image.json, Group.json)
 
   def parseUrl(url: String) =
     Try(new URL(url)).toOption.toRight(s"Invalid URL: $url")

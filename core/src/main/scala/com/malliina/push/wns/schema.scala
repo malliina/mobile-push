@@ -18,7 +18,8 @@ object Badge {
   implicit val json: Codec[Badge] = deriveCodec[Badge]
 }
 
-/** @param payload base64-encoded
+/** @param payload
+  *   base64-encoded
   */
 case class Raw(payload: String) extends WNSNotification {
   override def notificationType: NotificationType = NotificationType.Raw

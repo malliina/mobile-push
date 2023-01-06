@@ -25,15 +25,16 @@ object APNSTokenPreparer {
   def apply(conf: APNSTokenConf): APNSTokenPreparer = new APNSTokenPreparer(conf)
 }
 
-/** <p>For security, APNs requires you to refresh your token regularly. Refresh your token no more than once every
-  * 20 minutes and no less than once every 60 minutes. APNs rejects any request whose token contains a timestamp
-  * that is more than one hour old. Similarly, APNs reports an error if you recreate your tokens more than once
-  * every 20 minutes.</p>
+/** <p>For security, APNs requires you to refresh your token regularly. Refresh your token no more
+  * than once every 20 minutes and no less than once every 60 minutes. APNs rejects any request
+  * whose token contains a timestamp that is more than one hour old. Similarly, APNs reports an
+  * error if you recreate your tokens more than once every 20 minutes.</p>
   *
-  * <p>On your provider server, set up a recurring task to recreate your token with a current timestamp. Encrypt
-  * the token again and attach it to subsequent notification requests.</p>
+  * <p>On your provider server, set up a recurring task to recreate your token with a current
+  * timestamp. Encrypt the token again and attach it to subsequent notification requests.</p>
   *
-  * @see https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html
+  * @see
+  *   https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html
   */
 class APNSTokenPreparer(conf: APNSTokenConf) extends RequestPreparer {
   val keyFactory = KeyFactory.getInstance("EC")

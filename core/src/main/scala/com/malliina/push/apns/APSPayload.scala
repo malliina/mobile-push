@@ -4,9 +4,13 @@ import io.circe._
 import io.circe.generic.semiauto._
 import io.circe.syntax.EncoderOps
 
-/** @param alert Some(Left(...)) for a simple alert text, Some(Right(...)) for more verbose alert details, None for background notifications
-  * @param badge badge number
-  * @param sound rock.mp3
+/** @param alert
+  *   Some(Left(...)) for a simple alert text, Some(Right(...)) for more verbose alert details, None
+  *   for background notifications
+  * @param badge
+  *   badge number
+  * @param sound
+  *   rock.mp3
   */
 case class APSPayload(
   alert: Option[Either[String, AlertPayload]],

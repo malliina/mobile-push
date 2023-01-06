@@ -23,7 +23,9 @@ object APNSMessage {
 
   def badged(alert: String, badge: Int): APNSMessage = simple(alert, Option(badge))
 
-  /** @return A message that updates the app badge in the background: No message is shown and no sound is played.
+  /** @return
+    *   A message that updates the app badge in the background: No message is shown and no sound is
+    *   played.
     */
   def background(badge: Int): APNSMessage = APNSMessage(APSPayload(None, Option(badge)))
 

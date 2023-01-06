@@ -21,6 +21,6 @@ jobs:
         with:
           java-version: "adopt@1.11"
       - name: Run tests
-        run: sbt "project root" +test
+        run: sbt "project mobilePushRoot" +test
       - name: Check formatting
-        run: sbt "project root" scalafmtCheck
+        run: sbt "project mobilePushRoot" scalafmtCheck

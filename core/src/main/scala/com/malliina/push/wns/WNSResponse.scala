@@ -2,8 +2,10 @@ package com.malliina.push.wns
 
 import com.malliina.http.HttpResponse
 
-/** @param description a user-friendly message
-  * @see https://msdn.microsoft.com/library/windows/apps/hh465435.aspx#WNSResponseCodes
+/** @param description
+  *   a user-friendly message
+  * @see
+  *   https://msdn.microsoft.com/library/windows/apps/hh465435.aspx#WNSResponseCodes
   */
 sealed abstract class WNSResponse(val reason: String, val description: String) {
   def response: HttpResponse

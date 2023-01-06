@@ -102,12 +102,15 @@ abstract class APNSHttpClientBase[F[+_]](
 
 /** APNs client, using the HTTP/2 notification API.
   *
-  * Uses OkHttp with Jetty's "alpn-boot" in the bootclasspath for HTTP/2 support;
-  * please check the build definition of this project for details.
+  * Uses OkHttp with Jetty's "alpn-boot" in the bootclasspath for HTTP/2 support; please check the
+  * build definition of this project for details.
   *
-  * @see https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html
-  * @see https://groups.google.com/forum/embed/#!topic/simple-build-tool/TpImNLs1akQ
-  * @see https://github.com/square/okhttp/wiki/Building
+  * @see
+  *   https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html
+  * @see
+  *   https://groups.google.com/forum/embed/#!topic/simple-build-tool/TpImNLs1akQ
+  * @see
+  *   https://github.com/square/okhttp/wiki/Building
   */
 class APNSHttpClient(val client: OkClient, prep: RequestPreparer, isSandbox: Boolean = false)
   extends APNSHttpClientBase[Future](client, prep, isSandbox) {
