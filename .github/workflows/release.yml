@@ -34,4 +34,4 @@ jobs:
           SONATYPE_USERNAME: ${{ secrets.SonatypeUsername }}
           SONATYPE_PASSWORD: ${{ secrets.SonatypePassword }}
           PGP_PASSPHRASE: ${{ secrets.PgpPassphrase }}
-        run: sbt "project root" releaseArtifacts
+        run: sbt "project mobilePushRoot" releaseArtifacts
