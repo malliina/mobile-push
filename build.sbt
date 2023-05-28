@@ -7,7 +7,7 @@ val scala2_13 = "2.13.10"
 inThisBuild(
   Seq(
     organization := "com.malliina",
-    scalaVersion := "3.1.1",
+    scalaVersion := "3.2.2",
     crossScalaVersions := Seq(scalaVersion.value, scala2_13),
     releaseCrossBuild := true
   )
@@ -23,24 +23,24 @@ val mavenCentralSettings = Seq(
   testFrameworks += new TestFramework("munit.Framework")
 )
 
-val okClientVersion = "3.4.0"
+val okClientVersion = "3.4.2"
 
 val mobilePush = Project("mobile-push", file("core"))
   .enablePlugins(MavenCentralPlugin)
-  .settings(mavenCentralSettings: _*)
+  .settings(mavenCentralSettings *)
   .settings(
     libraryDependencies ++= Seq("server", "client").map { m =>
       "org.eclipse.jetty" % s"jetty-alpn-java-$m" % "9.4.40.v20210413"
     } ++ Seq(
       "com.malliina" %% "okclient" % okClientVersion,
-      "com.nimbusds" % "nimbus-jose-jwt" % "9.28",
+      "com.nimbusds" % "nimbus-jose-jwt" % "9.31",
       "org.scala-lang.modules" %% "scala-xml" % "2.1.0"
     )
   )
 
 val io = Project("mobile-push-io", file("io"))
   .enablePlugins(MavenCentralPlugin)
-  .settings(mavenCentralSettings: _*)
+  .settings(mavenCentralSettings *)
   .dependsOn(mobilePush, mobilePush % "test->test")
   .settings(
     libraryDependencies ++= Seq(
@@ -73,7 +73,7 @@ val mobilePushRoot = project
   .in(file("."))
   .enablePlugins(MavenCentralPlugin)
   .aggregate(mobilePush, io, docs)
-  .settings(mavenCentralSettings: _*)
+  .settings(mavenCentralSettings *)
   .settings(
     publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo"))),
     publish / skip := true,

@@ -52,7 +52,7 @@ object APNSHttpClient {
     )
 }
 
-abstract class APNSHttpClientBase[F[+_]](
+abstract class APNSHttpClientBase[F[_]](
   http: HttpClient[F],
   prep: RequestPreparer,
   isSandbox: Boolean

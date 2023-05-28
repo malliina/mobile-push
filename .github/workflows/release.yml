@@ -12,11 +12,12 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v1
-      - name: Set up Scala
-        uses: olafurpg/setup-scala@v11
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
         with:
-          java-version: "adopt@1.11"
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'sbt'
       - name: Prepare PGP
         env:
           PGP_SECRET: ${{ secrets.PgpSecret }}

@@ -26,7 +26,7 @@ object GCMClient {
     }
 }
 
-abstract class GoogleClientBase[F[+_]](
+abstract class GoogleClientBase[F[_]](
   val apiKey: String,
   val postEndpoint: FullUrl,
   http: HttpClient[F]
@@ -38,8 +38,10 @@ abstract class GoogleClientBase[F[+_]](
   protected def sendLimited(ids: Seq[GCMToken], message: GCMMessage): F[HttpResponse] =
     send(message.toLetter(ids))
 
-  protected def send(message: GCMLetter): F[HttpResponse] =
-    http.postJson(postEndpoint, message.asJson, Map(Authorization -> s"key=$apiKey"))
+  protected def send(message: GCMLetter): F[HttpResponse] = {
+    val res = http.postJson(postEndpoint, message.asJson, Map(Authorization -> s"key=$apiKey"))
+    http.flatMap(res)(r => http.success(r))
+  }
 }
 
 class GoogleClient(
