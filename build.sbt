@@ -23,7 +23,7 @@ val mavenCentralSettings = Seq(
   testFrameworks += new TestFramework("munit.Framework")
 )
 
-val okClientVersion = "3.4.2"
+val okClientVersion = "3.4.3"
 
 val mobilePush = Project("mobile-push", file("core"))
   .enablePlugins(MavenCentralPlugin)
