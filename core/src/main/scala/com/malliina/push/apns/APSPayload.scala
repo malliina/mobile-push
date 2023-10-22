@@ -21,7 +21,17 @@ case class APSPayload(
   badge: Option[Int] = None,
   sound: Option[Either[String, CriticalSound]] = None,
   category: Option[String] = None,
-  threadId: Option[String] = None
+  threadId: Option[String] = None,
+  mutableContent: Option[Int] = None,
+  targetContentId: Option[String] = None,
+  interruptionLevel: Option[String] = None,
+  relevanceScore: Option[String] = None,
+  filterCriteria: Option[String] = None,
+  staleDate: Option[Long] = None,
+  contentState: Option[Json] = None,
+  timestamp: Option[Long] = None,
+  event: Option[String] = None,
+  dismissalDate: Option[Long] = None
 )
 
 object APSPayload {
@@ -29,8 +39,18 @@ object APSPayload {
   val Badge = "badge"
   val Category = "category"
   val ContentAvailable = "content-available"
+  private val ContentState = "content-state"
+  private val DismissalDate = "dismissal-date"
+  private val Event = "event"
+  private val FilterCriteria = "filter-criteria"
+  private val InterruptionLevel = "interruption-level"
+  private val MutableContent = "mutable-content"
+  private val RelevanceScore = "relevance-score"
   val Sound = "sound"
+  private val StaleDate = "stale-date"
+  private val TargetContentId = "target-content-id"
   val ThreadId = "thread-id"
+  private val Timestamp = "timestamp"
 
   case class CriticalSound(critical: Int, name: String, volume: Int)
 
@@ -50,7 +70,16 @@ object APSPayload {
       objectify(Badge, p.badge)
         .deepMerge(objectify(Sound, p.sound))
         .deepMerge(objectify(Category, p.category))
+        .deepMerge(objectify(TargetContentId, p.targetContentId))
         .deepMerge(objectify(ThreadId, p.threadId))
+        .deepMerge(objectify(InterruptionLevel, p.interruptionLevel))
+        .deepMerge(objectify(RelevanceScore, p.relevanceScore))
+        .deepMerge(objectify(FilterCriteria, p.filterCriteria))
+        .deepMerge(objectify(StaleDate, p.staleDate))
+        .deepMerge(objectify(ContentState, p.contentState))
+        .deepMerge(objectify(Timestamp, p.timestamp))
+        .deepMerge(objectify(Event, p.event))
+        .deepMerge(objectify(DismissalDate, p.dismissalDate))
     )
   }
 
