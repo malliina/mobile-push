@@ -1,10 +1,11 @@
 package tests
 
+import com.malliina.push.apns.APSPayload.CriticalSound
 import com.malliina.push.apns.{APNSMessage, APSPayload, AlertPayload}
 import com.malliina.push.gcm.MappedGCMResponse.TokenReplacement
 import com.malliina.push.gcm.{GCMResponse, GCMResult, GCMResultError, GCMToken, MappedGCMResponse}
 import io.circe._
-import io.circe.syntax._
+import io.circe.syntax.EncoderOps
 import io.circe.generic.semiauto._
 import io.circe.parser._
 
@@ -20,7 +21,7 @@ class JsonTests extends munit.FunSuite {
       APSPayload(
         alert = Some(Right(AlertPayload("nice body", launchImage = Some("pic.jpg")))),
         badge = Some(5),
-        sound = Some("rock.mp3")
+        sound = Some(Left("rock.mp3"))
       ),
       Map(
         "extra" -> toJson("value"),
@@ -32,7 +33,7 @@ class JsonTests extends munit.FunSuite {
     assert(str contains "launch-image")
 
     val msg2 = APNSMessage(
-      APSPayload(alert = None, badge = Some(5), sound = Some("rock.mp3")),
+      APSPayload(alert = None, badge = Some(5), sound = Some(Left("rock.mp3"))),
       Map(
         "extra" -> toJson("value"),
         "number" -> Json.fromInt(5),
@@ -47,13 +48,21 @@ class JsonTests extends munit.FunSuite {
     val payload = APSPayload(
       alert = Some(Right(AlertPayload("nice body", launchImage = Some("pic.jpg")))),
       badge = Some(5),
-      sound = Some("rock.mp3")
+      sound = Some(Left("rock.mp3"))
     )
     val p1 = toJson(payload)
     assert(!(stringify(p1) contains APSPayload.ContentAvailable))
     val payload2 = APSPayload(None, Some(42), None)
     val p2 = toJson(payload2)
     assert(stringify(p2) contains APSPayload.ContentAvailable)
+  }
+
+  test("APS with critical sound") {
+    val msg = APSPayload(None, sound = Option(Right(CriticalSound(1, "Hello", 7))))
+    assertEquals(
+      msg.asJson.noSpaces,
+      """{"sound":{"critical":1,"name":"Hello","volume":7},"content-available":1}"""
+    )
   }
 
   test("GCM responses") {

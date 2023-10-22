@@ -13,10 +13,8 @@ object APNSMessage {
       aps <- apsJson.as[APSPayload].left.map(_.toString)
     } yield APNSMessage(aps, map - Aps)
   }
-  val encoder: Encoder[APNSMessage] = new Encoder[APNSMessage] {
-    final def apply(a: APNSMessage): Json =
-      Json.obj(Aps -> a.aps.asJson).deepMerge(a.data.asJson)
-  }
+  val encoder: Encoder[APNSMessage] = (a: APNSMessage) =>
+    Json.obj(Aps -> a.aps.asJson).deepMerge(a.data.asJson)
   implicit val json: Codec[APNSMessage] = Codec.from(decoder, encoder)
 
   def simple(alert: String): APNSMessage = simple(alert, None)

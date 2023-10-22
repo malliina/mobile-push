@@ -1,7 +1,8 @@
 package com.malliina.push.apns
 
-import io.circe._
-import io.circe.generic.semiauto._
+import com.malliina.push.apns.APSPayload.CriticalSound
+import io.circe.{Codec, Decoder, Encoder, Json}
+import io.circe.generic.semiauto.{deriveCodec, deriveDecoder}
 import io.circe.syntax.EncoderOps
 
 /** @param alert
@@ -11,11 +12,14 @@ import io.circe.syntax.EncoderOps
   *   badge number
   * @param sound
   *   rock.mp3
+  *
+  * @see
+  *   https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification
   */
 case class APSPayload(
   alert: Option[Either[String, AlertPayload]],
   badge: Option[Int] = None,
-  sound: Option[String] = None,
+  sound: Option[Either[String, CriticalSound]] = None,
   category: Option[String] = None,
   threadId: Option[String] = None
 )
@@ -28,22 +32,26 @@ object APSPayload {
   val Sound = "sound"
   val ThreadId = "thread-id"
 
+  case class CriticalSound(critical: Int, name: String, volume: Int)
+
+  object CriticalSound {
+    implicit val json: Codec[CriticalSound] = deriveCodec[CriticalSound]
+  }
+
   implicit val af: Codec[Either[String, AlertPayload]] = Codec.from(
     eitherDecoder[String, AlertPayload],
     eitherEncoder[String, AlertPayload]
   )
-  implicit val payloadEncoder: Encoder[APSPayload] = new Encoder[APSPayload] {
-    final def apply(p: APSPayload): Json = {
-      val alertJson = p.alert.fold(Json.obj(ContentAvailable -> Json.fromInt(1))) { e =>
-        Json.obj(Alert -> e.asJson)
-      }
-      alertJson.deepMerge(
-        objectify(Badge, p.badge)
-          .deepMerge(objectify(Sound, p.sound))
-          .deepMerge(objectify(Category, p.category))
-          .deepMerge(objectify(ThreadId, p.threadId))
-      )
+  implicit val payloadEncoder: Encoder[APSPayload] = (p: APSPayload) => {
+    val alertJson = p.alert.fold(Json.obj(ContentAvailable -> Json.fromInt(1))) { e =>
+      Json.obj(Alert -> e.asJson)
     }
+    alertJson.deepMerge(
+      objectify(Badge, p.badge)
+        .deepMerge(objectify(Sound, p.sound))
+        .deepMerge(objectify(Category, p.category))
+        .deepMerge(objectify(ThreadId, p.threadId))
+    )
   }
 
   implicit val json: Codec[APSPayload] = Codec.from(
@@ -57,7 +65,7 @@ object APSPayload {
     sound: Option[String] = None,
     category: Option[String] = None
   ): APSPayload =
-    apply(Option(Right(payload)), badge, sound, category)
+    apply(Option(Right(payload)), badge, sound.map(Left.apply), category)
 
   def simple(
     text: String,
@@ -65,13 +73,13 @@ object APSPayload {
     sound: Option[String] = None,
     category: Option[String] = None
   ): APSPayload =
-    apply(Option(Left(text)), badge, sound, category)
+    apply(Option(Left(text)), badge, sound.map(Left.apply), category)
 
   def background(
     badge: Option[Int] = None,
     sound: Option[String] = None,
     category: Option[String] = None
-  ): APSPayload = apply(None, badge, sound, category)
+  ): APSPayload = apply(None, badge, sound.map(Left.apply), category)
 
   implicit def eitherDecoder[A, B](implicit a: Decoder[A], b: Decoder[B]): Decoder[Either[A, B]] = {
     val left: Decoder[Either[A, B]] = a.map(Left.apply)
