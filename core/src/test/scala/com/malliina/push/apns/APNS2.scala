@@ -5,6 +5,7 @@ import com.malliina.push.apns._
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit
+import javax.net.ssl.SSLContext
 
 /** To test, obtain a token from a real app, then run a test case manually.
   */
@@ -33,15 +34,18 @@ class APNS2 extends BaseSuite {
   }
 
   http.test("token-authenticated advanced notification".ignore) { httpClient =>
-    APNSHttpConf.loadOpt.foreach { creds =>
-      APNSTokenConf.default.toOption.foreach { conf =>
-        val client = APNSTokenClient(conf, httpClient, isSandbox = false)
-        val payload = APSPayload.full(AlertPayload("The Body", title = Option("Attention")))
-        val message = APNSMessage(payload)
-        val request = APNSRequest.withTopic(creds.topic, message)
-        val result = await(client.push(creds.token, request))
-        assert(result.isRight)
-      }
+    val creds = APNSLoader.load
+    APNSTokenConf.default.toOption.foreach { conf =>
+      val client = APNSTokenClient(conf, httpClient, isSandbox = false)
+      val payload = APSPayload.full(
+        AlertPayload("The Body", title = Option("Car-Map")),
+        sound = Option("default")
+      )
+      val message = APNSMessage(payload)
+      val request = APNSRequest.withTopic(creds.topic, message)
+      val result = await(client.push(creds.token, request))
+      println(result)
+      assert(result.isRight)
     }
   }
 
@@ -69,7 +73,7 @@ class APNS2 extends BaseSuite {
     }
   }
 
-  def certContext(creds: APNSCred) = {
+  def certContext(creds: APNSCred): SSLContext = {
     val pass = creds.pass
     TLSUtils
       .keyStoreFromFile(creds.file, pass, "PKCS12")

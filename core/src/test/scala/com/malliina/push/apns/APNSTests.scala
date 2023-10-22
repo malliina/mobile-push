@@ -54,3 +54,21 @@ class FileAPNSConf(file: Path) extends ConfHelper[APNSCred] {
       token <- APNSToken.build(hexToken)
     } yield APNSCred(Paths get file, pass, APNSTopic(topic), token)
 }
+
+case class APNSInfo(topic: APNSTopic, token: APNSToken)
+
+object APNSLoader extends APNSLoader(PushUtils.userHome.resolve(".apple/apnsToken.conf"))
+
+class APNSLoader(file: Path) extends ConfHelper[APNSInfo] {
+
+  def load: APNSInfo = load(file)
+
+  override def parse(
+    readKey: String => Either[ErrorMessage, String]
+  ): Either[ErrorMessage, APNSInfo] =
+    for {
+      topic <- readKey("topic")
+      hexToken <- readKey("token")
+      token <- APNSToken.build(hexToken)
+    } yield APNSInfo(APNSTopic(topic), token)
+}
