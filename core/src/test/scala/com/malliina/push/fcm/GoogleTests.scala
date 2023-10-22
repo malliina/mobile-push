@@ -1,8 +1,7 @@
-package tests
+package com.malliina.push.fcm
 
-import com.malliina.push.ResponseException
-import com.malliina.push.fcm.FCMLegacyClient
 import com.malliina.push.gcm._
+import com.malliina.push.BaseSuite
 
 import scala.concurrent.{ExecutionContext, Future}
 

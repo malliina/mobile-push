@@ -1,5 +1,6 @@
-package tests
+package com.malliina.push.adm
 
+import com.malliina.push.BaseSuite
 import com.malliina.push.adm.{ADMClient, ADMToken}
 import com.malliina.push.android.AndroidMessage
 

@@ -1,4 +1,4 @@
-package tests
+package com.malliina.push
 
 import com.malliina.http.OkClient
 import munit.FunSuite

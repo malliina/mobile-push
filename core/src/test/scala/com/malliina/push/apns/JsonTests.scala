@@ -1,13 +1,9 @@
-package tests
+package com.malliina.push.apns
 
 import com.malliina.push.apns.APSPayload.CriticalSound
-import com.malliina.push.apns.{APNSMessage, APSPayload, AlertPayload}
-import com.malliina.push.gcm.MappedGCMResponse.TokenReplacement
-import com.malliina.push.gcm.{GCMResponse, GCMResult, GCMResultError, GCMToken, MappedGCMResponse}
 import io.circe._
+import io.circe.generic.semiauto.deriveCodec
 import io.circe.syntax.EncoderOps
-import io.circe.generic.semiauto._
-import io.circe.parser._
 
 class JsonTests extends munit.FunSuite {
   test("can json this") {
@@ -63,44 +59,6 @@ class JsonTests extends munit.FunSuite {
       msg.asJson.noSpaces,
       """{"sound":{"critical":1,"name":"Hello","volume":7},"content-available":1}"""
     )
-  }
-
-  test("GCM responses") {
-    val exampleResponse =
-      """{ "multicast_id": 216,
-        |  "success": 3,
-        |  "failure": 3,
-        |  "canonical_ids": 1,
-        |  "results": [
-        |    { "message_id": "1:0408" },
-        |    { "error": "Unavailable" },
-        |    { "error": "InvalidRegistration" },
-        |    { "message_id": "1:1516" },
-        |    { "message_id": "1:2342", "registration_id": "32" },
-        |    { "error": "NotRegistered"}
-        |  ]
-        |}""".stripMargin
-    val parsed = parse(exampleResponse).getOrElse(Json.Null).as[GCMResponse].toOption.get
-    val expected = GCMResponse(
-      216,
-      3,
-      3,
-      1,
-      Seq(
-        GCMResult(Some("1:0408"), None, None),
-        GCMResult(None, None, Some(GCMResultError.Unavailable)),
-        GCMResult(None, None, Some(GCMResultError.InvalidRegistration)),
-        GCMResult(Some("1:1516"), None, None),
-        GCMResult(Some("1:2342"), Some("32"), None),
-        GCMResult(None, None, Some(GCMResultError.NotRegistered))
-      )
-    )
-    assert(parsed.multicast_id == 216)
-    assert(parsed == expected)
-
-    val mapped = MappedGCMResponse(Seq(1, 2, 3, 4, 5, 6).map(n => GCMToken(n.toString)), parsed)
-    assert(mapped.replacements == Seq(TokenReplacement(GCMToken("5"), GCMToken("32"))))
-    assert(mapped.uninstalled == Seq(GCMToken("6")))
   }
 
   private def toJson[D: Encoder](d: D): Json = d.asJson

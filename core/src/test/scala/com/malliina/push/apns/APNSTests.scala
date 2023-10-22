@@ -1,10 +1,10 @@
-package tests
-
-import java.nio.file.{Path, Paths}
+package com.malliina.push.apns
 
 import com.malliina.push.apns._
-import com.malliina.push.{ConfHelper, Execution, PushUtils, TLSUtils}
+import com.malliina.push.{BaseSuite, ConfHelper, PushUtils}
 import com.malliina.values.ErrorMessage
+
+import java.nio.file.{Path, Paths}
 import scala.concurrent.ExecutionContext
 
 class APNSTests extends BaseSuite {

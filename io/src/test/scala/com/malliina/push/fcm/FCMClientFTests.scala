@@ -2,8 +2,8 @@ package com.malliina.push.fcm
 
 import cats.effect.unsafe.implicits.global
 import com.malliina.http.io.HttpClientIO
+import com.malliina.push.BaseSuite
 import com.malliina.push.gcm.{GCMMessage, GCMToken}
-import tests.BaseSuite
 
 class FCMClientFTests extends BaseSuite {
   val httpIo = FunFixture[HttpClientIO](

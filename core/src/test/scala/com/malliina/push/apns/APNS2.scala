@@ -1,10 +1,10 @@
-package tests
+package com.malliina.push.apns
+
+import com.malliina.push.{BaseSuite, TLSUtils}
+import com.malliina.push.apns._
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-
-import com.malliina.push.TLSUtils
-import com.malliina.push.apns._
 
 /** To test, obtain a token from a real app, then run a test case manually.
   */

@@ -1,10 +1,8 @@
-package tests
+package com.malliina.push.wns
 
-import com.malliina.push.wns.CommandId
 import com.malliina.push.wns.CommandId.Dismiss
-import io.circe._
-import io.circe.generic.semiauto._
-import io.circe.parser._
+import io.circe.Json
+import io.circe.parser.parse
 import io.circe.syntax.EncoderOps
 
 class WNSJson extends munit.FunSuite {

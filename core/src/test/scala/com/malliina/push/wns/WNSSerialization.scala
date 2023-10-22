@@ -1,6 +1,4 @@
-package tests
-
-import com.malliina.push.wns.{Selection, _}
+package com.malliina.push.wns
 
 import scala.xml.{Node, PrettyPrinter}
 

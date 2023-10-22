@@ -1,8 +1,7 @@
-package tests
+package com.malliina.push.wns
 
-import com.malliina.http.OkClient
 import com.malliina.push.wns._
-import com.malliina.push.{ConfHelper, PushUtils}
+import com.malliina.push.{BaseSuite, ConfHelper, PushUtils}
 import com.malliina.values.ErrorMessage
 
 class WNSTests extends BaseSuite {
