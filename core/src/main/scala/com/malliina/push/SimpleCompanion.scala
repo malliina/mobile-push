@@ -1,9 +1,9 @@
 package com.malliina.push
 
+import com.malliina.values.{ErrorMessage, Readable, ValidatingCompanion}
 import io.circe.{Decoder, Encoder}
-import com.malliina.values.{ErrorMessage, ValidatingCompanion}
 
-abstract class SimpleCompanion[In: Decoder: Encoder: Ordering, T]
+abstract class SimpleCompanion[In: Decoder: Encoder: Ordering: Readable, T]
   extends ValidatingCompanion[In, T] {
   def apply(in: In): T
 
