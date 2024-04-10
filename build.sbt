@@ -2,7 +2,7 @@ import scala.sys.process.Process
 
 val updateDocs = taskKey[Unit]("Updates README.md")
 
-val scala2_13 = "2.13.10"
+val scala2_13 = "2.13.13"
 
 inThisBuild(
   Seq(
@@ -23,17 +23,17 @@ val mavenCentralSettings = Seq(
   testFrameworks += new TestFramework("munit.Framework")
 )
 
-val okClientVersion = "3.5.2"
+val okClientVersion = "3.6.0"
 
 val mobilePush = Project("mobile-push", file("core"))
   .enablePlugins(MavenCentralPlugin)
   .settings(mavenCentralSettings *)
   .settings(
     libraryDependencies ++= Seq("server", "client").map { m =>
-      "org.eclipse.jetty" % s"jetty-alpn-java-$m" % "12.0.3"
+      "org.eclipse.jetty" % s"jetty-alpn-java-$m" % "12.0.8"
     } ++ Seq(
       "com.malliina" %% "okclient" % okClientVersion,
-      "com.nimbusds" % "nimbus-jose-jwt" % "9.37.1",
+      "com.nimbusds" % "nimbus-jose-jwt" % "9.37.3",
       "org.scala-lang.modules" %% "scala-xml" % "2.2.0"
     )
   )
