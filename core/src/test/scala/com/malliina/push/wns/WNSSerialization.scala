@@ -3,7 +3,7 @@ package com.malliina.push.wns
 import scala.xml.{Node, PrettyPrinter}
 
 class WNSSerialization extends munit.FunSuite {
-  val printer = new PrettyPrinter(200, 2)
+  private val prettyPrinter = new PrettyPrinter(200, 2)
 
   test("audio") {
     val audio1 = Audio.once("britney.mp3").xml.toString()
@@ -70,5 +70,5 @@ class WNSSerialization extends munit.FunSuite {
     // println(format(toast.xml))
   }
 
-  def format(node: Node) = printer.format(node)
+  def format(node: Node) = prettyPrinter.format(node)
 }

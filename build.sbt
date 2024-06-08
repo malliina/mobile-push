@@ -2,13 +2,11 @@ import scala.sys.process.Process
 
 val updateDocs = taskKey[Unit]("Updates README.md")
 
-val scala2_13 = "2.13.13"
-
 inThisBuild(
   Seq(
     organization := "com.malliina",
     scalaVersion := "3.3.1",
-    crossScalaVersions := Seq(scalaVersion.value, scala2_13),
+    crossScalaVersions := Seq(scalaVersion.value, "2.13.13"),
     releaseCrossBuild := true
   )
 )
@@ -18,7 +16,7 @@ val mavenCentralSettings = Seq(
   developerName := "Michael Skogberg",
   Test / fork := true,
   libraryDependencies ++= Seq(
-    "org.scalameta" %% "munit" % "0.7.29" % Test
+    "org.scalameta" %% "munit" % "1.0.0" % Test
   ),
   testFrameworks += new TestFramework("munit.Framework")
 )
@@ -34,7 +32,7 @@ val mobilePush = Project("mobile-push", file("core"))
     } ++ Seq(
       "com.malliina" %% "okclient" % okClientVersion,
       "com.nimbusds" % "nimbus-jose-jwt" % "9.37.3",
-      "org.scala-lang.modules" %% "scala-xml" % "2.2.0"
+      "org.scala-lang.modules" %% "scala-xml" % "2.3.0"
     )
   )
 
