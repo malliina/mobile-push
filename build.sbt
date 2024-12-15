@@ -6,7 +6,7 @@ inThisBuild(
   Seq(
     organization := "com.malliina",
     scalaVersion := "3.3.1",
-    crossScalaVersions := Seq(scalaVersion.value, "2.13.14"),
+    crossScalaVersions := Seq(scalaVersion.value, "2.13.15"),
     releaseCrossBuild := true
   )
 )
@@ -16,22 +16,21 @@ val mavenCentralSettings = Seq(
   developerName := "Michael Skogberg",
   Test / fork := true,
   libraryDependencies ++= Seq(
-    "org.scalameta" %% "munit" % "1.0.0" % Test
-  ),
-  testFrameworks += new TestFramework("munit.Framework")
+    "org.scalameta" %% "munit" % "1.0.3" % Test
+  )
 )
 
-val okClientVersion = "3.7.1"
+val okClientVersion = "3.7.4"
 
 val mobilePush = Project("mobile-push", file("core"))
   .enablePlugins(MavenCentralPlugin)
   .settings(mavenCentralSettings *)
   .settings(
     libraryDependencies ++= Seq("server", "client").map { m =>
-      "org.eclipse.jetty" % s"jetty-alpn-java-$m" % "12.0.8"
+      "org.eclipse.jetty" % s"jetty-alpn-java-$m" % "12.0.16"
     } ++ Seq(
       "com.malliina" %% "okclient" % okClientVersion,
-      "com.nimbusds" % "nimbus-jose-jwt" % "9.40",
+      "com.nimbusds" % "nimbus-jose-jwt" % "9.47",
       "org.scala-lang.modules" %% "scala-xml" % "2.3.0"
     )
   )
