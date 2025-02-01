@@ -16,11 +16,11 @@ val mavenCentralSettings = Seq(
   developerName := "Michael Skogberg",
   Test / fork := true,
   libraryDependencies ++= Seq(
-    "org.scalameta" %% "munit" % "1.0.4" % Test
+    "org.scalameta" %% "munit" % "1.1.0" % Test
   )
 )
 
-val okClientVersion = "3.7.5"
+val okClientVersion = "3.7.6"
 
 val mobilePush = Project("mobile-push", file("core"))
   .enablePlugins(MavenCentralPlugin)
