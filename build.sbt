@@ -20,7 +20,9 @@ val mavenCentralSettings = Seq(
   )
 )
 
-val okClientVersion = "3.7.6"
+val versions = new {
+  val okClient = "3.7.7"
+}
 
 val mobilePush = Project("mobile-push", file("core"))
   .enablePlugins(MavenCentralPlugin)
@@ -29,7 +31,7 @@ val mobilePush = Project("mobile-push", file("core"))
     libraryDependencies ++= Seq("server", "client").map { m =>
       "org.eclipse.jetty" % s"jetty-alpn-java-$m" % "12.0.16"
     } ++ Seq(
-      "com.malliina" %% "okclient" % okClientVersion,
+      "com.malliina" %% "okclient" % versions.okClient,
       "com.nimbusds" % "nimbus-jose-jwt" % "10.0.1",
       "org.scala-lang.modules" %% "scala-xml" % "2.3.0"
     )
@@ -41,7 +43,7 @@ val io = Project("mobile-push-io", file("io"))
   .dependsOn(mobilePush, mobilePush % "test->test")
   .settings(
     libraryDependencies ++= Seq(
-      "com.malliina" %% "okclient-io" % okClientVersion
+      "com.malliina" %% "okclient-io" % versions.okClient
     )
   )
 
