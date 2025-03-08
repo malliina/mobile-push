@@ -1,7 +1,9 @@
 package com.malliina.push.apns
 
-import com.malliina.push.{BaseSuite, TLSUtils}
+import com.malliina.push.{BaseSuite, PushUtils, TLSUtils}
 import com.malliina.push.apns._
+import io.circe.Codec
+import io.circe.generic.semiauto.deriveCodec
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -31,6 +33,34 @@ class APNS2 extends BaseSuite {
         assert(result.isRight)
       }
     }
+  }
+
+  case class LiveActivityAttributes(boatName: String, message: String)
+  object LiveActivityAttributes {
+    implicit val json: Codec[LiveActivityAttributes] = deriveCodec[LiveActivityAttributes]
+  }
+
+  http.test("Update live activity".ignore) { httpClient =>
+    val token = APNSToken("changeme")
+    APNSTokenConf
+      .fromFile(PushUtils.userHome.resolve(".boat/apns.conf"))
+      .foreach { conf =>
+        val client = APNSTokenClient(conf, httpClient, isSandbox = true)
+        val payload = APSPayload.updateLiveActivity(
+          Instant.now(),
+          LiveActivityAttributes("Boating", "Updated"),
+          None,
+          None,
+          None
+        )
+        val message = APNSMessage(payload, Map.empty)
+        val req = client.push(
+          token,
+          APNSRequest.liveActivity(APNSTopic("com.malliina.BoatTracker"), message)
+        )
+        val res = await(req)
+        println(s"Got $res")
+      }
   }
 
   http.test("token-authenticated advanced notification".ignore) { httpClient =>

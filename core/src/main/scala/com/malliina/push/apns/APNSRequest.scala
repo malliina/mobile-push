@@ -12,4 +12,7 @@ object APNSRequest {
     val isBackground = message.aps.alert.isEmpty
     APNSRequest(message, APNSMeta.withTopic(topic, if (isBackground) Background else Alert))
   }
+
+  def liveActivity(bundle: APNSTopic, message: APNSMessage) =
+    APNSRequest(message, APNSMeta.liveActivity(APNSTopic.liveActivity(bundle.topic)))
 }

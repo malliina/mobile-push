@@ -139,10 +139,10 @@ object APSPayload {
   // https://developer.apple.com/documentation/activitykit/starting-and-updating-live-activities-with-activitykit-push-notifications#Construct-the-ActivityKit-remote-push-notification-payload
   def startLiveActivity[C: Encoder](
     now: Instant,
+    attributesType: String,
     contentState: C,
     alert: Either[String, AlertPayload],
-    dismissalDate: Option[Instant],
-    attributesType: String
+    dismissalDate: Option[Instant]
   ): APSPayload =
     apply(
       alert = Option(alert),
