@@ -9,8 +9,6 @@ trait Token extends Any {
   override def toString: String = token
 }
 
-/** Base companion object for `Token`s.
-  */
 trait TokenCompanion[T <: Token] extends SimpleCompanion[String, T] {
   override def write(t: T): String = t.token
 }
