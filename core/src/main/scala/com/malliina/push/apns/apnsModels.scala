@@ -13,6 +13,8 @@ case class APNSTopic(topic: String) extends AnyVal {
 
 object APNSTopic extends SimpleCompanion[String, APNSTopic] {
   override def write(t: APNSTopic): String = t.topic
+
+  def liveActivity(bundleId: String): APNSTopic = apply(s"$bundleId.push-type.liveactivity")
 }
 
 case class APNSHttpResult(token: APNSToken, id: Option[APNSIdentifier], error: Option[APNSError])
@@ -47,6 +49,7 @@ object APNSPushType extends StringEnumCompanion[APNSPushType] {
 
 case object Alert extends APNSPushType("alert")
 case object Background extends APNSPushType("background")
+case object LiveActivity extends APNSPushType("liveactivity")
 
 case class APNSIdentifier(id: String) extends AnyVal {
   override def toString: String = id
@@ -69,6 +72,9 @@ object APNSMeta {
 
   def withTopic(topic: APNSTopic, pushType: APNSPushType = Alert): APNSMeta =
     APNSMeta(topic, 0, APNSImmediately, pushType, None)
+
+  def liveActivity(topic: APNSTopic): APNSMeta =
+    APNSMeta(topic, 0, APNSImmediately, LiveActivity, None)
 }
 
 case class APNSToken(token: String) extends AnyVal with Token

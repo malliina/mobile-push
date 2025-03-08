@@ -1,7 +1,7 @@
 package com.malliina.push.apns
 
-import io.circe._
-import io.circe.syntax._
+import io.circe.syntax.EncoderOps
+import io.circe.{Codec, Decoder, Encoder, Json}
 
 case class APNSMessage(aps: APSPayload, data: Map[String, Json] = Map())
 

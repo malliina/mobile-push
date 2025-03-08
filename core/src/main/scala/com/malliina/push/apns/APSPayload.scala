@@ -1,9 +1,12 @@
 package com.malliina.push.apns
 
-import com.malliina.push.apns.APSPayload.CriticalSound
+import com.malliina.push.apns.APSPayload.{APSEvent, CriticalSound}
 import io.circe.{Codec, Decoder, Encoder, Json}
 import io.circe.generic.semiauto.{deriveCodec, deriveDecoder}
 import io.circe.syntax.EncoderOps
+
+import java.time.Instant
+import scala.util.Try
 
 /** @param alert
   *   Some(Left(...)) for a simple alert text, Some(Right(...)) for more verbose alert details, None
@@ -27,15 +30,23 @@ case class APSPayload(
   interruptionLevel: Option[String] = None,
   relevanceScore: Option[String] = None,
   filterCriteria: Option[String] = None,
-  staleDate: Option[Long] = None,
+  staleDate: Option[Instant] = None,
   contentState: Option[Json] = None,
-  timestamp: Option[Long] = None,
-  event: Option[String] = None,
-  dismissalDate: Option[Long] = None
+  timestamp: Option[Instant] = None,
+  event: Option[APSEvent] = None,
+  dismissalDate: Option[Instant] = None,
+  attributes: Option[Json] = None,
+  attributesType: Option[String] = None
 )
 
 object APSPayload {
+  implicit val timestampCodec: Codec[Instant] = Codec.from(
+    Decoder.decodeLong.emapTry(l => Try(Instant.ofEpochSecond(l))),
+    Encoder.encodeLong.contramap(_.getEpochSecond)
+  )
   val Alert = "alert"
+  private val Attributes = "attributes"
+  private val AttributesType = "attributes-type"
   val Badge = "badge"
   val Category = "category"
   val ContentAvailable = "content-available"
@@ -56,6 +67,19 @@ object APSPayload {
 
   object CriticalSound {
     implicit val json: Codec[CriticalSound] = deriveCodec[CriticalSound]
+  }
+
+  sealed abstract class APSEvent(val name: String)
+  object APSEvent {
+    case object Start extends APSEvent("start")
+    case object Update extends APSEvent("update")
+    case object End extends APSEvent("end")
+    case class Other(n: String) extends APSEvent(n)
+
+    implicit val json: Codec[APSEvent] = Codec.from(
+      Decoder.decodeString.map(s => Seq(Start, Update, End).find(_.name == s).getOrElse(Other(s))),
+      Encoder.encodeString.contramap(_.name)
+    )
   }
 
   implicit val af: Codec[Either[String, AlertPayload]] = Codec.from(
@@ -80,6 +104,8 @@ object APSPayload {
         .deepMerge(objectify(Timestamp, p.timestamp))
         .deepMerge(objectify(Event, p.event))
         .deepMerge(objectify(DismissalDate, p.dismissalDate))
+        .deepMerge(objectify(Attributes, p.attributes))
+        .deepMerge(objectify(AttributesType, p.attributesType))
     )
   }
 
@@ -109,6 +135,55 @@ object APSPayload {
     sound: Option[String] = None,
     category: Option[String] = None
   ): APSPayload = apply(None, badge, sound.map(Left.apply), category)
+
+  // https://developer.apple.com/documentation/activitykit/starting-and-updating-live-activities-with-activitykit-push-notifications#Construct-the-ActivityKit-remote-push-notification-payload
+  def startLiveActivity[C: Encoder](
+    now: Instant,
+    contentState: C,
+    alert: Either[String, AlertPayload],
+    dismissalDate: Option[Instant],
+    attributesType: String
+  ): APSPayload =
+    apply(
+      alert = Option(alert),
+      attributesType = Option(attributesType),
+      attributes = Option(contentState.asJson),
+      contentState = Option(contentState.asJson),
+      timestamp = Option(now),
+      event = Option(APSEvent.Start)
+    )
+
+  def updateLiveActivity[C: Encoder](
+    now: Instant,
+    contentState: C,
+    alert: Option[Either[String, AlertPayload]],
+    staleDate: Option[Instant],
+    dismissalDate: Option[Instant]
+  ) = liveActivity(now, contentState, APSEvent.Update, alert, staleDate, dismissalDate)
+
+  def endLiveActivity[C: Encoder](
+    now: Instant,
+    contentState: C,
+    dismissalDate: Option[Instant]
+  ): APSPayload =
+    liveActivity(now, contentState, APSEvent.End, None, dismissalDate, None)
+
+  private def liveActivity[C: Encoder](
+    now: Instant,
+    contentState: C,
+    event: APSEvent,
+    alert: Option[Either[String, AlertPayload]],
+    staleDate: Option[Instant],
+    dismissalDate: Option[Instant]
+  ): APSPayload =
+    apply(
+      alert = alert,
+      contentState = Option(contentState.asJson),
+      timestamp = Option(now),
+      staleDate = staleDate,
+      dismissalDate = dismissalDate,
+      event = Option(event)
+    )
 
   implicit def eitherDecoder[A, B](implicit a: Decoder[A], b: Decoder[B]): Decoder[Either[A, B]] = {
     val left: Decoder[Either[A, B]] = a.map(Left.apply)
