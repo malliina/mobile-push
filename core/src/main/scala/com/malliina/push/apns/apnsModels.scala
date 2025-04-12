@@ -70,11 +70,15 @@ case class APNSMeta(
 object APNSMeta {
   implicit val json: Codec[APNSMeta] = deriveCodec[APNSMeta]
 
-  def withTopic(topic: APNSTopic, pushType: APNSPushType = Alert): APNSMeta =
-    APNSMeta(topic, 0, APNSImmediately, pushType, None)
+  def withTopic(
+    topic: APNSTopic,
+    pushType: APNSPushType = Alert,
+    priority: APNSPriority = APNSImmediately
+  ): APNSMeta =
+    APNSMeta(topic, 0, priority, pushType, None)
 
-  def liveActivity(topic: APNSTopic): APNSMeta =
-    APNSMeta(topic, 0, APNSImmediately, LiveActivity, None)
+  def liveActivity(topic: APNSTopic, priority: APNSPriority = APNSImmediately): APNSMeta =
+    APNSMeta(topic, 0, priority, LiveActivity, None)
 }
 
 case class APNSToken(token: String) extends AnyVal with Token
