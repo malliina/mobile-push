@@ -13,6 +13,10 @@ object APNSRequest {
     APNSRequest(message, APNSMeta.withTopic(topic, if (isBackground) Background else Alert))
   }
 
-  def liveActivity(bundle: APNSTopic, message: APNSMessage) =
-    APNSRequest(message, APNSMeta.liveActivity(APNSTopic.liveActivity(bundle.topic)))
+  def liveActivity(
+    bundle: APNSTopic,
+    message: APNSMessage,
+    priority: APNSPriority = APNSImmediately
+  ) =
+    APNSRequest(message, APNSMeta.liveActivity(APNSTopic.liveActivity(bundle.topic), priority))
 }
