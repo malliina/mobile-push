@@ -1,9 +1,10 @@
 package com.malliina.push.apns
 
 import com.malliina.push.{BaseSuite, PushUtils, TLSUtils}
-import com.malliina.push.apns._
-import io.circe.Codec
+import com.malliina.push.apns.*
+import io.circe.{Codec, Json}
 import io.circe.generic.semiauto.deriveCodec
+import io.circe.syntax.EncoderOps
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -35,9 +36,33 @@ class APNS2 extends BaseSuite {
     }
   }
 
-  case class LiveActivityAttributes(boatName: String, message: String)
+  case class LiveActivityAttributes(message: String, distance: Double, duration: Double)
   object LiveActivityAttributes {
     implicit val json: Codec[LiveActivityAttributes] = deriveCodec[LiveActivityAttributes]
+  }
+
+  http.test("Start live activity".ignore) { httpClient =>
+    val token = APNSToken("changeme")
+    APNSTokenConf
+      .fromFile(PushUtils.userHome.resolve(".boat/apns.conf"))
+      .foreach { conf =>
+        val client = APNSTokenClient(conf, httpClient, isSandbox = true)
+        val payload = APSPayload.startLiveActivity(
+          Instant.now(),
+          "BoatWidgetAttributes",
+          Json.obj("boatName" -> "boat 1".asJson, "trackName" -> "track1".asJson),
+          LiveActivityAttributes("Boating", 123, 111),
+          Right(AlertPayload("moving", title = Option("on the move"))),
+          None
+        )
+        val message = APNSMessage(payload, Map.empty)
+        val req = client.push(
+          token,
+          APNSRequest.liveActivity(APNSTopic("com.malliina.BoatTracker"), message)
+        )
+        val res = await(req)
+        println(s"Got $res")
+      }
   }
 
   http.test("Update live activity".ignore) { httpClient =>
@@ -48,7 +73,7 @@ class APNS2 extends BaseSuite {
         val client = APNSTokenClient(conf, httpClient, isSandbox = true)
         val payload = APSPayload.updateLiveActivity(
           Instant.now(),
-          LiveActivityAttributes("Boating", "Updated"),
+          LiveActivityAttributes("Boating more 2", 234, 444),
           None,
           None,
           None
