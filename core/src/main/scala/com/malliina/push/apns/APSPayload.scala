@@ -137,9 +137,10 @@ object APSPayload {
   ): APSPayload = apply(None, badge, sound.map(Left.apply), category)
 
   // https://developer.apple.com/documentation/activitykit/starting-and-updating-live-activities-with-activitykit-push-notifications#Construct-the-ActivityKit-remote-push-notification-payload
-  def startLiveActivity[C: Encoder](
+  def startLiveActivity[A: Encoder, C: Encoder](
     now: Instant,
     attributesType: String,
+    attributes: A,
     contentState: C,
     alert: Either[String, AlertPayload],
     dismissalDate: Option[Instant]
@@ -147,7 +148,7 @@ object APSPayload {
     apply(
       alert = Option(alert),
       attributesType = Option(attributesType),
-      attributes = Option(contentState.asJson),
+      attributes = Option(attributes.asJson),
       contentState = Option(contentState.asJson),
       timestamp = Option(now),
       event = Option(APSEvent.Start)
