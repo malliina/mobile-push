@@ -21,7 +21,7 @@ val mavenCentralSettings = Seq(
 )
 
 val versions = new {
-  val okClient = "3.7.7"
+  val okClient = "3.7.8"
 }
 
 val mobilePush = Project("mobile-push", file("core"))
