@@ -1,7 +1,7 @@
 package com.malliina.push.apns
 
 import com.malliina.push.{BaseSuite, PushUtils, TLSUtils}
-import com.malliina.push.apns.*
+import com.malliina.push.apns._
 import io.circe.{Codec, Json}
 import io.circe.generic.semiauto.deriveCodec
 import io.circe.syntax.EncoderOps
