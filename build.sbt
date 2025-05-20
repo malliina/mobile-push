@@ -16,12 +16,15 @@ val mavenCentralSettings = Seq(
   developerName := "Michael Skogberg",
   Test / fork := true,
   libraryDependencies ++= Seq(
-    "org.scalameta" %% "munit" % "1.1.0" % Test
+    "org.scalameta" %% "munit" % "1.1.1" % Test
   )
 )
 
 val versions = new {
-  val okClient = "3.7.8"
+  val jetty = "12.0.16"
+  val nimbusJwt = "10.3"
+  val okClient = "3.7.10"
+  val scalaXml = "2.3.0"
 }
 
 val mobilePush = Project("mobile-push", file("core"))
@@ -29,11 +32,11 @@ val mobilePush = Project("mobile-push", file("core"))
   .settings(mavenCentralSettings *)
   .settings(
     libraryDependencies ++= Seq("server", "client").map { m =>
-      "org.eclipse.jetty" % s"jetty-alpn-java-$m" % "12.0.16"
+      "org.eclipse.jetty" % s"jetty-alpn-java-$m" % versions.jetty
     } ++ Seq(
       "com.malliina" %% "okclient" % versions.okClient,
-      "com.nimbusds" % "nimbus-jose-jwt" % "10.0.1",
-      "org.scala-lang.modules" %% "scala-xml" % "2.3.0"
+      "com.nimbusds" % "nimbus-jose-jwt" % versions.nimbusJwt,
+      "org.scala-lang.modules" %% "scala-xml" % versions.scalaXml
     )
   )
 
