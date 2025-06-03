@@ -25,24 +25,35 @@ class APNS2 extends BaseSuite {
   }
 
   http.test("token-authenticated simple notification".ignore) { httpClient =>
-    APNSHttpConf.loadOpt.foreach { creds =>
-      APNSTokenConf.default.toOption.foreach { conf =>
+    APNSTokenConf
+      .fromFile(PushUtils.userHome.resolve(".boat/apns.conf"))
+      .foreach { conf =>
+        val token = APNSToken(
+          "changeme"
+        )
         val client = APNSTokenClient(conf, httpClient, isSandbox = false)
         val message = APNSMessage.simple("this is a token test")
-        val request = APNSRequest.withTopic(creds.topic, message)
-        val result = await(client.push(creds.token, request))
+        val request = APNSRequest.withTopic(APNSTopic("com.malliina.BoatTracker"), message)
+        val result = await(client.push(token, request))
         assert(result.isRight)
       }
-    }
   }
 
-  case class LiveActivityAttributes(message: String, distance: Double, duration: Double)
-  object LiveActivityAttributes {
-    implicit val json: Codec[LiveActivityAttributes] = deriveCodec[LiveActivityAttributes]
+  case class LiveActivityState(
+    message: String,
+    distance: Double,
+    duration: Double,
+    address: Option[String]
+  )
+
+  object LiveActivityState {
+    implicit val json: Codec[LiveActivityState] = deriveCodec[LiveActivityState]
   }
 
   http.test("Start live activity".ignore) { httpClient =>
-    val token = APNSToken("changeme")
+    val token = APNSToken(
+      "changeme"
+    )
     APNSTokenConf
       .fromFile(PushUtils.userHome.resolve(".boat/apns.conf"))
       .foreach { conf =>
@@ -51,7 +62,7 @@ class APNS2 extends BaseSuite {
           Instant.now(),
           "BoatWidgetAttributes",
           Json.obj("boatName" -> "boat 1".asJson, "trackName" -> "track1".asJson),
-          LiveActivityAttributes("Boating", 123, 111),
+          LiveActivityState("Boating", 123, 111, Option("Road 2")),
           Right(AlertPayload("moving", title = Option("on the move"))),
           None
         )
@@ -73,7 +84,7 @@ class APNS2 extends BaseSuite {
         val client = APNSTokenClient(conf, httpClient, isSandbox = true)
         val payload = APSPayload.updateLiveActivity(
           Instant.now(),
-          LiveActivityAttributes("Boating more 2", 234, 444),
+          LiveActivityState("Boating more 2", 234, 444, None),
           None,
           None,
           None
