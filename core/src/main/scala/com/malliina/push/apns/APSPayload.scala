@@ -151,7 +151,8 @@ object APSPayload {
       attributes = Option(attributes.asJson),
       contentState = Option(contentState.asJson),
       timestamp = Option(now),
-      event = Option(APSEvent.Start)
+      event = Option(APSEvent.Start),
+      dismissalDate = dismissalDate
     )
 
   def updateLiveActivity[C: Encoder](
@@ -167,7 +168,7 @@ object APSPayload {
     contentState: C,
     dismissalDate: Option[Instant]
   ): APSPayload =
-    liveActivity(now, contentState, APSEvent.End, None, dismissalDate, None)
+    liveActivity(now, contentState, APSEvent.End, None, None, dismissalDate)
 
   private def liveActivity[C: Encoder](
     now: Instant,

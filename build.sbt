@@ -2,6 +2,14 @@ import scala.sys.process.Process
 
 val updateDocs = taskKey[Unit]("Updates README.md")
 
+val versions = new {
+  val jetty = "12.0.16"
+  val munit = "1.1.1"
+  val nimbusJwt = "10.3"
+  val okClient = "3.7.10"
+  val scalaXml = "2.3.0"
+}
+
 inThisBuild(
   Seq(
     organization := "com.malliina",
@@ -16,16 +24,9 @@ val mavenCentralSettings = Seq(
   developerName := "Michael Skogberg",
   Test / fork := true,
   libraryDependencies ++= Seq(
-    "org.scalameta" %% "munit" % "1.1.1" % Test
+    "org.scalameta" %% "munit" % versions.munit % Test
   )
 )
-
-val versions = new {
-  val jetty = "12.0.16"
-  val nimbusJwt = "10.3"
-  val okClient = "3.7.10"
-  val scalaXml = "2.3.0"
-}
 
 val mobilePush = Project("mobile-push", file("core"))
   .enablePlugins(MavenCentralPlugin)
