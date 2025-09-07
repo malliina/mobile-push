@@ -2,12 +2,12 @@ package com.malliina.push.apns
 
 import java.nio.file.Path
 import java.security.KeyStore
-import com.malliina.http.{FullUrl, HttpClient, OkClient, OkHttpResponse}
+import com.malliina.http.{FullUrl, HttpClient, HttpResponse, OkClient, OkHttpResponse}
 import com.malliina.push.apns.APNSHttpClient._
 import com.malliina.push.{PushClientF, TLSUtils}
 
 import javax.net.ssl.SSLSocketFactory
-import okhttp3.{MediaType, _}
+import okhttp3._
 import io.circe._
 import io.circe.generic.semiauto._
 import io.circe.syntax.EncoderOps
@@ -60,18 +60,12 @@ abstract class APNSHttpClientBase[F[_]](
   val host: FullUrl = if (isSandbox) DevHost else ProdHost
   val jsonMediaType: MediaType = MediaType.parse("application/json")
 
-  def send(id: APNSToken, message: APNSRequest): F[OkHttpResponse] = {
+  def send(id: APNSToken, message: APNSRequest): F[HttpResponse] = {
     val meta = message.meta
     val bodyAsString = message.message.asJson.toString
     val body = RequestBody.create(bodyAsString, jsonMediaType)
     val contentLength = bodyAsString.getBytes(UTF8).length
-    val request = withHeaders(meta) {
-      new Request.Builder()
-        .url(url(id).url)
-        .post(body)
-        .header(ContentLength, "" + contentLength)
-    }.build()
-    http.execute(request)
+    http.postJson(url(id), message.message.asJson, Map(ContentLength -> s"$contentLength"))
   }
 
   def withHeaders(meta: APNSMeta)(request: Request.Builder): Request.Builder = {
@@ -88,9 +82,9 @@ abstract class APNSHttpClientBase[F[_]](
 
   def url(token: APNSToken): FullUrl = host / s"/3/device/${token.token}"
 
-  def parseResponse(response: OkHttpResponse): Either[APNSError, APNSIdentifier] = {
+  def parseResponse(response: HttpResponse): Either[APNSError, APNSIdentifier] = {
     if (response.code == 200) {
-      val apnsId = Option(response.inner.header(ApnsId)).map(APNSIdentifier.apply)
+      val apnsId = response.headers.get(ApnsId).flatMap(_.headOption).map(APNSIdentifier.apply)
       apnsId.map(Right.apply).getOrElse(Left(UnknownReason))
     } else {
       val json = decode[APNSErrorJson](response.asString)

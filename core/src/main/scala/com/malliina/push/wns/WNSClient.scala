@@ -24,11 +24,16 @@ object WNSClient {
   val Ttl = "X-WNS-TTL"
   val WnsType = "X-WNS-Type"
 
-  case class PushMeta(client: HttpClient[Future], payload: String, headers: Map[String, String])
+  case class PushMeta(
+    client: OkHttpHttpClient[Future],
+    payload: String,
+    headers: Map[String, String]
+  )
 }
 
-class WNSClient(creds: WNSCredentials, http: HttpClient[Future])(implicit ec: ExecutionContext)
-  extends PushClient[WNSToken, WNSMessage, WNSResponse] {
+class WNSClient(creds: WNSCredentials, http: OkHttpHttpClient[Future])(implicit
+  ec: ExecutionContext
+) extends PushClient[WNSToken, WNSMessage, WNSResponse] {
   def push(token: WNSToken, message: WNSMessage): Future[WNSResponse] =
     withUrls(message) { meta => pushSingle(meta.client, token, meta.payload, meta.headers) }
 
@@ -49,7 +54,7 @@ class WNSClient(creds: WNSCredentials, http: HttpClient[Future])(implicit ec: Ex
     }
 
   def pushSingle(
-    client: HttpClient[Future],
+    client: OkHttpHttpClient[Future],
     token: WNSToken,
     body: String,
     headers: Map[String, String]

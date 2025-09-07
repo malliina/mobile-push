@@ -2,10 +2,10 @@ package com.malliina.push.gcm
 
 import cats.Monad
 import cats.implicits._
-import com.malliina.http.{FullUrl, HttpClient}
+import com.malliina.http.{FullUrl, HttpClient, OkHttpHttpClient}
 import com.malliina.push.gcm.GCMClient.{MaxRecipientsPerRequest, parseOrFail}
 
-class GoogleClientF[F[_]: Monad](apiKey: String, postEndpoint: FullUrl, http: HttpClient[F])
+class GoogleClientF[F[_]: Monad](apiKey: String, postEndpoint: FullUrl, http: OkHttpHttpClient[F])
   extends GoogleClientBase[F](apiKey, postEndpoint, http) {
 
   def push(id: GCMToken, message: GCMMessage): F[MappedGCMResponse] =

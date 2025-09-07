@@ -1,6 +1,7 @@
 package com.malliina.push.gcm
 
-import com.malliina.http.{FullUrl, HttpClient, HttpResponse}
+import cats.effect.Async
+import com.malliina.http.{FullUrl, HttpClient, HttpResponse, OkHttpHttpClient}
 import com.malliina.push.Headers._
 import com.malliina.push.gcm.GCMClient._
 import com.malliina.push.{JsonException, PushClient, PushClientF, ResponseException}
@@ -29,7 +30,7 @@ object GCMClient {
 abstract class GoogleClientBase[F[_]](
   val apiKey: String,
   val postEndpoint: FullUrl,
-  http: HttpClient[F]
+  http: OkHttpHttpClient[F]
 ) extends PushClientF[GCMToken, GCMMessage, MappedGCMResponse, F] {
 
   def send(id: GCMToken, data: Map[String, String]): F[HttpResponse] =
@@ -47,7 +48,7 @@ abstract class GoogleClientBase[F[_]](
 class GoogleClient(
   apiKey: String,
   postEndpoint: FullUrl,
-  http: HttpClient[Future]
+  http: OkHttpHttpClient[Future]
 )(implicit ec: ExecutionContext)
   extends GoogleClientBase[Future](apiKey, postEndpoint, http)
   with PushClient[GCMToken, GCMMessage, MappedGCMResponse] {

@@ -1,14 +1,14 @@
 package com.malliina.push
 
-import com.malliina.http.{FullUrl, HttpClient, HttpResponse}
+import com.malliina.http.{FullUrl, HttpClient, HttpResponse, OkHttpHttpClient}
 import okhttp3.RequestBody
 
 import java.io.StringWriter
 import scala.concurrent.{ExecutionContext, Future}
 import scala.xml.{Elem, XML}
 
-abstract class WindowsClient[T <: Token, M <: WindowsMessage](http: HttpClient[Future])(implicit
-  ec: ExecutionContext
+abstract class WindowsClient[T <: Token, M <: WindowsMessage](http: OkHttpHttpClient[Future])(
+  implicit ec: ExecutionContext
 ) extends PushClient[T, M, HttpResponse] {
   override def pushAll(urls: Seq[T], message: M): Future[Seq[HttpResponse]] = {
     val bodyAsString = WindowsClient.serialize(message.xml)

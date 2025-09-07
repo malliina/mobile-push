@@ -5,9 +5,9 @@ val updateDocs = taskKey[Unit]("Updates README.md")
 val versions = new {
   val jetty = "12.0.16"
   val munit = "1.1.1"
-  val nimbusJwt = "10.3.1"
-  val okClient = "3.7.13"
-  val scalaXml = "2.3.0"
+  val nimbusJwt = "10.5"
+  val okClient = "3.7.16"
+  val scalaXml = "2.4.0"
 }
 
 inThisBuild(
