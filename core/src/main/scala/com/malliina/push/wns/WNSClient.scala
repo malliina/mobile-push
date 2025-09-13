@@ -58,7 +58,7 @@ class WNSClient(creds: WNSCredentials, http: SimpleHttpClient[Future])(implicit
     headers: Map[String, String]
   ): Future[WNSResponse] = {
     client
-      .postString(FullUrl.build(token.token).toOption.get, body, XmlMediaType.toString, headers)
+      .postString(FullUrl.build(token.token).toOption.get, body, XmlMediaType, headers)
       .map(WNSResponse.fromResponse)
   }
 

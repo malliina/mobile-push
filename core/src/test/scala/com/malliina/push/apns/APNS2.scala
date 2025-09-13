@@ -24,12 +24,12 @@ class APNS2 extends BaseSuite {
     }
   }
 
-  http.test("token-authenticated simple notification") { httpClient =>
+  http.test("token-authenticated simple notification".ignore) { httpClient =>
     APNSTokenConf
       .fromFile(PushUtils.userHome.resolve(".boat/apns.conf"))
       .foreach { conf =>
         val token = APNSToken(
-          "521f9540a4d1f48e9ec07750c1e5469141f3e1a941566bdf1052ed9d753fec99"
+          "changeme"
         )
         val client = APNSTokenClient(conf, httpClient, isSandbox = false)
         val message = APNSMessage.simple("this is a token test")

@@ -2,21 +2,12 @@ package com.malliina.push.apns
 
 import java.nio.file.Path
 import java.security.KeyStore
-import com.malliina.http.{
-  FullUrl,
-  HttpClient,
-  HttpResponse,
-  OkClient,
-  OkHttpResponse,
-  SimpleHttpClient
-}
+import com.malliina.http.{FullUrl, HttpHeaders, HttpResponse, OkClient, SimpleHttpClient}
 import com.malliina.push.apns.APNSHttpClient._
 import com.malliina.push.{PushClientF, TLSUtils}
 
 import javax.net.ssl.SSLSocketFactory
-import okhttp3._
 import io.circe._
-import io.circe.generic.semiauto._
 import io.circe.syntax.EncoderOps
 import io.circe.parser.decode
 
@@ -66,18 +57,16 @@ abstract class APNSHttpClientBase[F[_]](
   isSandbox: Boolean
 ) extends PushClientF[APNSToken, APNSRequest, Either[APNSError, APNSIdentifier], F] {
   val host: FullUrl = if (isSandbox) DevHost else ProdHost
-  val jsonMediaType: MediaType = MediaType.parse("application/json")
 
   def send(id: APNSToken, message: APNSRequest): F[HttpResponse] = {
     val meta = message.meta
     val bodyAsString = message.message.asJson.toString
-    val body = RequestBody.create(bodyAsString, jsonMediaType)
     val contentLength = bodyAsString.getBytes(UTF8).length
     val headers = makeHeaders(meta, Instant.now()) ++ Map(ContentLength -> s"$contentLength")
-    println(s"Sending $headers")
-    http.postJson(
+    http.postString(
       url(id),
-      message.message.asJson,
+      bodyAsString,
+      HttpHeaders.application.json,
       headers
     )
   }
@@ -108,9 +97,6 @@ abstract class APNSHttpClientBase[F[_]](
 }
 
 /** APNs client, using the HTTP/2 notification API.
-  *
-  * Uses OkHttp with Jetty's "alpn-boot" in the bootclasspath for HTTP/2 support; please check the
-  * build definition of this project for details.
   *
   * @see
   *   https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html

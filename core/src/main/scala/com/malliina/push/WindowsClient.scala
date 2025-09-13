@@ -32,7 +32,7 @@ abstract class WindowsClient[T <: Token, M <: WindowsMessage](http: SimpleHttpCl
     http.postString(
       FullUrl.build(url.token).toOption.get,
       body,
-      Headers.XmlMediaTypeUtf8.toString,
+      Headers.XmlMediaTypeUtf8,
       headers
     )
 }
