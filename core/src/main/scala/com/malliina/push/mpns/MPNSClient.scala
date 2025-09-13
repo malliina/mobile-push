@@ -1,11 +1,11 @@
 package com.malliina.push.mpns
 
-import com.malliina.http.{HttpClient, HttpResponse, OkHttpHttpClient}
+import com.malliina.http.{HttpResponse, SimpleHttpClient}
 import com.malliina.push.{Headers, WindowsClient, WindowsMessage}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class MPNSClient(http: OkHttpHttpClient[Future], ec: ExecutionContext)
+class MPNSClient(http: SimpleHttpClient[Future], ec: ExecutionContext)
   extends WindowsClient[MPNSToken, WindowsMessage](http)(ec) {
 
   /** Might throw [[NullPointerException]] if `url` is bogus, but how do you solidly validate a URL

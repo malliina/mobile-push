@@ -25,6 +25,12 @@ object APNSTokenPreparer {
   def apply(conf: APNSTokenConf): APNSTokenPreparer = new APNSTokenPreparer(conf)
 }
 
+class APNSTokenPreparer(conf: APNSTokenConf) extends RequestPreparer {
+  private val builder = new APNSTokenBuilder(conf)
+  override def prepare(request: Request.Builder): Request.Builder =
+    request.header("authorization", builder.tokenHeader())
+}
+
 /** <p>For security, APNs requires you to refresh your token regularly. Refresh your token no more
   * than once every 20 minutes and no less than once every 60 minutes. APNs rejects any request
   * whose token contains a timestamp that is more than one hour old. Similarly, APNs reports an
@@ -36,7 +42,7 @@ object APNSTokenPreparer {
   * @see
   *   https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html
   */
-class APNSTokenPreparer(conf: APNSTokenConf) extends RequestPreparer {
+class APNSTokenBuilder(conf: APNSTokenConf) {
   val keyFactory = KeyFactory.getInstance("EC")
   val key = keyFactory.generatePrivate(conf.privateKey).asInstanceOf[ECPrivateKey]
   val signer = new ECDSASigner(key)
@@ -45,10 +51,7 @@ class APNSTokenPreparer(conf: APNSTokenConf) extends RequestPreparer {
   private val providerToken: AtomicReference[SignedJWT] =
     new AtomicReference[SignedJWT](newProviderToken(Instant.now()))
 
-  override def prepare(request: Request.Builder): Request.Builder =
-    request.header("authorization", tokenHeader())
-
-  private def tokenHeader() = headerValue(validToken(Instant.now()))
+  def tokenHeader(now: Instant = Instant.now()) = headerValue(validToken(now))
 
   def validToken(now: Instant): SignedJWT =
     providerToken.updateAndGet { token =>

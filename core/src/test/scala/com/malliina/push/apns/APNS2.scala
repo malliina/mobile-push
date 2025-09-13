@@ -6,6 +6,7 @@ import io.circe.{Codec, Json}
 import io.circe.generic.semiauto.deriveCodec
 import io.circe.syntax.EncoderOps
 
+import java.nio.file.Paths
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import javax.net.ssl.SSLContext
@@ -29,7 +30,7 @@ class APNS2 extends BaseSuite {
       .fromFile(PushUtils.userHome.resolve(".boat/apns.conf"))
       .foreach { conf =>
         val token = APNSToken(
-          "changeme"
+          "521f9540a4d1f48e9ec07750c1e5469141f3e1a941566bdf1052ed9d753fec99"
         )
         val client = APNSTokenClient(conf, httpClient, isSandbox = false)
         val message = APNSMessage.simple("this is a token test")
@@ -117,7 +118,7 @@ class APNS2 extends BaseSuite {
 
   test("provider token refresh".ignore) {
     val conf = APNSTokenConf.default.toOption.get
-    val client = new APNSTokenPreparer(conf)
+    val client = new APNSTokenBuilder(conf)
     val now = Instant.now()
     val first = client.validToken(now)
     val second = client.validToken(now)

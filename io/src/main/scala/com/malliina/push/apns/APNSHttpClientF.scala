@@ -6,11 +6,11 @@ import com.malliina.http.HttpClient
 
 object APNSHttpClientF {
   def apply[F[_]: Monad](conf: APNSTokenConf, http: HttpClient[F], isSandbox: Boolean) =
-    new APNSHttpClientF[F](http, RequestPreparer.token(conf), isSandbox)
+    new APNSHttpClientF[F](http, isSandbox)
 }
 
-class APNSHttpClientF[F[_]: Monad](http: HttpClient[F], prep: RequestPreparer, isSandbox: Boolean)
-  extends APNSHttpClientBase[F](http, prep, isSandbox) {
+class APNSHttpClientF[F[_]: Monad](http: HttpClient[F], isSandbox: Boolean)
+  extends APNSHttpClientBase[F](http, isSandbox) {
   override def push(id: APNSToken, message: APNSRequest): F[Either[APNSError, APNSIdentifier]] =
     send(id, message).map(parseResponse)
 

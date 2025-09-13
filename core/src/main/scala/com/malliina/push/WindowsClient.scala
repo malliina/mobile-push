@@ -1,13 +1,12 @@
 package com.malliina.push
 
-import com.malliina.http.{FullUrl, HttpClient, HttpResponse, OkHttpHttpClient}
-import okhttp3.RequestBody
+import com.malliina.http.{FullUrl, HttpResponse, SimpleHttpClient}
 
 import java.io.StringWriter
 import scala.concurrent.{ExecutionContext, Future}
 import scala.xml.{Elem, XML}
 
-abstract class WindowsClient[T <: Token, M <: WindowsMessage](http: OkHttpHttpClient[Future])(
+abstract class WindowsClient[T <: Token, M <: WindowsMessage](http: SimpleHttpClient[Future])(
   implicit ec: ExecutionContext
 ) extends PushClient[T, M, HttpResponse] {
   override def pushAll(urls: Seq[T], message: M): Future[Seq[HttpResponse]] = {
@@ -30,9 +29,10 @@ abstract class WindowsClient[T <: Token, M <: WindowsMessage](http: OkHttpHttpCl
     body: String,
     headers: Map[String, String]
   ): Future[HttpResponse] =
-    http.post(
+    http.postString(
       FullUrl.build(url.token).toOption.get,
-      RequestBody.create(body, Headers.XmlMediaTypeUtf8),
+      body,
+      Headers.XmlMediaTypeUtf8.toString,
       headers
     )
 }

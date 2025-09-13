@@ -1,7 +1,6 @@
 package com.malliina.push.gcm
 
-import cats.effect.Async
-import com.malliina.http.{FullUrl, HttpClient, HttpResponse, OkHttpHttpClient}
+import com.malliina.http.{FullUrl, HttpClient, HttpResponse, SimpleHttpClient}
 import com.malliina.push.Headers._
 import com.malliina.push.gcm.GCMClient._
 import com.malliina.push.{JsonException, PushClient, PushClientF, ResponseException}
@@ -30,7 +29,7 @@ object GCMClient {
 abstract class GoogleClientBase[F[_]](
   val apiKey: String,
   val postEndpoint: FullUrl,
-  http: OkHttpHttpClient[F]
+  http: SimpleHttpClient[F]
 ) extends PushClientF[GCMToken, GCMMessage, MappedGCMResponse, F] {
 
   def send(id: GCMToken, data: Map[String, String]): F[HttpResponse] =
@@ -39,16 +38,14 @@ abstract class GoogleClientBase[F[_]](
   protected def sendLimited(ids: Seq[GCMToken], message: GCMMessage): F[HttpResponse] =
     send(message.toLetter(ids))
 
-  protected def send(message: GCMLetter): F[HttpResponse] = {
-    val res = http.postJson(postEndpoint, message.asJson, Map(Authorization -> s"key=$apiKey"))
-    http.flatMap(res)(r => http.success(r))
-  }
+  protected def send(message: GCMLetter): F[HttpResponse] =
+    http.postJson(postEndpoint, message.asJson, Map(Authorization -> s"key=$apiKey"))
 }
 
 class GoogleClient(
   apiKey: String,
   postEndpoint: FullUrl,
-  http: OkHttpHttpClient[Future]
+  http: SimpleHttpClient[Future]
 )(implicit ec: ExecutionContext)
   extends GoogleClientBase[Future](apiKey, postEndpoint, http)
   with PushClient[GCMToken, GCMMessage, MappedGCMResponse] {
