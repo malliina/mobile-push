@@ -2,16 +2,25 @@ package com.malliina.push.apns
 
 import java.nio.file.Path
 import java.security.KeyStore
-import com.malliina.http.{FullUrl, HttpResponse, OkClient, SimpleHttpClient}
+import com.malliina.http.{
+  FullUrl,
+  HttpClient,
+  HttpResponse,
+  OkClient,
+  OkHttpResponse,
+  SimpleHttpClient
+}
 import com.malliina.push.apns.APNSHttpClient._
 import com.malliina.push.{PushClientF, TLSUtils}
 
 import javax.net.ssl.SSLSocketFactory
 import okhttp3._
 import io.circe._
+import io.circe.generic.semiauto._
 import io.circe.syntax.EncoderOps
 import io.circe.parser.decode
 
+import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
@@ -53,6 +62,7 @@ object APNSHttpClient {
 
 abstract class APNSHttpClientBase[F[_]](
   http: SimpleHttpClient[F],
+  prep: TokenBuilder,
   isSandbox: Boolean
 ) extends PushClientF[APNSToken, APNSRequest, Either[APNSError, APNSIdentifier], F] {
   val host: FullUrl = if (isSandbox) DevHost else ProdHost
@@ -63,20 +73,25 @@ abstract class APNSHttpClientBase[F[_]](
     val bodyAsString = message.message.asJson.toString
     val body = RequestBody.create(bodyAsString, jsonMediaType)
     val contentLength = bodyAsString.getBytes(UTF8).length
-    http.postJson(url(id), message.message.asJson, Map(ContentLength -> s"$contentLength"))
+    val headers = makeHeaders(meta, Instant.now()) ++ Map(ContentLength -> s"$contentLength")
+    println(s"Sending $headers")
+    http.postJson(
+      url(id),
+      message.message.asJson,
+      headers
+    )
   }
 
-//  def withHeaders(meta: APNSMeta)(request: Request.Builder): Request.Builder = {
-//    val request1 = request
-//      .header(ApnsExpiration, "" + meta.apnsExpiration)
-//      .header(ApnsPriority, "" + meta.apnsPriority.priority)
-//      .header(ApnsPushType, meta.apnsPushType.name)
-//      .header(ApnsTopic, meta.apnsTopic.topic)
-//    val withDefaults = meta.apnsId.map(id => request1.header(ApnsId, id.id)).getOrElse(request1)
-//    prep.prepare(installHeaders(withDefaults))
-//  }
-
-  def installHeaders(request: Request.Builder): Request.Builder = request
+  def makeHeaders(meta: APNSMeta, now: Instant): Map[String, String] = {
+    val basic = Map(
+      ApnsExpiration -> s"${meta.apnsExpiration}",
+      ApnsPriority -> s"${meta.apnsPriority.priority}",
+      ApnsPushType -> meta.apnsPushType.name,
+      ApnsTopic -> meta.apnsTopic.topic
+    )
+    val id = meta.apnsId.map(apnsId => Map(ApnsId -> apnsId.id)).getOrElse(Map.empty)
+    basic ++ id ++ Map("authorization" -> prep.tokenHeader(now))
+  }
 
   def url(token: APNSToken): FullUrl = host / s"/3/device/${token.token}"
 
@@ -104,8 +119,8 @@ abstract class APNSHttpClientBase[F[_]](
   * @see
   *   https://github.com/square/okhttp/wiki/Building
   */
-class APNSHttpClient(val client: OkClient, isSandbox: Boolean = false)
-  extends APNSHttpClientBase[Future](client, isSandbox) {
+class APNSHttpClient(val client: OkClient, prep: TokenBuilder, isSandbox: Boolean = false)
+  extends APNSHttpClientBase[Future](client, prep, isSandbox) {
   implicit val ec: ExecutionContext = client.exec
 
   def pushOne(id: APNSToken, message: APNSRequest): Future[APNSHttpResult] =

@@ -6,7 +6,6 @@ import io.circe.{Codec, Json}
 import io.circe.generic.semiauto.deriveCodec
 import io.circe.syntax.EncoderOps
 
-import java.nio.file.Paths
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import javax.net.ssl.SSLContext
@@ -25,7 +24,7 @@ class APNS2 extends BaseSuite {
     }
   }
 
-  http.test("token-authenticated simple notification".ignore) { httpClient =>
+  http.test("token-authenticated simple notification") { httpClient =>
     APNSTokenConf
       .fromFile(PushUtils.userHome.resolve(".boat/apns.conf"))
       .foreach { conf =>
@@ -36,6 +35,7 @@ class APNS2 extends BaseSuite {
         val message = APNSMessage.simple("this is a token test")
         val request = APNSRequest.withTopic(APNSTopic("com.malliina.BoatTracker"), message)
         val result = await(client.push(token, request))
+        println(result)
         assert(result.isRight)
       }
   }

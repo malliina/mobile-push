@@ -28,7 +28,16 @@ object APNSTokenPreparer {
 class APNSTokenPreparer(conf: APNSTokenConf) extends RequestPreparer {
   private val builder = new APNSTokenBuilder(conf)
   override def prepare(request: Request.Builder): Request.Builder =
-    request.header("authorization", builder.tokenHeader())
+    request.header("authorization", builder.tokenHeader(Instant.now()))
+}
+
+trait TokenBuilder {
+  def tokenHeader(now: Instant): String
+}
+
+object TokenBuilder {
+  val noop: TokenBuilder = (now: Instant) => "unused"
+  def token(conf: APNSTokenConf): TokenBuilder = new APNSTokenBuilder(conf)
 }
 
 /** <p>For security, APNs requires you to refresh your token regularly. Refresh your token no more
@@ -42,7 +51,7 @@ class APNSTokenPreparer(conf: APNSTokenConf) extends RequestPreparer {
   * @see
   *   https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html
   */
-class APNSTokenBuilder(conf: APNSTokenConf) {
+class APNSTokenBuilder(conf: APNSTokenConf) extends TokenBuilder {
   val keyFactory = KeyFactory.getInstance("EC")
   val key = keyFactory.generatePrivate(conf.privateKey).asInstanceOf[ECPrivateKey]
   val signer = new ECDSASigner(key)
@@ -51,7 +60,7 @@ class APNSTokenBuilder(conf: APNSTokenConf) {
   private val providerToken: AtomicReference[SignedJWT] =
     new AtomicReference[SignedJWT](newProviderToken(Instant.now()))
 
-  def tokenHeader(now: Instant = Instant.now()) = headerValue(validToken(now))
+  def tokenHeader(now: Instant) = headerValue(validToken(now))
 
   def validToken(now: Instant): SignedJWT =
     providerToken.updateAndGet { token =>

@@ -24,6 +24,7 @@ object APNSCertClient {
 class APNSCertClient(socketFactory: SSLSocketFactory, isSandbox: Boolean = false)
   extends APNSHttpClient(
     OkClient.ssl(socketFactory, APNSCertClient.tm),
+    TokenBuilder.noop,
     isSandbox
   )
   with AutoCloseable {
