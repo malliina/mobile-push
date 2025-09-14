@@ -35,6 +35,7 @@ class APNS2 extends BaseSuite {
         val message = APNSMessage.simple("this is a token test")
         val request = APNSRequest.withTopic(APNSTopic("com.malliina.BoatTracker"), message)
         val result = await(client.push(token, request))
+        println(result)
         assert(result.isRight)
       }
   }
@@ -117,7 +118,7 @@ class APNS2 extends BaseSuite {
 
   test("provider token refresh".ignore) {
     val conf = APNSTokenConf.default.toOption.get
-    val client = new APNSTokenPreparer(conf)
+    val client = new APNSTokenBuilder(conf)
     val now = Instant.now()
     val first = client.validToken(now)
     val second = client.validToken(now)

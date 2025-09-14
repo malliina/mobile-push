@@ -5,9 +5,7 @@ import com.malliina.push.Headers._
 import com.malliina.push.OAuthKeys._
 import com.malliina.push._
 import com.malliina.push.wns.WNSClient._
-import okhttp3.RequestBody
 import io.circe._
-import io.circe.generic.semiauto._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
@@ -25,13 +23,13 @@ object WNSClient {
   val WnsType = "X-WNS-Type"
 
   case class PushMeta(
-    client: OkHttpHttpClient[Future],
+    client: SimpleHttpClient[Future],
     payload: String,
     headers: Map[String, String]
   )
 }
 
-class WNSClient(creds: WNSCredentials, http: OkHttpHttpClient[Future])(implicit
+class WNSClient(creds: WNSCredentials, http: SimpleHttpClient[Future])(implicit
   ec: ExecutionContext
 ) extends PushClient[WNSToken, WNSMessage, WNSResponse] {
   def push(token: WNSToken, message: WNSMessage): Future[WNSResponse] =
@@ -54,18 +52,17 @@ class WNSClient(creds: WNSCredentials, http: OkHttpHttpClient[Future])(implicit
     }
 
   def pushSingle(
-    client: OkHttpHttpClient[Future],
+    client: SimpleHttpClient[Future],
     token: WNSToken,
     body: String,
     headers: Map[String, String]
   ): Future[WNSResponse] = {
-    val requestBody = RequestBody.create(body, XmlMediaType)
     client
-      .post(FullUrl.build(token.token).toOption.get, requestBody, headers)
+      .postString(FullUrl.build(token.token).toOption.get, body, XmlMediaType, headers)
       .map(WNSResponse.fromResponse)
   }
 
-  def fetchAccessToken(client: HttpClient[Future]): Future[WNSAccessToken] = {
+  def fetchAccessToken(client: SimpleHttpClient[Future]): Future[WNSAccessToken] = {
     val parameters = Map(
       GrantType -> ClientCredentials,
       ClientId -> creds.packageSID,

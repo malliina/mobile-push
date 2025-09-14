@@ -1,6 +1,6 @@
 package com.malliina.push.adm
 
-import com.malliina.http.{FullUrl, HttpClient, HttpResponse, OkClient}
+import com.malliina.http.{FullUrl, HttpClient, HttpResponse, OkClient, SimpleHttpClient}
 import com.malliina.push.Headers._
 import com.malliina.push.OAuthKeys._
 import com.malliina.push.adm.ADMClient._
@@ -8,6 +8,7 @@ import com.malliina.push.android.AndroidMessage
 import com.malliina.push.{PushClient, PushException}
 import io.circe._
 import io.circe.syntax.EncoderOps
+
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.DurationInt
 
@@ -23,14 +24,14 @@ object ADMClient {
   def apply(
     clientID: String,
     clientSecret: String,
-    http: HttpClient[Future],
+    http: SimpleHttpClient[Future],
     ec: ExecutionContext
   ): ADMClient =
     new ADMClient(clientID, clientSecret, http)(ec)
 }
 
-class ADMClient(val clientID: String, val clientSecret: String, http: HttpClient[Future])(implicit
-  ec: ExecutionContext
+class ADMClient(val clientID: String, val clientSecret: String, http: SimpleHttpClient[Future])(
+  implicit ec: ExecutionContext
 ) extends PushClient[ADMToken, AndroidMessage, HttpResponse] {
 
   def send(id: ADMToken, data: Map[String, String]): Future[HttpResponse] =

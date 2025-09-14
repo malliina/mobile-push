@@ -7,5 +7,5 @@ object APNSTokenClient {
     apply(APNSTokenConf.default.toOption.get, OkClient.default, isSandbox = false)
 
   def apply(conf: APNSTokenConf, http: OkClient, isSandbox: Boolean): APNSHttpClient =
-    new APNSHttpClient(http, APNSTokenPreparer(conf), isSandbox)
+    new APNSHttpClient(http, TokenBuilder.token(conf), isSandbox)
 }

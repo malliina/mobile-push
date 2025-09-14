@@ -1,7 +1,5 @@
 package com.malliina.push
 
-import okhttp3.MediaType
-
 import scala.xml.Elem
 
 trait Token extends Any {
@@ -39,6 +37,6 @@ trait Headers {
   val OctetStream = "application/octet-stream"
   val TextHtml = "text/xml"
 
-  val XmlMediaType = MediaType.parse("application/xml")
-  val XmlMediaTypeUtf8 = MediaType.parse("application/xml; charset=utf-8")
+  val XmlMediaType = "application/xml"
+  val XmlMediaTypeUtf8 = "application/xml; charset=utf-8"
 }
