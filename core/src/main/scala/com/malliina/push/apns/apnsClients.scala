@@ -62,7 +62,7 @@ abstract class APNSHttpClientBase[F[_]](
     val meta = message.meta
     val bodyAsString = message.message.asJson.toString
     val contentLength = bodyAsString.getBytes(UTF8).length
-    val headers = makeHeaders(meta, Instant.now()) ++ Map(ContentLength -> s"$contentLength")
+    val headers = makeHeaders(meta, Instant.now())
     http.postString(
       url(id),
       bodyAsString,
