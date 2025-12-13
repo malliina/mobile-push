@@ -78,7 +78,9 @@ class APNS2 extends BaseSuite {
   }
 
   http.test("Update live activity".ignore) { httpClient =>
-    val token = APNSToken("changeme")
+    val token = APNSToken(
+      "changeme"
+    )
     APNSTokenConf
       .fromFile(PushUtils.userHome.resolve(".boat/apns.conf"))
       .foreach { conf =>
