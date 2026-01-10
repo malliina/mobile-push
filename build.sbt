@@ -6,7 +6,7 @@ val versions = new {
   val jetty = "12.0.16"
   val munit = "1.2.1"
   val nimbusJwt = "10.6"
-  val okClient = "6.10.3"
+  val okClient = "6.11.0"
   val scalaXml = "2.4.0"
 }
 

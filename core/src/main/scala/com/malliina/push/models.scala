@@ -1,5 +1,7 @@
 package com.malliina.push
 
+import com.malliina.values.ValidatedString
+
 import scala.xml.Elem
 
 trait Token extends Any {
@@ -7,7 +9,7 @@ trait Token extends Any {
   override def toString: String = token
 }
 
-trait TokenCompanion[T <: Token] extends SimpleCompanion[String, T] {
+trait TokenCompanion[T <: Token] extends ValidatedString[T] {
   override def write(t: T): String = t.token
 }
 

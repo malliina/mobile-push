@@ -1,9 +1,9 @@
 package com.malliina.push.apns
 
-import com.malliina.push.{SimpleCompanion, Token, TokenCompanion}
-import com.malliina.values.{ErrorMessage, StringEnumCompanion, ValidatingCompanion}
-import io.circe._
-import io.circe.generic.semiauto._
+import com.malliina.push.{Token, TokenCompanion}
+import com.malliina.values.{ErrorMessage, StringEnumCompanion, ValidatedString, ValidatingCompanion}
+import io.circe.*
+import io.circe.generic.semiauto.*
 
 import scala.util.Try
 
@@ -11,7 +11,8 @@ case class APNSTopic(topic: String) extends AnyVal {
   override def toString: String = topic
 }
 
-object APNSTopic extends SimpleCompanion[String, APNSTopic] {
+object APNSTopic extends ValidatedString[APNSTopic] {
+  i
   override def write(t: APNSTopic): String = t.topic
 
   def liveActivity(bundleId: String): APNSTopic = apply(s"$bundleId.push-type.liveactivity")
@@ -84,7 +85,11 @@ object APNSMeta {
 case class APNSToken(token: String) extends AnyVal with Token
 
 object APNSToken extends TokenCompanion[APNSToken] {
-  override def isValid(token: String): Boolean =
+  override def build(input: String): Either[ErrorMessage, APNSToken] =
+    if (isValid(input)) Right(apply(input))
+    else Left(ErrorMessage(s"Invalid input: '$input'."))
+
+  def isValid(token: String): Boolean =
     Try(decodeHex(token)).isSuccess
 
   private def decodeHex(str: String): Array[Byte] = {
