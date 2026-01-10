@@ -5,7 +5,7 @@ import com.malliina.push.Headers._
 import com.malliina.push.OAuthKeys._
 import com.malliina.push._
 import com.malliina.push.wns.WNSClient._
-import io.circe._
+import io.circe.{Codec, Decoder}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}

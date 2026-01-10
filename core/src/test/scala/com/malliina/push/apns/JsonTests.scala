@@ -1,7 +1,7 @@
 package com.malliina.push.apns
 
 import com.malliina.push.apns.APSPayload.CriticalSound
-import io.circe._
+import io.circe.{Codec, Encoder, Json}
 import io.circe.generic.semiauto.deriveCodec
 import io.circe.syntax.EncoderOps
 

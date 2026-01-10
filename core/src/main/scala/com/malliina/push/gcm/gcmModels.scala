@@ -3,8 +3,8 @@ package com.malliina.push.gcm
 import com.malliina.json.PrimitiveFormats
 import com.malliina.push.{Token, TokenCompanion}
 import com.malliina.values.ErrorMessage
-import io.circe._
-import io.circe.generic.semiauto._
+import io.circe.Codec
+import io.circe.generic.semiauto.deriveCodec
 
 import scala.concurrent.duration.Duration
 

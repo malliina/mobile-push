@@ -1,7 +1,6 @@
 package com.malliina.push.mpns
 
 import com.malliina.push.BaseSuite
-import com.malliina.push.mpns.{MPNSClient, MPNSToken, TileData, ToastMessage}
 
 class MPNSTests extends BaseSuite {
   val devices = Seq(

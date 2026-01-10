@@ -3,8 +3,8 @@ package com.malliina.push.gcm
 import com.malliina.push.gcm.GCMResultError
 import com.malliina.push.gcm.MappedGCMResponse.TokenReplacement
 
-import io.circe._
-import io.circe.generic.semiauto._
+import io.circe.Codec
+import io.circe.generic.semiauto.deriveCodec
 
 case class MappedGCMResponse(ids: Seq[GCMToken], response: GCMResponse) {
   lazy val replacements: Seq[TokenReplacement] = {

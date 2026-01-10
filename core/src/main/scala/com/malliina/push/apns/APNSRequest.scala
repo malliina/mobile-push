@@ -1,7 +1,7 @@
 package com.malliina.push.apns
 
-import io.circe._
-import io.circe.generic.semiauto._
+import io.circe.Codec
+import io.circe.generic.semiauto.deriveCodec
 
 case class APNSRequest(message: APNSMessage, meta: APNSMeta)
 

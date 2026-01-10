@@ -2,8 +2,8 @@ package com.malliina.push.wns
 
 import java.net.URL
 
-import io.circe._
-import io.circe.generic.semiauto._
+import io.circe.{Codec, Decoder, Encoder}
+import io.circe.generic.semiauto.deriveCodec
 
 import scala.util.Try
 import scala.xml.Elem

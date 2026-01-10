@@ -1,8 +1,8 @@
 package com.malliina.push.apns
 
 import com.malliina.push.json.OpenEnum
-import io.circe._
-import io.circe.generic.semiauto._
+import io.circe.Codec
+import io.circe.generic.semiauto.deriveCodec
 
 /** @see
   *   https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/APNsProviderAPI.html

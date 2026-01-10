@@ -1,7 +1,7 @@
 package com.malliina.push.mpns
 
-import io.circe._
-import io.circe.generic.semiauto._
+import io.circe.Codec
+import io.circe.generic.semiauto.deriveCodec
 
 /** The same device may open different push URLs at different points in time, however the old ones
   * still work until the channel is closed, it seems. We only accept one push URL per device

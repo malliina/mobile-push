@@ -1,7 +1,7 @@
 package com.malliina.push.wns
 
-import io.circe._
-import io.circe.generic.semiauto._
+import io.circe.Codec
+import io.circe.generic.semiauto.deriveCodec
 
 case class WNSAccessToken(access_token: String, token_type: String)
 

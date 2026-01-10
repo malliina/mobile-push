@@ -1,8 +1,8 @@
 package com.malliina.push.wns
 
 import com.malliina.push.NamedCompanion
-import io.circe._
-import io.circe.generic.semiauto._
+import io.circe.{Codec, Decoder, Encoder}
+import io.circe.generic.semiauto.deriveCodec
 import scala.util.Try
 
 sealed abstract class HintCrop(val name: String) extends Named

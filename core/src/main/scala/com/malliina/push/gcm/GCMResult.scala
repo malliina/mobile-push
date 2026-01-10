@@ -2,7 +2,7 @@ package com.malliina.push.gcm
 
 import com.malliina.push.json.OpenEnum
 import io.circe.Codec
-import io.circe.generic.semiauto._
+import io.circe.generic.semiauto.deriveCodec
 
 sealed abstract class GCMResultError(val name: String)
 

@@ -1,6 +1,6 @@
 package com.malliina.push.json
 
-import io.circe._
+import io.circe.{Codec, Decoder, Encoder}
 
 trait JsonEnum[T] {
   def all: Seq[T]

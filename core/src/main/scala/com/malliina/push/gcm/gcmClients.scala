@@ -1,11 +1,10 @@
 package com.malliina.push.gcm
 
-import com.malliina.http.{FullUrl, HttpClient, HttpResponse, SimpleHttpClient}
+import com.malliina.http.{FullUrl, HttpResponse, SimpleHttpClient}
 import com.malliina.push.Headers._
 import com.malliina.push.gcm.GCMClient._
 import com.malliina.push.{JsonException, PushClient, PushClientF, ResponseException}
-import io.circe._
-import io.circe.generic.semiauto._
+import io.circe.Codec
 import io.circe.syntax.EncoderOps
 
 import scala.concurrent.{ExecutionContext, Future}

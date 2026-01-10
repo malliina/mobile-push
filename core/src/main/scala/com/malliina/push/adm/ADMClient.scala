@@ -6,7 +6,7 @@ import com.malliina.push.OAuthKeys._
 import com.malliina.push.adm.ADMClient._
 import com.malliina.push.android.AndroidMessage
 import com.malliina.push.{PushClient, PushException}
-import io.circe._
+import io.circe.Codec
 import io.circe.syntax.EncoderOps
 
 import scala.concurrent.{ExecutionContext, Future}

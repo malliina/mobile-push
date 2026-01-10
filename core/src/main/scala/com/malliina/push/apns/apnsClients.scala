@@ -7,7 +7,7 @@ import com.malliina.push.apns.APNSHttpClient._
 import com.malliina.push.{PushClientF, TLSUtils}
 
 import javax.net.ssl.SSLSocketFactory
-import io.circe._
+import io.circe.Codec
 import io.circe.syntax.EncoderOps
 import io.circe.parser.decode
 

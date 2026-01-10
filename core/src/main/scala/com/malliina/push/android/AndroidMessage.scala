@@ -2,7 +2,7 @@ package com.malliina.push.android
 
 import com.malliina.json.PrimitiveFormats
 import io.circe.Codec
-import io.circe.generic.semiauto._
+import io.circe.generic.semiauto.deriveCodec
 
 import scala.concurrent.duration.Duration
 
