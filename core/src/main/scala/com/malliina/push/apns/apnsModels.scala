@@ -2,8 +2,8 @@ package com.malliina.push.apns
 
 import com.malliina.push.{Token, TokenCompanion}
 import com.malliina.values.{ErrorMessage, StringEnumCompanion, ValidatedString, ValidatingCompanion}
-import io.circe.*
-import io.circe.generic.semiauto.*
+import io.circe._
+import io.circe.generic.semiauto._
 
 import scala.util.Try
 
@@ -12,7 +12,10 @@ case class APNSTopic(topic: String) extends AnyVal {
 }
 
 object APNSTopic extends ValidatedString[APNSTopic] {
-  i
+  override def build(input: String): Either[ErrorMessage, APNSTopic] =
+    if (input.isBlank) Left(ErrorMessage("Topic cannot be blank."))
+    else Right(apply(input))
+
   override def write(t: APNSTopic): String = t.topic
 
   def liveActivity(bundleId: String): APNSTopic = apply(s"$bundleId.push-type.liveactivity")
@@ -56,7 +59,11 @@ case class APNSIdentifier(id: String) extends AnyVal {
   override def toString: String = id
 }
 
-object APNSIdentifier extends SimpleCompanion[String, APNSIdentifier] {
+object APNSIdentifier extends ValidatedString[APNSIdentifier] {
+  override def build(input: String): Either[ErrorMessage, APNSIdentifier] =
+    if (input.isBlank) Left(ErrorMessage("Identifier cannot be blank."))
+    else Right(apply(input))
+
   override def write(t: APNSIdentifier): String = t.id
 }
 

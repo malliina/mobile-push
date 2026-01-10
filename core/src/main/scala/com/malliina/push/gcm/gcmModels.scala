@@ -2,6 +2,7 @@ package com.malliina.push.gcm
 
 import com.malliina.json.PrimitiveFormats
 import com.malliina.push.{Token, TokenCompanion}
+import com.malliina.values.ErrorMessage
 import io.circe._
 import io.circe.generic.semiauto._
 
@@ -11,6 +12,10 @@ case class GCMToken(token: String) extends AnyVal with Token
 
 object GCMToken extends TokenCompanion[GCMToken] {
   type FCMToken = GCMToken
+
+  override def build(input: String): Either[ErrorMessage, FCMToken] =
+    if (input.isBlank) Left(ErrorMessage("GCM token must not be blank."))
+    else Right(apply(input))
 }
 
 case class GCMResponse(
