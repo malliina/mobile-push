@@ -4,9 +4,9 @@ val updateDocs = taskKey[Unit]("Updates README.md")
 
 val versions = new {
   val jetty = "12.0.16"
-  val munit = "1.2.1"
-  val nimbusJwt = "10.6"
-  val okClient = "6.11.1"
+  val munit = "1.2.3"
+  val nimbusJwt = "10.8"
+  val okClient = "6.13.0"
   val scalaXml = "2.4.0"
 }
 
@@ -14,7 +14,7 @@ inThisBuild(
   Seq(
     organization := "com.malliina",
     scalaVersion := "3.3.1",
-    crossScalaVersions := Seq(scalaVersion.value, "2.13.16"),
+    crossScalaVersions := Seq(scalaVersion.value, "2.13.18"),
     releaseCrossBuild := true
   )
 )
