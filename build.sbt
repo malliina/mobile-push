@@ -3,10 +3,10 @@ import scala.sys.process.Process
 val updateDocs = taskKey[Unit]("Updates README.md")
 
 val versions = new {
-  val jetty = "12.0.16"
-  val munit = "1.2.3"
-  val nimbusJwt = "10.8"
-  val okClient = "6.13.0"
+  val jetty = "12.1.8"
+  val munit = "1.3.0"
+  val nimbusJwt = "10.9"
+  val okClient = "6.14.3"
   val scalaXml = "2.4.0"
 }
 
