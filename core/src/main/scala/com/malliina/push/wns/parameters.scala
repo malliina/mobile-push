@@ -99,7 +99,7 @@ object BadgeValue:
     Attention
   )
 
-  implicit val json: Codec[BadgeValue] = Codec.from(
+  given json: Codec[BadgeValue] = Codec.from(
     Decoder.decodeString.emap(fromName) or Decoder.decodeInt.map(i => Number(i)),
     Encoder.encodeString.contramap(b => b.name)
   )

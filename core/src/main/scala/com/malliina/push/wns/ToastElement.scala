@@ -30,6 +30,6 @@ case class ToastElement(
     )
 
 object ToastElement:
-  implicit val json: Codec[ToastElement] = deriveCodec[ToastElement]
+  given json: Codec[ToastElement] = deriveCodec[ToastElement]
 
   def text(text: String) = ToastElement(ToastVisual.text(text))

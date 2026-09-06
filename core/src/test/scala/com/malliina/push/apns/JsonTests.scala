@@ -63,4 +63,4 @@ class JsonTests extends munit.FunSuite:
 case class MyData(age: Int, name: String)
 
 object MyData:
-  implicit val format: Codec[MyData] = deriveCodec[MyData]
+  given format: Codec[MyData] = deriveCodec[MyData]

@@ -40,7 +40,7 @@ case class APSPayload(
 )
 
 object APSPayload:
-  implicit val timestampCodec: Codec[Instant] = Codec.from(
+  given timestampCodec: Codec[Instant] = Codec.from(
     Decoder.decodeLong.emapTry(l => Try(Instant.ofEpochSecond(l))),
     Encoder.encodeLong.contramap(_.getEpochSecond)
   )
@@ -66,7 +66,7 @@ object APSPayload:
   case class CriticalSound(critical: Int, name: String, volume: Int)
 
   object CriticalSound:
-    implicit val json: Codec[CriticalSound] = deriveCodec[CriticalSound]
+    given json: Codec[CriticalSound] = deriveCodec[CriticalSound]
 
   sealed abstract class APSEvent(val name: String)
   object APSEvent:
@@ -75,16 +75,16 @@ object APSPayload:
     case object End extends APSEvent("end")
     case class Other(n: String) extends APSEvent(n)
 
-    implicit val json: Codec[APSEvent] = Codec.from(
+    given json: Codec[APSEvent] = Codec.from(
       Decoder.decodeString.map(s => Seq(Start, Update, End).find(_.name == s).getOrElse(Other(s))),
       Encoder.encodeString.contramap(_.name)
     )
 
-  implicit val af: Codec[Either[String, AlertPayload]] = Codec.from(
+  given af: Codec[Either[String, AlertPayload]] = Codec.from(
     eitherDecoder[String, AlertPayload],
     eitherEncoder[String, AlertPayload]
   )
-  implicit val payloadEncoder: Encoder[APSPayload] = (p: APSPayload) =>
+  given payloadEncoder: Encoder[APSPayload] = (p: APSPayload) =>
     val alertJson = p.alert.fold(Json.obj(ContentAvailable -> Json.fromInt(1))): e =>
       Json.obj(Alert -> e.asJson)
     alertJson.deepMerge(
@@ -105,7 +105,7 @@ object APSPayload:
         .deepMerge(objectify(AttributesType, p.attributesType))
     )
 
-  implicit val json: Codec[APSPayload] = Codec.from(
+  given json: Codec[APSPayload] = Codec.from(
     deriveDecoder[APSPayload],
     payloadEncoder
   )

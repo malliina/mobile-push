@@ -9,7 +9,7 @@ trait JsonEnum[T]:
     all.find(i => resolveName(i).toLowerCase == name.toLowerCase)
   def allNames = all.map(resolveName).mkString(", ")
 
-  implicit val json: Codec[T] = Codec.from(
+  given json: Codec[T] = Codec.from(
     Decoder.decodeString.emap(s =>
       withName(s).toRight(s"Unknown name: $s. Must be one of: $allNames.")
     ),
@@ -24,7 +24,7 @@ trait OpenEnum[T]:
   def default(name: String): T
   def allNames = all.map(resolveName).mkString(", ")
 
-  implicit val json: Codec[T] = Codec.from(
+  given json: Codec[T] = Codec.from(
     Decoder.decodeString.map(s => withName(s)),
     Encoder.encodeString.contramap(t => resolveName(t))
   )

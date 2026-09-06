@@ -15,4 +15,4 @@ case class Actions(inputs: Seq[Input] = Nil, actions: Seq[ActionElement] = Nil) 
     </actions>
 
 object Actions:
-  implicit val json: Codec[Actions] = deriveCodec[Actions]
+  given json: Codec[Actions] = deriveCodec[Actions]

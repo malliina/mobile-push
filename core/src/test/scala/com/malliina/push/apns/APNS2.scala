@@ -44,7 +44,7 @@ class APNS2 extends BaseSuite:
   )
 
   object LiveActivityState:
-    implicit val json: Codec[LiveActivityState] = deriveCodec[LiveActivityState]
+    given json: Codec[LiveActivityState] = deriveCodec[LiveActivityState]
 
   http.test("Start live activity".ignore): httpClient =>
     val token = APNSToken(

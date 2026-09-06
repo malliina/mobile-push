@@ -26,7 +26,7 @@ case class GCMResponse(
 )
 
 object GCMResponse:
-  implicit val json: Codec[GCMResponse] = deriveCodec[GCMResponse]
+  given json: Codec[GCMResponse] = deriveCodec[GCMResponse]
 
 case class GCMNotification(
   title: Option[String],
@@ -44,7 +44,7 @@ case class GCMNotification(
 )
 
 object GCMNotification:
-  implicit val json: Codec[GCMNotification] = deriveCodec[GCMNotification]
+  given json: Codec[GCMNotification] = deriveCodec[GCMNotification]
 
 case class GCMLetter(
   registration_ids: Seq[GCMToken],
@@ -58,8 +58,8 @@ case class GCMLetter(
 )
 
 object GCMLetter:
-  implicit val durationJson: Codec[Duration] = PrimitiveFormats.durationCodec
-  implicit val json: Codec[GCMLetter] = deriveCodec[GCMLetter]
+  given durationJson: Codec[Duration] = PrimitiveFormats.durationCodec
+  given json: Codec[GCMLetter] = deriveCodec[GCMLetter]
 
 case class GCMMessage(
   data: Map[String, String],
@@ -83,7 +83,7 @@ case class GCMMessage(
     )
 
 object GCMMessage:
-  implicit val durationFormat: Codec[Duration] = PrimitiveFormats.durationCodec
-  implicit val json: Codec[GCMMessage] = deriveCodec[GCMMessage]
+  given durationFormat: Codec[Duration] = PrimitiveFormats.durationCodec
+  given json: Codec[GCMMessage] = deriveCodec[GCMMessage]
 
   type FCMMessage = GCMMessage

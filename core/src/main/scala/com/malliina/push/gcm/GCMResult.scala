@@ -46,4 +46,4 @@ case class GCMResult(
 )
 
 object GCMResult:
-  implicit val json: Codec[GCMResult] = deriveCodec[GCMResult]
+  given json: Codec[GCMResult] = deriveCodec[GCMResult]

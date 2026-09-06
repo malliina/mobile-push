@@ -130,4 +130,4 @@ case object UnknownReason extends APNSError("UnknownReason", "An unknown error o
 case class APNSErrorJson(reason: APNSError)
 
 object APNSErrorJson:
-  implicit val json: Codec[APNSErrorJson] = deriveCodec[APNSErrorJson]
+  given json: Codec[APNSErrorJson] = deriveCodec[APNSErrorJson]

@@ -14,5 +14,5 @@ case class AccessToken(
 )
 
 object AccessToken:
-  implicit val dc: Codec[Duration] = PrimitiveFormats.durationCodec
-  implicit val json: Codec[AccessToken] = deriveCodec[AccessToken]
+  given dc: Codec[Duration] = PrimitiveFormats.durationCodec
+  given json: Codec[AccessToken] = deriveCodec[AccessToken]

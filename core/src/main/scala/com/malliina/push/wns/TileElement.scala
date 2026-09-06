@@ -15,4 +15,4 @@ case class TileElement(visual: TileVisual) extends XmlNotification:
     </tile>
 
 object TileElement:
-  implicit val json: Codec[TileElement] = deriveCodec[TileElement]
+  given json: Codec[TileElement] = deriveCodec[TileElement]

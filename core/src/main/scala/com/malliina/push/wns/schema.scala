@@ -14,7 +14,7 @@ case class Badge(value: BadgeValue = BadgeValue.None) extends XmlNotification:
   )
 
 object Badge:
-  implicit val json: Codec[Badge] = deriveCodec[Badge]
+  given json: Codec[Badge] = deriveCodec[Badge]
 
 /** @param payload
   *   base64-encoded
@@ -23,7 +23,7 @@ case class Raw(payload: String) extends WNSNotification:
   override def notificationType: NotificationType = NotificationType.Raw
 
 object Raw:
-  implicit val json: Codec[Raw] = deriveCodec[Raw]
+  given json: Codec[Raw] = deriveCodec[Raw]
 
 case class Command(arguments: Option[String], id: Option[CommandId]) extends Xmlable:
   override def xml: Elem =
@@ -33,7 +33,7 @@ case class Command(arguments: Option[String], id: Option[CommandId]) extends Xml
     )
 
 object Command:
-  implicit val json: Codec[Command] = deriveCodec[Command]
+  given json: Codec[Command] = deriveCodec[Command]
 
 case class Commands(commands: Seq[Command]) extends Xmlable:
   override def xml: Elem = <commands>
@@ -41,7 +41,7 @@ case class Commands(commands: Seq[Command]) extends Xmlable:
   </commands>
 
 object Commands:
-  implicit val json: Codec[Commands] = deriveCodec[Commands]
+  given json: Codec[Commands] = deriveCodec[Commands]
 
 case class ActionElement(
   content: String,
@@ -59,7 +59,7 @@ case class ActionElement(
   )
 
 object ActionElement:
-  implicit val json: Codec[ActionElement] = deriveCodec[ActionElement]
+  given json: Codec[ActionElement] = deriveCodec[ActionElement]
 
 case class Selection(id: String, content: String) extends Xmlable:
   override def xml: Elem = <selection/>.withAttributes(
@@ -68,7 +68,7 @@ case class Selection(id: String, content: String) extends Xmlable:
   )
 
 object Selection:
-  implicit val json: Codec[Selection] = deriveCodec[Selection]
+  given json: Codec[Selection] = deriveCodec[Selection]
 
 case class Input(
   id: String,
@@ -90,7 +90,7 @@ case class Input(
     )
 
 object Input:
-  implicit val json: Codec[Input] = deriveCodec[Input]
+  given json: Codec[Input] = deriveCodec[Input]
 
 case class ToastVisual(
   bindings: Seq[ToastBinding],
@@ -103,8 +103,8 @@ case class ToastVisual(
 ) extends Visual[ToastTemplate]
 
 object ToastVisual:
-  implicit val url: Codec[URL] = Binding.urlFormat
-  implicit val json: Codec[ToastVisual] = deriveCodec[ToastVisual]
+  given url: Codec[URL] = Binding.urlFormat
+  given json: Codec[ToastVisual] = deriveCodec[ToastVisual]
 
   def text(text: String) = ToastVisual(Seq(ToastBinding.text(text)))
 
@@ -119,8 +119,8 @@ case class TileVisual(
 ) extends Visual[TileTemplate]
 
 object TileVisual:
-  implicit val url: Codec[URL] = Binding.urlFormat
-  implicit val json: Codec[TileVisual] = deriveCodec[TileVisual]
+  given url: Codec[URL] = Binding.urlFormat
+  given json: Codec[TileVisual] = deriveCodec[TileVisual]
 
 trait Visual[T <: Template] extends Xmlable:
   def bindings: Seq[Binding[T]]
@@ -165,7 +165,7 @@ case class Image(
   )
 
 object Image:
-  implicit val json: Codec[Image] = deriveCodec[Image]
+  given json: Codec[Image] = deriveCodec[Image]
 
 case class WnsText(
   text: String,
@@ -189,7 +189,7 @@ case class WnsText(
     )
 
 object WnsText:
-  implicit val json: Codec[WnsText] = deriveCodec[WnsText]
+  given json: Codec[WnsText] = deriveCodec[WnsText]
 
 case class Audio(src: Option[String] = None, silent: Boolean = false, loop: Boolean = false)
   extends Xmlable:
@@ -201,7 +201,7 @@ case class Audio(src: Option[String] = None, silent: Boolean = false, loop: Bool
   )
 
 object Audio:
-  implicit val json: Codec[Audio] = deriveCodec[Audio]
+  given json: Codec[Audio] = deriveCodec[Audio]
   val Default = Audio()
   val Mute = Audio(silent = true)
 
@@ -223,7 +223,7 @@ case class SubGroup(
     )
 
 object SubGroup:
-  implicit val json: Codec[SubGroup] = deriveCodec[SubGroup]
+  given json: Codec[SubGroup] = deriveCodec[SubGroup]
 
 case class Group(subGroups: Seq[SubGroup]) extends Xmlable:
   override def xml: Elem =
@@ -232,7 +232,7 @@ case class Group(subGroups: Seq[SubGroup]) extends Xmlable:
     </group>
 
 object Group:
-  implicit val json: Codec[Group] = deriveCodec[Group]
+  given json: Codec[Group] = deriveCodec[Group]
 
 trait Xmlable extends XmlOps:
   def xml: Elem

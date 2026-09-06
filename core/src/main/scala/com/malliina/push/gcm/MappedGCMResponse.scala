@@ -25,6 +25,6 @@ case class MappedGCMResponse(ids: Seq[GCMToken], response: GCMResponse):
     else Nil
 
 object MappedGCMResponse:
-  implicit val json: Codec[MappedGCMResponse] = deriveCodec[MappedGCMResponse]
+  given json: Codec[MappedGCMResponse] = deriveCodec[MappedGCMResponse]
 
   case class TokenReplacement(oldToken: GCMToken, newToken: GCMToken)

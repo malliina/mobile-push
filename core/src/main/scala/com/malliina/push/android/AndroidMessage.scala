@@ -9,5 +9,5 @@ import scala.concurrent.duration.Duration
 case class AndroidMessage(data: Map[String, String], expiresAfter: Duration)
 
 object AndroidMessage:
-  implicit val duration: Codec[Duration] = PrimitiveFormats.durationCodec
-  implicit val json: Codec[AndroidMessage] = deriveCodec[AndroidMessage]
+  given duration: Codec[Duration] = PrimitiveFormats.durationCodec
+  given json: Codec[AndroidMessage] = deriveCodec[AndroidMessage]

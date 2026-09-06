@@ -59,7 +59,7 @@ object AlertPayload:
   )
   val rawDecoder: Decoder[AlertPayloadJson] = deriveDecoder[AlertPayloadJson]
   val rawEncoder: Encoder[AlertPayloadJson] = deriveEncoder[AlertPayloadJson]
-  implicit val json: Codec[AlertPayload] = Codec.from(
+  given json: Codec[AlertPayload] = Codec.from(
     rawDecoder.map(raw => raw.toPayload),
     rawEncoder.contramap(AlertPayload.to)
   )

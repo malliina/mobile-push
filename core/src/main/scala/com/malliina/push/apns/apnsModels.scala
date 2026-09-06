@@ -22,7 +22,7 @@ object APNSTopic extends ValidatedString[APNSTopic]:
 case class APNSHttpResult(token: APNSToken, id: Option[APNSIdentifier], error: Option[APNSError])
 
 object APNSHttpResult:
-  implicit val json: Codec[APNSHttpResult] = deriveCodec[APNSHttpResult]
+  given json: Codec[APNSHttpResult] = deriveCodec[APNSHttpResult]
 
 abstract sealed class APNSPriority(val priority: Int)
 
@@ -67,7 +67,7 @@ case class APNSMeta(
 )
 
 object APNSMeta:
-  implicit val json: Codec[APNSMeta] = deriveCodec[APNSMeta]
+  given json: Codec[APNSMeta] = deriveCodec[APNSMeta]
 
   def withTopic(
     topic: APNSTopic,

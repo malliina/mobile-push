@@ -101,7 +101,7 @@ abstract class APNSHttpClientBase[F[_]](
   */
 class APNSHttpClient(val client: OkClient, prep: TokenBuilder, isSandbox: Boolean = false)
   extends APNSHttpClientBase[Future](client, prep, isSandbox):
-  implicit val ec: ExecutionContext = client.exec
+  given ec: ExecutionContext = client.exec
 
   def pushOne(id: APNSToken, message: APNSRequest): Future[APNSHttpResult] =
     push(id, message).map(r => fold(r, id))
