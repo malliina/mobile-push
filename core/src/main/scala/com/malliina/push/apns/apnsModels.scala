@@ -7,65 +7,56 @@ import io.circe.generic.semiauto.deriveCodec
 
 import scala.util.Try
 
-case class APNSTopic(topic: String) extends AnyVal {
+case class APNSTopic(topic: String) extends AnyVal:
   override def toString: String = topic
-}
 
-object APNSTopic extends ValidatedString[APNSTopic] {
+object APNSTopic extends ValidatedString[APNSTopic]:
   override def build(input: String): Either[ErrorMessage, APNSTopic] =
-    if (input.isBlank) Left(ErrorMessage("Topic cannot be blank."))
+    if input.isBlank then Left(ErrorMessage("Topic cannot be blank."))
     else Right(apply(input))
 
   override def write(t: APNSTopic): String = t.topic
 
   def liveActivity(bundleId: String): APNSTopic = apply(s"$bundleId.push-type.liveactivity")
-}
 
 case class APNSHttpResult(token: APNSToken, id: Option[APNSIdentifier], error: Option[APNSError])
 
-object APNSHttpResult {
+object APNSHttpResult:
   implicit val json: Codec[APNSHttpResult] = deriveCodec[APNSHttpResult]
-}
 
 abstract sealed class APNSPriority(val priority: Int)
 
-object APNSPriority extends ValidatingCompanion[Int, APNSPriority] {
-  override def build(input: Int): Either[ErrorMessage, APNSPriority] = input match {
+object APNSPriority extends ValidatingCompanion[Int, APNSPriority]:
+  override def build(input: Int): Either[ErrorMessage, APNSPriority] = input match
     case APNSImmediately.priority => Right(APNSImmediately)
     case APNSConsiderate.priority => Right(APNSConsiderate)
     case _                        => Left(ErrorMessage(s"Invalid input: '$input'."))
-  }
 
   override def write(t: APNSPriority): Int = t.priority
-}
 
 case object APNSImmediately extends APNSPriority(10)
 case object APNSConsiderate extends APNSPriority(5)
 
-abstract sealed class APNSPushType(val name: String) {
+abstract sealed class APNSPushType(val name: String):
   override def toString: String = name
-}
 
-object APNSPushType extends StringEnumCompanion[APNSPushType] {
+object APNSPushType extends StringEnumCompanion[APNSPushType]:
   override def all: Seq[APNSPushType] = Seq(Alert, Background)
   override def write(t: APNSPushType): String = t.name
-}
 
 case object Alert extends APNSPushType("alert")
 case object Background extends APNSPushType("background")
 case object LiveActivity extends APNSPushType("liveactivity")
 
-case class APNSIdentifier(id: String) extends AnyVal {
+case class APNSIdentifier(id: String) extends AnyVal:
   override def toString: String = id
-}
 
-object APNSIdentifier extends ValidatedString[APNSIdentifier] {
+object APNSIdentifier extends ValidatedString[APNSIdentifier]:
   override def build(input: String): Either[ErrorMessage, APNSIdentifier] =
-    if (input.isBlank) Left(ErrorMessage("Identifier cannot be blank."))
+    if input.isBlank then Left(ErrorMessage("Identifier cannot be blank."))
     else Right(apply(input))
 
   override def write(t: APNSIdentifier): String = t.id
-}
 
 case class APNSMeta(
   apnsTopic: APNSTopic,
@@ -75,7 +66,7 @@ case class APNSMeta(
   apnsId: Option[APNSIdentifier]
 )
 
-object APNSMeta {
+object APNSMeta:
   implicit val json: Codec[APNSMeta] = deriveCodec[APNSMeta]
 
   def withTopic(
@@ -87,21 +78,18 @@ object APNSMeta {
 
   def liveActivity(topic: APNSTopic, priority: APNSPriority = APNSImmediately): APNSMeta =
     APNSMeta(topic, 0, priority, LiveActivity, None)
-}
 
 case class APNSToken(token: String) extends AnyVal with Token
 
-object APNSToken extends TokenCompanion[APNSToken] {
+object APNSToken extends TokenCompanion[APNSToken]:
   override def build(input: String): Either[ErrorMessage, APNSToken] =
-    if (isValid(input)) Right(apply(input))
+    if isValid(input) then Right(apply(input))
     else Left(ErrorMessage(s"Invalid input: '$input'."))
 
   def isValid(token: String): Boolean =
     Try(decodeHex(token)).isSuccess
 
-  private def decodeHex(str: String): Array[Byte] = {
+  private def decodeHex(str: String): Array[Byte] =
     str.sliding(2, 2).toArray.map(h => Integer.parseInt(h, 16).toByte)
-  }
-}
 
 case class InactiveDevice(deviceHexID: String, asOf: Long)

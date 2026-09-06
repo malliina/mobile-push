@@ -6,7 +6,7 @@ import io.circe.generic.semiauto.deriveCodec
 
 sealed abstract class GCMResultError(val name: String)
 
-object GCMResultError extends OpenEnum[GCMResultError] {
+object GCMResultError extends OpenEnum[GCMResultError]:
   override val all: Seq[GCMResultError] = Seq(
     MissingRegistration,
     InvalidRegistration,
@@ -38,7 +38,6 @@ object GCMResultError extends OpenEnum[GCMResultError] {
   override def resolveName(item: GCMResultError): String = item.name
 
   override def default(name: String): GCMResultError = UnknownError(name)
-}
 
 case class GCMResult(
   message_id: Option[String],
@@ -46,6 +45,5 @@ case class GCMResult(
   error: Option[GCMResultError]
 )
 
-object GCMResult {
+object GCMResult:
   implicit val json: Codec[GCMResult] = deriveCodec[GCMResult]
-}

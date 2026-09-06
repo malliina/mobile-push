@@ -3,7 +3,7 @@ package com.malliina.push.apns
 import java.nio.file.Path
 import java.security.KeyStore
 import com.malliina.http.{FullUrl, HttpHeaders, HttpResponse, OkClient, SimpleHttpClient}
-import com.malliina.push.apns.APNSHttpClient._
+import com.malliina.push.apns.APNSHttpClient.*
 import com.malliina.push.{PushClientF, TLSUtils}
 
 import javax.net.ssl.SSLSocketFactory
@@ -15,7 +15,7 @@ import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
-object APNSHttpClient {
+object APNSHttpClient:
   val DevHost: FullUrl = FullUrl.https("api.sandbox.push.apple.com", "")
   val ProdHost: FullUrl = FullUrl.https("api.push.apple.com", "")
 
@@ -49,16 +49,15 @@ object APNSHttpClient {
       err => APNSHttpResult(token, None, Option(err)),
       id => APNSHttpResult(token, Option(id), None)
     )
-}
 
 abstract class APNSHttpClientBase[F[_]](
   http: SimpleHttpClient[F],
   prep: TokenBuilder,
   isSandbox: Boolean
-) extends PushClientF[APNSToken, APNSRequest, Either[APNSError, APNSIdentifier], F] {
-  val host: FullUrl = if (isSandbox) DevHost else ProdHost
+) extends PushClientF[APNSToken, APNSRequest, Either[APNSError, APNSIdentifier], F]:
+  val host: FullUrl = if isSandbox then DevHost else ProdHost
 
-  def send(id: APNSToken, message: APNSRequest): F[HttpResponse] = {
+  def send(id: APNSToken, message: APNSRequest): F[HttpResponse] =
     val meta = message.meta
     val bodyAsString = message.message.asJson.toString
     val contentLength = bodyAsString.getBytes(UTF8).length
@@ -69,9 +68,8 @@ abstract class APNSHttpClientBase[F[_]](
       HttpHeaders.application.json,
       headers
     )
-  }
 
-  def makeHeaders(meta: APNSMeta, now: Instant): Map[String, String] = {
+  def makeHeaders(meta: APNSMeta, now: Instant): Map[String, String] =
     val basic = Map(
       ApnsExpiration -> s"${meta.apnsExpiration}",
       ApnsPriority -> s"${meta.apnsPriority.priority}",
@@ -80,21 +78,17 @@ abstract class APNSHttpClientBase[F[_]](
     )
     val id = meta.apnsId.map(apnsId => Map(ApnsId -> apnsId.id)).getOrElse(Map.empty)
     basic ++ id ++ Map("authorization" -> prep.tokenHeader(now))
-  }
 
   def url(token: APNSToken): FullUrl = host / s"/3/device/${token.token}"
 
-  def parseResponse(response: HttpResponse): Either[APNSError, APNSIdentifier] = {
-    if (response.code == 200) {
+  def parseResponse(response: HttpResponse): Either[APNSError, APNSIdentifier] =
+    if response.code == 200 then
       val apnsId = response.headers.get(ApnsId).flatMap(_.headOption).map(APNSIdentifier.apply)
       apnsId.map(Right.apply).getOrElse(Left(UnknownReason))
-    } else {
+    else
       val json = decode[APNSErrorJson](response.asString)
       val maybeReason = json.map(_.reason)
       Left(maybeReason getOrElse UnknownReason)
-    }
-  }
-}
 
 /** APNs client, using the HTTP/2 notification API.
   *
@@ -106,7 +100,7 @@ abstract class APNSHttpClientBase[F[_]](
   *   https://github.com/square/okhttp/wiki/Building
   */
 class APNSHttpClient(val client: OkClient, prep: TokenBuilder, isSandbox: Boolean = false)
-  extends APNSHttpClientBase[Future](client, prep, isSandbox) {
+  extends APNSHttpClientBase[Future](client, prep, isSandbox):
   implicit val ec: ExecutionContext = client.exec
 
   def pushOne(id: APNSToken, message: APNSRequest): Future[APNSHttpResult] =
@@ -123,4 +117,3 @@ class APNSHttpClient(val client: OkClient, prep: TokenBuilder, isSandbox: Boolea
     message: APNSRequest
   ): Future[Seq[Either[APNSError, APNSIdentifier]]] =
     Future.traverse(ids)(push(_, message))
-}

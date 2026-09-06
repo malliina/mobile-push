@@ -4,7 +4,7 @@ import scala.xml.{Elem, NodeSeq}
 
 /** Do not automatically format this file.
   */
-object MPNSPayloads {
+object MPNSPayloads:
   def toast(message: ToastMessage): Elem =
     toast(message.text1, message.text2, message.deepLink, message.silent)
 
@@ -16,8 +16,8 @@ object MPNSPayloads {
     *   The page to go to in app. For example: /page1.xaml?value1=1234&amp;value2=9876
     * @return
     */
-  def toast(text1: String, text2: String, deepLink: String, silent: Boolean): Elem = {
-    val silenceElement = if (silent) <wp:Sound Silent="true"/> else NodeSeq.Empty
+  def toast(text1: String, text2: String, deepLink: String, silent: Boolean): Elem =
+    val silenceElement = if silent then <wp:Sound Silent="true"/> else NodeSeq.Empty
     // payloads must be on same line of xml, do not let formatting mess it up
     <wp:Notification xmlns:wp="WPNotification">
       <wp:Toast>
@@ -27,9 +27,8 @@ object MPNSPayloads {
         {silenceElement}
       </wp:Toast>
     </wp:Notification>
-  }
 
-  def tile(tile: TileData): Elem = {
+  def tile(tile: TileData): Elem =
     <wp:Notification xmlns:wp="WPNotification">
       <wp:Tile>
         <wp:BackgroundImage>{tile.backgroundImage}</wp:BackgroundImage>
@@ -40,9 +39,8 @@ object MPNSPayloads {
         <wp:BackContent>{tile.backContent}</wp:BackContent>
       </wp:Tile>
     </wp:Notification>
-  }
 
-  def flip(flip: FlipData): Elem = {
+  def flip(flip: FlipData): Elem =
     <wp:Notification xmlns:wp="WPNotification" Version="2.0">
       <wp:Tile Template="FlipTile">
         <wp:SmallBackgroundImage>{flip.smallBackgroundImage}</wp:SmallBackgroundImage>
@@ -57,9 +55,8 @@ object MPNSPayloads {
         <wp:BackContent>{flip.tile.backContent}</wp:BackContent>
       </wp:Tile>
     </wp:Notification>
-  }
 
-  def iconic(iconic: IconicData): Elem = {
+  def iconic(iconic: IconicData): Elem =
     <wp:Notification xmlns:wp="WPNotification" Version="2.0">
       <wp:Tile Template="IconicTile">
         <wp:SmallIconImage>{iconic.smallIconImage}</wp:SmallIconImage>
@@ -72,9 +69,8 @@ object MPNSPayloads {
         <wp:BackgroundColor>{iconic.backgroundColor}</wp:BackgroundColor>
       </wp:Tile>
     </wp:Notification>
-  }
 
-  def cycle(tile: CycleTile): Elem = {
+  def cycle(tile: CycleTile): Elem =
     <wp:Notification xmlns:wp="WPNotification" Version="2.0">
       <wp:Tile Template="CycleTile">
         <wp:SmallBackgroundImage>{tile.smallBackgroundImage}</wp:SmallBackgroundImage>
@@ -89,5 +85,3 @@ object MPNSPayloads {
         <wp:CycleImage9>{tile.cycleImage9}</wp:CycleImage9>
       </wp:Tile>
     </wp:Notification>
-  }
-}

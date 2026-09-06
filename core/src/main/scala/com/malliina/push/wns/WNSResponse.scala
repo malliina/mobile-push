@@ -7,17 +7,16 @@ import com.malliina.http.HttpResponse
   * @see
   *   https://msdn.microsoft.com/library/windows/apps/hh465435.aspx#WNSResponseCodes
   */
-sealed abstract class WNSResponse(val reason: String, val description: String) {
+sealed abstract class WNSResponse(val reason: String, val description: String):
   def response: HttpResponse
 
   def statusCode: Int = response.code
 
   def isSuccess = statusCode == 200
-}
 
-object WNSResponse {
-  def fromResponse(response: HttpResponse): WNSResponse = {
-    response.code match {
+object WNSResponse:
+  def fromResponse(response: HttpResponse): WNSResponse =
+    response.code match
       case 200                   => WNSSuccess(response)
       case 400                   => IncorrectHeaders(response)
       case 401                   => InvalidAuthentication(response)
@@ -30,8 +29,6 @@ object WNSResponse {
       case 500                   => DeliveryError(response)
       case 503                   => ServiceUnavailable(response)
       case other if other >= 400 => UnknownError(response)
-    }
-  }
 
   case class WNSSuccess(response: HttpResponse) extends WNSResponse("Success", "Received")
 
@@ -85,5 +82,3 @@ object WNSResponse {
 
   case class UnknownError(response: HttpResponse)
     extends WNSResponse("UnknownError", s"Unrecognized status code: ${response.code}")
-
-}

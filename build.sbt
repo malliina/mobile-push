@@ -2,20 +2,10 @@ import scala.sys.process.Process
 
 val updateDocs = taskKey[Unit]("Updates README.md")
 
-val versions = new {
-  val jetty = "12.1.8"
-  val munit = "1.3.0"
-  val nimbusJwt = "10.9"
-  val okClient = "6.14.3"
-  val scalaXml = "2.4.0"
-}
-
 inThisBuild(
   Seq(
     organization := "com.malliina",
-    scalaVersion := "3.3.1",
-    crossScalaVersions := Seq(scalaVersion.value, "2.13.18"),
-    releaseCrossBuild := true
+    scalaVersion := "3.9.0"
   )
 )
 
@@ -81,7 +71,7 @@ val mobilePushRoot = project
     publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo"))),
     publish / skip := true,
     publishArtifact := false,
-    packagedArtifacts := Map.empty,
+    packagedArtifacts := Def.uncached(Map.empty),
     publish := {},
     publishLocal := {},
     releaseProcess := tagReleaseProcess.value,

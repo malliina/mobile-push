@@ -10,7 +10,7 @@ import io.circe.generic.semiauto.deriveCodec
   */
 sealed abstract class APNSError(val reason: String, val description: String)
 
-object APNSError extends OpenEnum[APNSError] {
+object APNSError extends OpenEnum[APNSError]:
   val ReasonKey = "reason"
   override val all: Seq[APNSError] = Seq(
     PayloadEmpty,
@@ -46,7 +46,6 @@ object APNSError extends OpenEnum[APNSError] {
   override def default(name: String): APNSError = OtherReason(name)
 
   override def resolveName(item: APNSError): String = item.reason
-}
 
 case object PayloadEmpty extends APNSError("PayloadEmpty", "The message payload was empty.")
 case object PayloadTooLarge
@@ -130,6 +129,5 @@ case object UnknownReason extends APNSError("UnknownReason", "An unknown error o
 
 case class APNSErrorJson(reason: APNSError)
 
-object APNSErrorJson {
+object APNSErrorJson:
   implicit val json: Codec[APNSErrorJson] = deriveCodec[APNSErrorJson]
-}

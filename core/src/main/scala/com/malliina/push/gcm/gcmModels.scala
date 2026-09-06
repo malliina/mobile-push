@@ -10,13 +10,12 @@ import scala.concurrent.duration.Duration
 
 case class GCMToken(token: String) extends AnyVal with Token
 
-object GCMToken extends TokenCompanion[GCMToken] {
+object GCMToken extends TokenCompanion[GCMToken]:
   type FCMToken = GCMToken
 
   override def build(input: String): Either[ErrorMessage, FCMToken] =
-    if (input.isBlank) Left(ErrorMessage("GCM token must not be blank."))
+    if input.isBlank then Left(ErrorMessage("GCM token must not be blank."))
     else Right(apply(input))
-}
 
 case class GCMResponse(
   multicast_id: Long,
@@ -26,9 +25,8 @@ case class GCMResponse(
   results: Seq[GCMResult]
 )
 
-object GCMResponse {
+object GCMResponse:
   implicit val json: Codec[GCMResponse] = deriveCodec[GCMResponse]
-}
 
 case class GCMNotification(
   title: Option[String],
@@ -45,9 +43,8 @@ case class GCMNotification(
   color: Option[String]
 )
 
-object GCMNotification {
+object GCMNotification:
   implicit val json: Codec[GCMNotification] = deriveCodec[GCMNotification]
-}
 
 case class GCMLetter(
   registration_ids: Seq[GCMToken],
@@ -60,10 +57,9 @@ case class GCMLetter(
   dry_run: Option[Boolean] = None
 )
 
-object GCMLetter {
+object GCMLetter:
   implicit val durationJson: Codec[Duration] = PrimitiveFormats.durationCodec
   implicit val json: Codec[GCMLetter] = deriveCodec[GCMLetter]
-}
 
 case class GCMMessage(
   data: Map[String, String],
@@ -73,7 +69,7 @@ case class GCMMessage(
   delayWhileIdle: Option[Boolean] = None,
   restrictedPackageName: Option[String] = None,
   dryRun: Option[Boolean] = None
-) {
+):
   def toLetter(ids: Seq[GCMToken]) =
     GCMLetter(
       ids,
@@ -85,11 +81,9 @@ case class GCMMessage(
       restrictedPackageName,
       dryRun
     )
-}
 
-object GCMMessage {
+object GCMMessage:
   implicit val durationFormat: Codec[Duration] = PrimitiveFormats.durationCodec
   implicit val json: Codec[GCMMessage] = deriveCodec[GCMMessage]
 
   type FCMMessage = GCMMessage
-}

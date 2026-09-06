@@ -1,9 +1,9 @@
 package com.malliina.push.adm
 
 import com.malliina.http.{FullUrl, HttpClient, HttpResponse, OkClient, SimpleHttpClient}
-import com.malliina.push.Headers._
-import com.malliina.push.OAuthKeys._
-import com.malliina.push.adm.ADMClient._
+import com.malliina.push.Headers.*
+import com.malliina.push.OAuthKeys.*
+import com.malliina.push.adm.ADMClient.*
 import com.malliina.push.android.AndroidMessage
 import com.malliina.push.{PushClient, PushException}
 import io.circe.Codec
@@ -12,7 +12,7 @@ import io.circe.syntax.EncoderOps
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.DurationInt
 
-object ADMClient {
+object ADMClient:
   val MessagingPush = "messaging:push"
   val AccessToken = "access_token"
 
@@ -27,19 +27,18 @@ object ADMClient {
     http: SimpleHttpClient[Future],
     ec: ExecutionContext
   ): ADMClient =
-    new ADMClient(clientID, clientSecret, http)(ec)
-}
+    new ADMClient(clientID, clientSecret, http)(using ec)
 
 class ADMClient(val clientID: String, val clientSecret: String, http: SimpleHttpClient[Future])(
   implicit ec: ExecutionContext
-) extends PushClient[ADMToken, AndroidMessage, HttpResponse] {
+) extends PushClient[ADMToken, AndroidMessage, HttpResponse]:
 
   def send(id: ADMToken, data: Map[String, String]): Future[HttpResponse] =
     push(id, AndroidMessage(data, expiresAfter = 60.seconds))
 
-  def push(id: ADMToken, message: AndroidMessage): Future[HttpResponse] = {
+  def push(id: ADMToken, message: AndroidMessage): Future[HttpResponse] =
     val body = message.asJson
-    token(clientID, clientSecret).flatMap { t =>
+    token(clientID, clientSecret).flatMap: t =>
       val headers = Map(
         Authorization -> s"Bearer $t",
         AmazonTypeVersion -> AmazonTypeVersionValue,
@@ -51,8 +50,6 @@ class ADMClient(val clientID: String, val clientSecret: String, http: SimpleHttp
         body,
         headers
       )
-    }
-  }
 
   override def pushAll(ids: Seq[ADMToken], message: AndroidMessage): Future[Seq[HttpResponse]] =
     Future.traverse(ids)(id => push(id, message))
@@ -63,7 +60,7 @@ class ADMClient(val clientID: String, val clientSecret: String, http: SimpleHttp
   def accessToken: Future[AccessToken] = accessToken(clientID, clientSecret)
 
   def accessToken(clientID: String, clientSecret: String): Future[AccessToken] =
-    tokenRequest(clientID, clientSecret).flatMap { response =>
+    tokenRequest(clientID, clientSecret).flatMap: response =>
       response
         .parse[AccessToken]
         .fold(
@@ -71,9 +68,8 @@ class ADMClient(val clientID: String, val clientSecret: String, http: SimpleHttp
             Future.failed[AccessToken](new PushException(s"Invalid JSON in ADM response: $errors")),
           valid => Future.successful(valid)
         )
-    }
 
-  private def tokenRequest(clientID: String, clientSecret: String): Future[HttpResponse] = {
+  private def tokenRequest(clientID: String, clientSecret: String): Future[HttpResponse] =
     val parameters = Map(
       GrantType -> ClientCredentials,
       Scope -> MessagingPush,
@@ -81,5 +77,3 @@ class ADMClient(val clientID: String, val clientSecret: String, http: SimpleHttp
       ClientSecret -> clientSecret
     )
     http.postForm(FullUrl.https("api.amazon.com", "/auth/O2/token"), parameters)
-  }
-}

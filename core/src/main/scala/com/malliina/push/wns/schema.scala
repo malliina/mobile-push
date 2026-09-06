@@ -7,49 +7,41 @@ import io.circe.generic.semiauto.deriveCodec
 
 import scala.xml.{Attribute, Elem, Text}
 
-case class Badge(value: BadgeValue = BadgeValue.None) extends XmlNotification {
+case class Badge(value: BadgeValue = BadgeValue.None) extends XmlNotification:
   override def notificationType: NotificationType = NotificationType.Badge
   override def xml: Elem = <badge/>.withAttributes(
     "value" -> Option(value.name)
   )
-}
 
-object Badge {
+object Badge:
   implicit val json: Codec[Badge] = deriveCodec[Badge]
-}
 
 /** @param payload
   *   base64-encoded
   */
-case class Raw(payload: String) extends WNSNotification {
+case class Raw(payload: String) extends WNSNotification:
   override def notificationType: NotificationType = NotificationType.Raw
-}
 
-object Raw {
+object Raw:
   implicit val json: Codec[Raw] = deriveCodec[Raw]
-}
 
-case class Command(arguments: Option[String], id: Option[CommandId]) extends Xmlable {
+case class Command(arguments: Option[String], id: Option[CommandId]) extends Xmlable:
   override def xml: Elem =
     <command/>.withAttributes(
       "arguments" -> arguments,
       "id" -> id
     )
-}
 
-object Command {
+object Command:
   implicit val json: Codec[Command] = deriveCodec[Command]
-}
 
-case class Commands(commands: Seq[Command]) extends Xmlable {
+case class Commands(commands: Seq[Command]) extends Xmlable:
   override def xml: Elem = <commands>
     {commands.map(_.xml)}
   </commands>
-}
 
-object Commands {
+object Commands:
   implicit val json: Codec[Commands] = deriveCodec[Commands]
-}
 
 case class ActionElement(
   content: String,
@@ -57,7 +49,7 @@ case class ActionElement(
   activationType: ActivationType,
   imageUri: Option[String] = None,
   hintInputId: Option[String] = None
-) extends Xmlable {
+) extends Xmlable:
   override def xml: Elem = <action/>.withAttributes(
     "content" -> Option(content),
     "arguments" -> Option(arguments),
@@ -65,22 +57,18 @@ case class ActionElement(
     "imageUri" -> imageUri,
     "hint-inputId" -> hintInputId
   )
-}
 
-object ActionElement {
+object ActionElement:
   implicit val json: Codec[ActionElement] = deriveCodec[ActionElement]
-}
 
-case class Selection(id: String, content: String) extends Xmlable {
+case class Selection(id: String, content: String) extends Xmlable:
   override def xml: Elem = <selection/>.withAttributes(
     "id" -> Option(id),
     "content" -> Option(content)
   )
-}
 
-object Selection {
+object Selection:
   implicit val json: Codec[Selection] = deriveCodec[Selection]
-}
 
 case class Input(
   id: String,
@@ -89,7 +77,7 @@ case class Input(
   defaultInput: Option[String] = None,
   title: Option[String] = None,
   placeHolderContent: Option[String] = None
-) extends Xmlable {
+) extends Xmlable:
   override def xml: Elem =
     <input>
       {selection.map(_.xml)}
@@ -100,11 +88,9 @@ case class Input(
       "placeHolderContent" -> placeHolderContent,
       "defaultInput" -> defaultInput
     )
-}
 
-object Input {
+object Input:
   implicit val json: Codec[Input] = deriveCodec[Input]
-}
 
 case class ToastVisual(
   bindings: Seq[ToastBinding],
@@ -116,12 +102,11 @@ case class ToastVisual(
   displayName: Option[String] = None
 ) extends Visual[ToastTemplate]
 
-object ToastVisual {
+object ToastVisual:
   implicit val url: Codec[URL] = Binding.urlFormat
   implicit val json: Codec[ToastVisual] = deriveCodec[ToastVisual]
 
   def text(text: String) = ToastVisual(Seq(ToastBinding.text(text)))
-}
 
 case class TileVisual(
   bindings: Seq[TileBinding],
@@ -133,12 +118,11 @@ case class TileVisual(
   displayName: Option[String] = None
 ) extends Visual[TileTemplate]
 
-object TileVisual {
+object TileVisual:
   implicit val url: Codec[URL] = Binding.urlFormat
   implicit val json: Codec[TileVisual] = deriveCodec[TileVisual]
-}
 
-trait Visual[T <: Template] extends Xmlable {
+trait Visual[T <: Template] extends Xmlable:
   def bindings: Seq[Binding[T]]
   def lang: Option[String]
   def baseUri: Option[URL]
@@ -158,7 +142,6 @@ trait Visual[T <: Template] extends Xmlable {
       "contentId" -> contentId,
       "displayName" -> displayName
     )
-}
 
 case class Image(
   src: String,
@@ -169,7 +152,7 @@ case class Image(
   hintRemoveMargin: Option[Boolean] = None,
   hintAlign: Option[HintAlign] = None,
   hintOverlay: Option[Int] = None
-) extends Xmlable {
+) extends Xmlable:
   override def xml: Elem = <image/>.withAttributes(
     "src" -> Option(src),
     "placement" -> placement,
@@ -180,11 +163,9 @@ case class Image(
     "hint-align" -> hintAlign,
     "hint-overlay" -> hintOverlay
   )
-}
 
-object Image {
+object Image:
   implicit val json: Codec[Image] = deriveCodec[Image]
-}
 
 case class WnsText(
   text: String,
@@ -194,7 +175,7 @@ case class WnsText(
   hintMaxLines: Option[Int] = None,
   hintMinLines: Option[Int] = None,
   hintAlign: Option[HintAlign] = None
-) extends Xmlable {
+) extends Xmlable:
   def xml: Elem =
     <text>
       {text}
@@ -206,36 +187,32 @@ case class WnsText(
       "hint-minLines" -> hintMinLines,
       "hint-align" -> hintAlign
     )
-}
 
-object WnsText {
+object WnsText:
   implicit val json: Codec[WnsText] = deriveCodec[WnsText]
-}
 
 case class Audio(src: Option[String] = None, silent: Boolean = false, loop: Boolean = false)
-  extends Xmlable {
+  extends Xmlable:
 
   def xml: Elem = <audio/>.withAttributes(
     "src" -> src,
     "silent" -> Option(silent),
     "loop" -> Option(loop)
   )
-}
 
-object Audio {
+object Audio:
   implicit val json: Codec[Audio] = deriveCodec[Audio]
   val Default = Audio()
   val Mute = Audio(silent = true)
 
   def once(source: String) = Audio(src = Option(source))
-}
 
 case class SubGroup(
   hintWeight: Option[Int],
   hintTextStacking: Option[TextStacking],
   texts: Seq[WnsText],
   images: Seq[Image]
-) extends Xmlable {
+) extends Xmlable:
   override def xml: Elem =
     <subgroup>
       {texts.map(_.xml)}
@@ -244,33 +221,27 @@ case class SubGroup(
       "hint-weight" -> hintWeight,
       "hint-textStacking" -> hintTextStacking
     )
-}
 
-object SubGroup {
+object SubGroup:
   implicit val json: Codec[SubGroup] = deriveCodec[SubGroup]
-}
 
-case class Group(subGroups: Seq[SubGroup]) extends Xmlable {
+case class Group(subGroups: Seq[SubGroup]) extends Xmlable:
   override def xml: Elem =
     <group>
       {subGroups.map(_.xml)}
     </group>
-}
 
-object Group {
+object Group:
   implicit val json: Codec[Group] = deriveCodec[Group]
-}
 
-trait Xmlable extends XmlOps {
+trait Xmlable extends XmlOps:
   def xml: Elem
-}
 
-trait XmlOps {
+trait XmlOps:
 
-  implicit class ElemOps(e: Elem) {
+  implicit class ElemOps(e: Elem):
     def withAttributes(kvs: (String, Option[Any])*) =
       addMap(e, filterAndStringify(kvs.toMap))
-  }
 
   def filterAndStringify[K, V](m: Map[K, Option[V]]): Map[K, String] =
     filterOption(m) map { case (key, value) =>
@@ -289,4 +260,3 @@ trait XmlOps {
 
   def add(xml: Elem, key: String, value: String): Elem =
     xml % Attribute(None, key, Text(value), scala.xml.Null)
-}

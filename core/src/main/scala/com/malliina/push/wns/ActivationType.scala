@@ -4,7 +4,7 @@ import com.malliina.push.NamedCompanion
 
 sealed abstract class ActivationType(val name: String) extends Named
 
-object ActivationType extends NamedCompanion[ActivationType] {
+object ActivationType extends NamedCompanion[ActivationType]:
   override val all: Seq[ActivationType] =
     Seq(Foreground, Background, Protocol, System)
 
@@ -14,4 +14,3 @@ object ActivationType extends NamedCompanion[ActivationType] {
   case object System extends ActivationType("system")
 
   val Default = Foreground
-}

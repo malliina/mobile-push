@@ -6,7 +6,7 @@ import com.malliina.push.{Headers, WindowsClient, WindowsMessage}
 import scala.concurrent.{ExecutionContext, Future}
 
 class MPNSClient(http: SimpleHttpClient[Future], ec: ExecutionContext)
-  extends WindowsClient[MPNSToken, WindowsMessage](http)(ec) {
+  extends WindowsClient[MPNSToken, WindowsMessage](http)(using ec):
 
   /** Might throw [[NullPointerException]] if `url` is bogus, but how do you solidly validate a URL
     * in Java? I don't know.
@@ -19,9 +19,8 @@ class MPNSClient(http: SimpleHttpClient[Future], ec: ExecutionContext)
     */
   override def push(url: MPNSToken, message: WindowsMessage): Future[HttpResponse] =
     send(url, message.xml, message.headers)
-}
 
-object MPNSClient {
+object MPNSClient:
   def isTokenValid(token: String): Boolean = MPNSToken.isValid(token)
 
   //  val MessageID = "X-MessageID"
@@ -51,4 +50,3 @@ object MPNSClient {
   val tileHeaders = headers(Tile, TileImmediate)
 
   val rawHeaders = baseHeaders(RawImmediate)
-}

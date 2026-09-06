@@ -39,7 +39,7 @@ case class APSPayload(
   attributesType: Option[String] = None
 )
 
-object APSPayload {
+object APSPayload:
   implicit val timestampCodec: Codec[Instant] = Codec.from(
     Decoder.decodeLong.emapTry(l => Try(Instant.ofEpochSecond(l))),
     Encoder.encodeLong.contramap(_.getEpochSecond)
@@ -65,12 +65,11 @@ object APSPayload {
 
   case class CriticalSound(critical: Int, name: String, volume: Int)
 
-  object CriticalSound {
+  object CriticalSound:
     implicit val json: Codec[CriticalSound] = deriveCodec[CriticalSound]
-  }
 
   sealed abstract class APSEvent(val name: String)
-  object APSEvent {
+  object APSEvent:
     case object Start extends APSEvent("start")
     case object Update extends APSEvent("update")
     case object End extends APSEvent("end")
@@ -80,16 +79,14 @@ object APSPayload {
       Decoder.decodeString.map(s => Seq(Start, Update, End).find(_.name == s).getOrElse(Other(s))),
       Encoder.encodeString.contramap(_.name)
     )
-  }
 
   implicit val af: Codec[Either[String, AlertPayload]] = Codec.from(
     eitherDecoder[String, AlertPayload],
     eitherEncoder[String, AlertPayload]
   )
-  implicit val payloadEncoder: Encoder[APSPayload] = (p: APSPayload) => {
-    val alertJson = p.alert.fold(Json.obj(ContentAvailable -> Json.fromInt(1))) { e =>
+  implicit val payloadEncoder: Encoder[APSPayload] = (p: APSPayload) =>
+    val alertJson = p.alert.fold(Json.obj(ContentAvailable -> Json.fromInt(1))): e =>
       Json.obj(Alert -> e.asJson)
-    }
     alertJson.deepMerge(
       objectify(Badge, p.badge)
         .deepMerge(objectify(Sound, p.sound))
@@ -107,7 +104,6 @@ object APSPayload {
         .deepMerge(objectify(Attributes, p.attributes))
         .deepMerge(objectify(AttributesType, p.attributesType))
     )
-  }
 
   implicit val json: Codec[APSPayload] = Codec.from(
     deriveDecoder[APSPayload],
@@ -187,15 +183,13 @@ object APSPayload {
       event = Option(event)
     )
 
-  implicit def eitherDecoder[A, B](implicit a: Decoder[A], b: Decoder[B]): Decoder[Either[A, B]] = {
+  implicit def eitherDecoder[A, B](implicit a: Decoder[A], b: Decoder[B]): Decoder[Either[A, B]] =
     val left: Decoder[Either[A, B]] = a.map(Left.apply)
     val right: Decoder[Either[A, B]] = b.map(Right.apply)
     left or right
-  }
 
   implicit def eitherEncoder[A: Encoder, B: Encoder]: Encoder[Either[A, B]] =
     (o: Either[A, B]) => o.fold(_.asJson, _.asJson)
 
   private def objectify[T: Encoder](key: String, opt: Option[T]): Json =
     opt.fold(Json.obj())(v => Json.obj(key -> v.asJson))
-}

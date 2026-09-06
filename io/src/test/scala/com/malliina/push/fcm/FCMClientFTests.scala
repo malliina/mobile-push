@@ -5,12 +5,12 @@ import com.malliina.http.io.HttpClientIO
 import com.malliina.push.BaseSuite
 import com.malliina.push.gcm.{GCMMessage, GCMToken}
 
-class FCMClientFTests extends BaseSuite {
+class FCMClientFTests extends BaseSuite:
   val httpIo = FunFixture[HttpClientIO](
     opts => HttpClientIO(),
     teardown = _.close()
   )
-  httpIo.test("FCM send".ignore) { httpClient =>
+  httpIo.test("FCM send".ignore): httpClient =>
     val boatToken = GCMToken("changeme")
     val fcmApiKey: String = "changeme"
     val client = FCMClientF(fcmApiKey, httpClient)
@@ -19,5 +19,3 @@ class FCMClientFTests extends BaseSuite {
     )
     val res = client.push(boatToken, message).unsafeRunSync()
     println(res)
-  }
-}

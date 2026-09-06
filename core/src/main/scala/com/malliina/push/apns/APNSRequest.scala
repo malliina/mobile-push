@@ -5,13 +5,12 @@ import io.circe.generic.semiauto.deriveCodec
 
 case class APNSRequest(message: APNSMessage, meta: APNSMeta)
 
-object APNSRequest {
+object APNSRequest:
   implicit val json: Codec[APNSRequest] = deriveCodec[APNSRequest]
 
-  def withTopic(topic: APNSTopic, message: APNSMessage): APNSRequest = {
+  def withTopic(topic: APNSTopic, message: APNSMessage): APNSRequest =
     val isBackground = message.aps.alert.isEmpty
-    APNSRequest(message, APNSMeta.withTopic(topic, if (isBackground) Background else Alert))
-  }
+    APNSRequest(message, APNSMeta.withTopic(topic, if isBackground then Background else Alert))
 
   def liveActivity(
     bundle: APNSTopic,
@@ -19,4 +18,3 @@ object APNSRequest {
     priority: APNSPriority = APNSImmediately
   ) =
     APNSRequest(message, APNSMeta.liveActivity(APNSTopic.liveActivity(bundle.topic), priority))
-}

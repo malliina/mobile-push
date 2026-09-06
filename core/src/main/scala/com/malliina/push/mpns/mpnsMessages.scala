@@ -4,16 +4,14 @@ import com.malliina.push.WindowsMessage
 
 import scala.xml.Elem
 
-trait TileMessage extends WindowsMessage {
+trait TileMessage extends WindowsMessage:
   override def headers: Map[String, String] = MPNSClient.tileHeaders
-}
 
 case class ToastMessage(text1: String, text2: String, deepLink: String, silent: Boolean)
-  extends WindowsMessage {
+  extends WindowsMessage:
   override def xml: Elem = MPNSPayloads.toast(this)
 
   override def headers: Map[String, String] = MPNSClient.toastHeaders
-}
 
 case class TileData(
   backgroundImage: String,
@@ -22,9 +20,8 @@ case class TileData(
   backBackgroundImage: String,
   backTitle: String,
   backContent: String
-) extends TileMessage {
+) extends TileMessage:
   override def xml: Elem = MPNSPayloads.tile(this)
-}
 
 case class FlipData(
   smallBackgroundImage: String,
@@ -32,9 +29,8 @@ case class FlipData(
   wideBackBackgroundImage: String,
   wideBackContent: String,
   tile: TileData
-) extends TileMessage {
+) extends TileMessage:
   override def xml: Elem = MPNSPayloads.flip(this)
-}
 
 case class IconicData(
   smallIconImage: String,
@@ -45,9 +41,8 @@ case class IconicData(
   count: Int,
   title: String,
   backgroundColor: String
-) extends TileMessage {
+) extends TileMessage:
   override def xml: Elem = MPNSPayloads.iconic(this)
-}
 
 case class CycleTile(
   smallBackgroundImage: String,
@@ -62,6 +57,5 @@ case class CycleTile(
   cycleImage9: String,
   count: Int,
   title: String
-) extends TileMessage {
+) extends TileMessage:
   override def xml: Elem = MPNSPayloads.cycle(this)
-}

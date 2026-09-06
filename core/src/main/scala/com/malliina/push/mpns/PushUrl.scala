@@ -17,6 +17,5 @@ import io.circe.generic.semiauto.deriveCodec
   */
 case class PushUrl(url: MPNSToken, silent: Boolean, tag: String)
 
-object PushUrl {
+object PushUrl:
   implicit val json: Codec[PushUrl] = deriveCodec[PushUrl]
-}

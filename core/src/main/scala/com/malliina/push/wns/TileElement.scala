@@ -5,7 +5,7 @@ import io.circe.generic.semiauto.deriveCodec
 
 import scala.xml.Elem
 
-case class TileElement(visual: TileVisual) extends XmlNotification {
+case class TileElement(visual: TileVisual) extends XmlNotification:
 
   override def notificationType: NotificationType = NotificationType.Tile
 
@@ -13,8 +13,6 @@ case class TileElement(visual: TileVisual) extends XmlNotification {
     <tile>
       {visual.xml}
     </tile>
-}
 
-object TileElement {
+object TileElement:
   implicit val json: Codec[TileElement] = deriveCodec[TileElement]
-}

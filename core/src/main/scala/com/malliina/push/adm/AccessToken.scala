@@ -13,7 +13,6 @@ case class AccessToken(
   token_type: String
 )
 
-object AccessToken {
+object AccessToken:
   implicit val dc: Codec[Duration] = PrimitiveFormats.durationCodec
   implicit val json: Codec[AccessToken] = deriveCodec[AccessToken]
-}

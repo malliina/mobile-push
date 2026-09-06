@@ -12,8 +12,8 @@ case class ToastElement(
   activationType: Option[ActivationType] = None,
   scenario: Option[Scenario] = None,
   audio: Option[Audio] = None
-) extends XmlNotification {
-  val actionsXml = if (actions.isEmpty) NodeSeq.Empty else actions.xml
+) extends XmlNotification:
+  val actionsXml = if actions.isEmpty then NodeSeq.Empty else actions.xml
   val audioXml = audio.map(_.xml) getOrElse NodeSeq.Empty
 
   override def notificationType: NotificationType = NotificationType.Toast
@@ -28,10 +28,8 @@ case class ToastElement(
       "activationType" -> activationType,
       "scenario" -> scenario
     )
-}
 
-object ToastElement {
+object ToastElement:
   implicit val json: Codec[ToastElement] = deriveCodec[ToastElement]
 
   def text(text: String) = ToastElement(ToastVisual.text(text))
-}

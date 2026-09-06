@@ -5,8 +5,7 @@ import com.malliina.values.ErrorMessage
 
 case class ADMToken(token: String) extends AnyVal with Token
 
-object ADMToken extends TokenCompanion[ADMToken] {
+object ADMToken extends TokenCompanion[ADMToken]:
   override def build(input: String): Either[ErrorMessage, ADMToken] =
-    if (input.isBlank) Left(ErrorMessage("Token cannot be blank."))
+    if input.isBlank then Left(ErrorMessage("Token cannot be blank."))
     else Right(apply(input))
-}

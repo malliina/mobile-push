@@ -12,33 +12,27 @@ import java.time.temporal.ChronoUnit
 import java.util.Date
 import java.util.concurrent.atomic.AtomicReference
 
-trait RequestPreparer {
+trait RequestPreparer:
   def prepare(request: Request.Builder): Request.Builder
-}
 
-object RequestPreparer {
+object RequestPreparer:
   def noop: RequestPreparer = (request: Request.Builder) => request
   def token(conf: APNSTokenConf): RequestPreparer = APNSTokenPreparer(conf)
-}
 
-object APNSTokenPreparer {
+object APNSTokenPreparer:
   def apply(conf: APNSTokenConf): APNSTokenPreparer = new APNSTokenPreparer(conf)
-}
 
-class APNSTokenPreparer(conf: APNSTokenConf) extends RequestPreparer {
+class APNSTokenPreparer(conf: APNSTokenConf) extends RequestPreparer:
   private val builder = new APNSTokenBuilder(conf)
   override def prepare(request: Request.Builder): Request.Builder =
     request.header("authorization", builder.tokenHeader(Instant.now()))
-}
 
-trait TokenBuilder {
+trait TokenBuilder:
   def tokenHeader(now: Instant): String
-}
 
-object TokenBuilder {
+object TokenBuilder:
   val noop: TokenBuilder = (now: Instant) => "unused"
   def token(conf: APNSTokenConf): TokenBuilder = new APNSTokenBuilder(conf)
-}
 
 /** <p>For security, APNs requires you to refresh your token regularly. Refresh your token no more
   * than once every 20 minutes and no less than once every 60 minutes. APNs rejects any request
@@ -51,7 +45,7 @@ object TokenBuilder {
   * @see
   *   https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html
   */
-class APNSTokenBuilder(conf: APNSTokenConf) extends TokenBuilder {
+class APNSTokenBuilder(conf: APNSTokenConf) extends TokenBuilder:
   val keyFactory = KeyFactory.getInstance("EC")
   val key = keyFactory.generatePrivate(conf.privateKey).asInstanceOf[ECPrivateKey]
   val signer = new ECDSASigner(key)
@@ -63,13 +57,12 @@ class APNSTokenBuilder(conf: APNSTokenConf) extends TokenBuilder {
   def tokenHeader(now: Instant) = headerValue(validToken(now))
 
   def validToken(now: Instant): SignedJWT =
-    providerToken.updateAndGet { token =>
+    providerToken.updateAndGet: token =>
       // Regenerates the provider token if it's more than 40 minutes old, as per Apple's guidelines
       val notBefore = Date.from(now.minus(40, ChronoUnit.MINUTES))
-      if (token.getJWTClaimsSet.getIssueTime.before(notBefore)) newProviderToken(now) else token
-    }
+      if token.getJWTClaimsSet.getIssueTime.before(notBefore) then newProviderToken(now) else token
 
-  private def newProviderToken(now: Instant): SignedJWT = {
+  private def newProviderToken(now: Instant): SignedJWT =
     val issuedAt = Date.from(Instant.ofEpochSecond(now.getEpochSecond))
     val claimsSet = new JWTClaimsSet.Builder()
       .issuer(conf.teamId.team)
@@ -78,10 +71,7 @@ class APNSTokenBuilder(conf: APNSTokenConf) extends TokenBuilder {
     val signable = new SignedJWT(jwtHeader, claimsSet)
     signable.sign(signer)
     signable
-  }
 
-  private def headerValue(signed: SignedJWT) = {
+  private def headerValue(signed: SignedJWT) =
     val serialized = signed.serialize()
     s"bearer $serialized"
-  }
-}

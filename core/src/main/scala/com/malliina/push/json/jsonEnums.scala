@@ -2,7 +2,7 @@ package com.malliina.push.json
 
 import io.circe.{Codec, Decoder, Encoder}
 
-trait JsonEnum[T] {
+trait JsonEnum[T]:
   def all: Seq[T]
   def resolveName(item: T): String
   def withName(name: String): Option[T] =
@@ -15,9 +15,8 @@ trait JsonEnum[T] {
     ),
     Encoder.encodeString.contramap(t => resolveName(t))
   )
-}
 
-trait OpenEnum[T] {
+trait OpenEnum[T]:
   def all: Seq[T]
   def resolveName(item: T): String
   def withName(name: String): T =
@@ -29,4 +28,3 @@ trait OpenEnum[T] {
     Decoder.decodeString.map(s => withName(s)),
     Encoder.encodeString.contramap(t => resolveName(t))
   )
-}

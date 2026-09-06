@@ -5,7 +5,7 @@ import com.malliina.push.gcm.{GCMResponse, GCMResult, GCMResultError, GCMToken, 
 import io.circe.Json
 import io.circe.parser.parse
 
-class GCMJsonTests extends munit.FunSuite {
+class GCMJsonTests extends munit.FunSuite:
   test("GCM responses") {
     val exampleResponse =
       """{ "multicast_id": 216,
@@ -43,4 +43,3 @@ class GCMJsonTests extends munit.FunSuite {
     assert(mapped.replacements == Seq(TokenReplacement(GCMToken("5"), GCMToken("32"))))
     assert(mapped.uninstalled == Seq(GCMToken("6")))
   }
-}

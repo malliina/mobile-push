@@ -22,10 +22,9 @@ case class TileBinding(
   hintOverlay: Option[Int] = None
 ) extends Binding[TileTemplate]
 
-object TileBinding {
+object TileBinding:
   implicit val url: Codec[URL] = Binding.urlFormat
   implicit val json: Codec[TileBinding] = deriveCodec[TileBinding]
-}
 
 case class ToastBinding(
   template: ToastTemplate,
@@ -41,15 +40,14 @@ case class ToastBinding(
   hintOverlay: Option[Int] = None
 ) extends Binding[ToastTemplate]
 
-object ToastBinding {
+object ToastBinding:
   implicit val url: Codec[URL] = Binding.urlFormat
   implicit val json: Codec[ToastBinding] = deriveCodec[ToastBinding]
 
   def text(text: String): ToastBinding =
     ToastBinding(ToastTemplate.ToastGeneric, Seq(WnsText(text)))
-}
 
-trait Binding[T <: Template] extends Xmlable {
+trait Binding[T <: Template] extends Xmlable:
   def template: T
   def texts: Seq[WnsText]
   def images: Seq[Image]
@@ -77,9 +75,8 @@ trait Binding[T <: Template] extends Xmlable {
       "displayName" -> displayName,
       "hint-overlay" -> hintOverlay
     )
-}
 
-object Binding {
+object Binding:
   implicit val urlFormat: Codec[URL] = Codec.from(
     Decoder.decodeString.emap[URL](s => parseUrl(s)),
     Encoder.encodeString.contramap[URL](url => url.toString)
@@ -88,4 +85,3 @@ object Binding {
 
   def parseUrl(url: String) =
     Try(new URL(url)).toOption.toRight(s"Invalid URL: $url")
-}

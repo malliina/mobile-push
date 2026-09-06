@@ -1,61 +1,52 @@
 package com.malliina.push.wns
 
-import com.malliina.push.wns._
+import com.malliina.push.wns.*
 import com.malliina.push.{BaseSuite, ConfHelper, PushUtils}
 import com.malliina.values.ErrorMessage
 
-class WNSTests extends BaseSuite {
+class WNSTests extends BaseSuite:
   lazy val maybeCreds = WNSConfReader.loadOpt
 
-  test("wns regex accepts valid input") {
+  test("wns regex accepts valid input"):
     val validInput =
       "https://db3.notify.windows.com/?token=AgUAAADCQmTg7OMlCg%2fK0K8rBPcBqHuy%2b1rTSNPMuIzF6BtvpRdT7DM4j%2fs%2bNNm8z5l1QKZMtyjByKW5uXqb9V7hIAeA3i8FoKR%2f49ZnGgyUkAhzix%2fuSuasL3jalk7562F4Bpw%3d"
     assert(WNSToken.isValid(validInput))
-  }
 
-  test("wns regex discards invalid input") {
+  test("wns regex discards invalid input"):
     val invalidInput = "https://www.google.com/hey"
     assert(!WNSToken.isValid(invalidInput))
-  }
 
-  test("can read credentials".ignore) {
+  test("can read credentials".ignore):
     assert(maybeCreds.isDefined)
-  }
 
-  http.test("can fetch token".ignore) { httpClient =>
+  http.test("can fetch token".ignore): httpClient =>
     val token = maybeCreds map { creds =>
-      val client = new WNSClient(creds, httpClient)(munitExecutionContext)
+      val client = new WNSClient(creds, httpClient)(using munitExecutionContext)
       await(client.fetchAccessToken(httpClient))
     }
     assert(token.forall(_.access_token.nonEmpty))
-  }
 
-  http.test("send".ignore) { httpClient =>
+  http.test("send".ignore): httpClient =>
     val token = WNSToken
-      .build(
+      .unsafe(
         "https://db5.notify.windows.com/?token=AwYAAABq7aWoYUJUr%2fM%2bRcWZacCYWN3cutxpadhmsejNg7aOJQselRS9AEE3ubPwZlLBcjYmYNzHFezNQoPyrViQRtPlvpxMXNREJHPVCmBDMG7wZWhRb1sxDCatCYsiafv0a6I%3d"
       )
-      .toOption
-      .get
     val payload = ToastElement.text("Hello, world!")
     val message = WNSMessage(payload)
     maybeCreds foreach { creds =>
-      val client = new WNSClient(creds, httpClient)(munitExecutionContext)
+      val client = new WNSClient(creds, httpClient)(using munitExecutionContext)
       val response = await(client.push(token, message))
       assert(response.isSuccess)
     }
-  }
-}
 
-object WNSConfReader extends ConfHelper[WNSCredentials] {
+object WNSConfReader extends ConfHelper[WNSCredentials]:
   val file = PushUtils.userHome.resolve("keys/wns.key")
 
   def loadOpt = fromFile(file).toOption
 
   override def parse(
     readKey: String => Either[ErrorMessage, String]
-  ): Either[ErrorMessage, WNSCredentials] = for {
+  ): Either[ErrorMessage, WNSCredentials] = for
     sid <- readKey("sid")
     secret <- readKey("clientSecret")
-  } yield WNSCredentials(sid, secret)
-}
+  yield WNSCredentials(sid, secret)

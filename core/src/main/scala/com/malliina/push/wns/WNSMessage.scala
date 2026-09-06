@@ -9,7 +9,7 @@ case class WNSMessage(
   cache: Option[Boolean] = None,
   ttl: Option[Duration] = None,
   tag: Option[String] = None
-) {
+):
 
   def payload: String = notification.payload
 
@@ -18,7 +18,7 @@ case class WNSMessage(
       Map(WnsType -> notification.notificationType.name)
 
   private def cacheHeaders =
-    mappify(CachePolicy, cache.map(c => if (c) "cache" else "no-cache"))
+    mappify(CachePolicy, cache.map(c => if c then "cache" else "no-cache"))
 
   private def ttlHeaders =
     mappify(Ttl, ttl.map(_.toSeconds.toString))
@@ -28,4 +28,3 @@ case class WNSMessage(
 
   private def mappify(key: String, value: Option[String]) =
     value.map(v => Map(key -> v)) getOrElse Map.empty
-}

@@ -5,6 +5,5 @@ import io.circe.Codec
 
 import scala.concurrent.duration.{Duration, FiniteDuration}
 
-package object push {
+package object push:
   implicit val durationCodec: Codec[Duration] = PrimitiveFormats.durationCodec
-}

@@ -1,16 +1,16 @@
 package com.malliina.push.wns
 
-import com.malliina.http._
-import com.malliina.push.Headers._
-import com.malliina.push.OAuthKeys._
-import com.malliina.push._
-import com.malliina.push.wns.WNSClient._
+import com.malliina.http.*
+import com.malliina.push.Headers.*
+import com.malliina.push.OAuthKeys.*
+import com.malliina.push.*
+import com.malliina.push.wns.WNSClient.*
 import io.circe.{Codec, Decoder}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
 
-object WNSClient {
+object WNSClient:
   val NotificationHost = "notify.windows.com"
 
   val CachePolicy = "X-WNS-Cache-Policy"
@@ -27,42 +27,40 @@ object WNSClient {
     payload: String,
     headers: Map[String, String]
   )
-}
 
 class WNSClient(creds: WNSCredentials, http: SimpleHttpClient[Future])(implicit
   ec: ExecutionContext
-) extends PushClient[WNSToken, WNSMessage, WNSResponse] {
+) extends PushClient[WNSToken, WNSMessage, WNSResponse]:
   def push(token: WNSToken, message: WNSMessage): Future[WNSResponse] =
-    withUrls(message) { meta => pushSingle(meta.client, token, meta.payload, meta.headers) }
+    withUrls(message): meta =>
+      pushSingle(meta.client, token, meta.payload, meta.headers)
 
   override def pushAll(urls: Seq[WNSToken], message: WNSMessage): Future[Seq[WNSResponse]] =
-    withUrls(message) { meta =>
-      Future.traverse(urls) { url => pushSingle(meta.client, url, meta.payload, meta.headers) }
-    }
+    withUrls(message): meta =>
+      Future.traverse(urls): url =>
+        pushSingle(meta.client, url, meta.payload, meta.headers)
 
   private def withUrls[T](message: WNSMessage)(code: PushMeta => Future[T]): Future[T] =
-    fetchAccessToken(http).flatMap { accessToken =>
-      val contentType = if (message.notification.isRaw) OctetStream else TextHtml
+    fetchAccessToken(http).flatMap: accessToken =>
+      val contentType = if message.notification.isRaw then OctetStream else TextHtml
       val allHeaders = message.headers ++ Map(
         Authorization -> s"Bearer ${accessToken.access_token}",
         ContentType -> contentType,
         RequestStatus -> "true"
       )
       code(PushMeta(http, message.payload, allHeaders))
-    }
 
   def pushSingle(
     client: SimpleHttpClient[Future],
     token: WNSToken,
     body: String,
     headers: Map[String, String]
-  ): Future[WNSResponse] = {
+  ): Future[WNSResponse] =
     client
       .postString(FullUrl.build(token.token).toOption.get, body, XmlMediaType, headers)
       .map(WNSResponse.fromResponse)
-  }
 
-  def fetchAccessToken(client: SimpleHttpClient[Future]): Future[WNSAccessToken] = {
+  def fetchAccessToken(client: SimpleHttpClient[Future]): Future[WNSAccessToken] =
     val parameters = Map(
       GrantType -> ClientCredentials,
       ClientId -> creds.packageSID,
@@ -72,17 +70,13 @@ class WNSClient(creds: WNSCredentials, http: SimpleHttpClient[Future])(implicit
     val url = FullUrl.https("login.live.com", "/accesstoken.srf")
     val response = client.postForm(url, Map(ContentType -> FormType), parameters)
     response.flatMap(r => Future.fromTry(parseResponse[WNSAccessToken](r, url)))
-  }
 
   def parseResponse[T: Decoder](response: HttpResponse, url: FullUrl): Try[T] =
-    if (response.code == 200) {
+    if response.code == 200 then
       response
         .parse[T]
         .fold(
           invalid => Failure(new JsonException(response.asString, invalid.toString)),
           valid => Success(valid)
         )
-    } else {
-      Failure(new com.malliina.push.ResponseException(response, url))
-    }
-}
+    else Failure(new com.malliina.push.ResponseException(response, url))

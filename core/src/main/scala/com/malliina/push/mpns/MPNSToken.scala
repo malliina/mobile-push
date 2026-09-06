@@ -8,9 +8,9 @@ import scala.util.Try
 
 case class MPNSToken(token: String) extends AnyVal with Token
 
-object MPNSToken extends TokenCompanion[MPNSToken] {
+object MPNSToken extends TokenCompanion[MPNSToken]:
   override def build(input: String): Either[ErrorMessage, MPNSToken] =
-    if (isValid(input)) Right(apply(input))
+    if isValid(input) then Right(apply(input))
     else Left(defaultError(input))
 
   def isValid(token: String): Boolean =
@@ -18,4 +18,3 @@ object MPNSToken extends TokenCompanion[MPNSToken] {
 
   def toUrl(in: String): Try[URL] =
     Try(new URL(in)).filter(_.getPath.length > 0)
-}

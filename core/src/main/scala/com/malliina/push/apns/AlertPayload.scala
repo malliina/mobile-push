@@ -17,7 +17,7 @@ case class AlertPayload(
   subtitleLocArgs: Option[Seq[String]] = None
 )
 
-object AlertPayload {
+object AlertPayload:
   case class AlertPayloadJson(
     body: String,
     title: Option[String],
@@ -30,7 +30,7 @@ object AlertPayload {
     `title-loc-args`: Option[Seq[String]],
     `subtitle-loc-key`: Option[String],
     `subtitle-loc-args`: Option[Seq[String]]
-  ) {
+  ):
     def toPayload: AlertPayload = AlertPayload(
       body,
       title,
@@ -44,7 +44,6 @@ object AlertPayload {
       `subtitle-loc-key`,
       `subtitle-loc-args`
     )
-  }
   def to(json: AlertPayload): AlertPayloadJson = AlertPayloadJson(
     json.body,
     json.title,
@@ -64,4 +63,3 @@ object AlertPayload {
     rawDecoder.map(raw => raw.toPayload),
     rawEncoder.contramap(AlertPayload.to)
   )
-}

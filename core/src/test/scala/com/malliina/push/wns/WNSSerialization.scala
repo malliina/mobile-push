@@ -2,17 +2,16 @@ package com.malliina.push.wns
 
 import scala.xml.{Node, PrettyPrinter}
 
-class WNSSerialization extends munit.FunSuite {
+class WNSSerialization extends munit.FunSuite:
   private val prettyPrinter = new PrettyPrinter(200, 2)
 
-  test("audio") {
+  test("audio"):
     val audio1 = Audio.once("britney.mp3").xml.toString()
-    assert(audio1 contains """src="britney.mp3"""")
+    assert(audio1.contains("""src="britney.mp3""""))
     val audio2 = Audio.Mute.xml
     assert(!(audio2 contains "src"))
-  }
 
-  test("seqs") {
+  test("seqs"):
     def elem(i: Int) =
       <elem>
         {i}
@@ -23,9 +22,8 @@ class WNSSerialization extends munit.FunSuite {
       <result>
         {elems}
       </result>
-  }
 
-  test("example") {
+  test("example"):
     // https://msdn.microsoft.com/en-us/windows/uwp/controls-and-patterns/tiles-and-notifications-adaptive-interactive-toasts
     val toast = ToastElement(
       ToastVisual(
@@ -68,7 +66,5 @@ class WNSSerialization extends munit.FunSuite {
       None
     )
     // println(format(toast.xml))
-  }
 
   def format(node: Node) = prettyPrinter.format(node)
-}

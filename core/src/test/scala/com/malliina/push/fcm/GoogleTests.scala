@@ -1,23 +1,22 @@
 package com.malliina.push.fcm
 
-import com.malliina.push.gcm._
+import com.malliina.push.gcm.*
 import com.malliina.push.BaseSuite
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class GoogleTests extends BaseSuite {
+class GoogleTests extends BaseSuite:
   implicit val ec: ExecutionContext = munitExecutionContext
   val rawToken =
     "APA91bHyeY6NdQar-XXoC47PuWB0eCZErLB-xBNSlhrXQ-u_ElWM7ZFaocsoCeWBx_Or5vmj357BNTdr6atRNwAfFQ4od458OqwfJV3SSPnYa1CIN1j0EVplN8QeEjx3n6-WV6obKN60CDn0-RL3gAsILC_4ec0gAQ"
   // emulator token
   val token = GCMToken("changeme")
 
-  test("token validation") {
+  test("token validation"):
     val tokenOpt = GCMToken.build(rawToken)
     assert(tokenOpt.isRight)
-  }
 
-  http.test("send message, if enabled".ignore) { httpClient =>
+  http.test("send message, if enabled".ignore): httpClient =>
     val boatToken = GCMToken("changeme")
     val fcmApiKey: String = "changeme"
     val pushIDs = Seq(boatToken)
@@ -29,9 +28,8 @@ class GoogleTests extends BaseSuite {
     val rs = await(response)
     assert(rs.forall(r => r.response.failure == 0))
     rs.foreach(println)
-  }
 
-  http.test("FCM".ignore) { httpClient =>
+  http.test("FCM".ignore): httpClient =>
     val tokens = Seq(
       // Emulator
       GCMToken(
@@ -49,5 +47,3 @@ class GoogleTests extends BaseSuite {
     println(rs)
     assert(rs.forall(r => r.response.failure == 0))
     rs.foreach(println)
-  }
-}

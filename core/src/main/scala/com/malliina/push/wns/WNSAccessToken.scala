@@ -5,6 +5,5 @@ import io.circe.generic.semiauto.deriveCodec
 
 case class WNSAccessToken(access_token: String, token_type: String)
 
-object WNSAccessToken {
+object WNSAccessToken:
   implicit val json: Codec[WNSAccessToken] = deriveCodec[WNSAccessToken]
-}

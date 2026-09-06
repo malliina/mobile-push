@@ -5,7 +5,7 @@ import io.circe.generic.semiauto.deriveCodec
 
 import scala.xml.Elem
 
-case class Actions(inputs: Seq[Input] = Nil, actions: Seq[ActionElement] = Nil) extends Xmlable {
+case class Actions(inputs: Seq[Input] = Nil, actions: Seq[ActionElement] = Nil) extends Xmlable:
   val isEmpty = actions.isEmpty
 
   override def xml: Elem =
@@ -13,8 +13,6 @@ case class Actions(inputs: Seq[Input] = Nil, actions: Seq[ActionElement] = Nil) 
       {inputs.map(_.xml)}
       {actions.map(_.xml)}
     </actions>
-}
 
-object Actions {
+object Actions:
   implicit val json: Codec[Actions] = deriveCodec[Actions]
-}

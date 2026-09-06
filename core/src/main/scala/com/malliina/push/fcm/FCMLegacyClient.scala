@@ -6,12 +6,11 @@ import com.malliina.push.gcm.GoogleClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object FCMLegacyClient {
+object FCMLegacyClient:
   val FcmEndpoint: FullUrl = FullUrl.https("fcm.googleapis.com", "/fcm/send")
 
   def apply(apiKey: String, http: SimpleHttpClient[Future], ec: ExecutionContext): FCMLegacyClient =
     new FCMLegacyClient(apiKey, http, ec)
-}
 
 class FCMLegacyClient(apiKey: String, http: SimpleHttpClient[Future], ec: ExecutionContext)
-  extends GoogleClient(apiKey, FcmEndpoint, http)(ec)
+  extends GoogleClient(apiKey, FcmEndpoint, http)(using ec)
